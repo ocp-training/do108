@@ -1,0 +1,45 @@
+name: Publish FIDS images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/fids-api/**"
+      - "src/fids-web/**"
+      - ".github/workflows/publish-images.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [fids-api, fids-web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: src/${{ matrix.app }}
+          file: src/${{ matrix.app }}/Containerfile
+          push: true
+          tags: |
+            ghcr.io/ocp-training/${{ matrix.app }}:latest
+            ghcr.io/ocp-training/${{ matrix.app }}:${{ github.sha }}
+      - name: Make package public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method PUT \
+            -H "Accept: application/vnd.github+json" \
+            "/orgs/ocp-training/packages/container/${{ matrix.app }}/visibility" \
+            -f visibility=public || true
