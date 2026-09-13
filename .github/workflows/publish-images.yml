@@ -41,5 +41,5 @@ jobs:
         run: |
           gh api --method PUT \
             -H "Accept: application/vnd.github+json" \
-            "/orgs/ocp-training/packages/container/${{ matrix.app }}/visibility" \
-            -f visibility=public || true
+            "/user/packages/container/${{ matrix.app }}/visibility" \
+            -f visibility=public
