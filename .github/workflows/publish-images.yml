@@ -38,8 +38,9 @@ jobs:
       - name: Make package public
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
         run: |
           gh api --method PUT \
             -H "Accept: application/vnd.github+json" \
             "/user/packages/container/${{ matrix.app }}/visibility" \
-            -f visibility=public
+            -f visibility=public || true

@@ -12,7 +12,7 @@ USER root
 COPY fids-proxy.conf /etc/httpd/conf.d/fids-proxy.conf
 RUN sed -i 's/\r$//' /usr/local/bin/fids-entrypoint /etc/httpd/conf.d/fids-proxy.conf \
  && chmod 0755 /usr/local/bin/fids-entrypoint \
- && chmod 0777 /var/www/html /usr/share/fids
+ && chmod -R a+rwX /var/www/html /usr/share/fids
 USER 1001
 
 ENTRYPOINT ["/usr/local/bin/fids-entrypoint"]
