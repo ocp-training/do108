@@ -5,3 +5,4 @@ resources:
   - fids-db.yaml
   - fids-api.yaml
   - fids-web.yaml
+  - fids-admin.yaml
