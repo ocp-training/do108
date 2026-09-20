@@ -6,6 +6,7 @@ on:
     paths:
       - "src/fids-api/**"
       - "src/fids-web/**"
+      - "src/fids-admin/**"
       - ".github/workflows/publish-images.yml"
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [fids-api, fids-web]
+        app: [fids-api, fids-web, fids-admin]
     steps:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3

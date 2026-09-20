@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCE — Departures — Terminal 2</title>
+<style>
+  :root{
+    --board:#0b0d10;
+    --panel:#12151b;
+    --line:#2a2f38;
+    --amber:#e8c36a;
+    --amber-dim:#9a7d35;
+    --ink:#e8e4d8;
+    --mute:#8b9080;
+    --ok:#3dba7a;
+    --warn:#e8c36a;
+    --hot:#e24b4b;
+    --gone:#6b7180;
+    --banner:#c9a24a;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background:var(--board);
+    color:var(--ink);
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .banner{
+    background:var(--banner);
+    color:#141208;
+    font-weight:700;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:13px;
+    padding:8px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .banner b{ letter-spacing:.08em; }
+  header{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:16px;
+    align-items:end;
+  }
+  .mark{
+    font-size:11px;
+    letter-spacing:.28em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    margin:0;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:.04em;
+    line-height:1;
+    text-transform:uppercase;
+  }
+  h1 span{ color:var(--amber); }
+  .clock{
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+  .clock .t{
+    font-size:42px;
+    font-weight:700;
+    letter-spacing:.06em;
+    color:var(--amber);
+    line-height:1;
+  }
+  .clock .d{
+    margin-top:6px;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--mute);
+  }
+  .cols{
+    display:grid;
+    grid-template-columns:140px 110px 1fr 90px 180px;
+    gap:12px;
+    padding:10px 28px;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .row{
+    display:grid;
+    grid-template-columns:140px 110px 1fr 90px 180px;
+    gap:12px;
+    padding:14px 28px;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    font-size:22px;
+    letter-spacing:.02em;
+  }
+  .row:nth-child(odd){ background:var(--panel); }
+  .fn{ font-weight:700; color:var(--amber); letter-spacing:.08em; }
+  .tm{ font-variant-numeric:tabular-nums; font-weight:700; }
+  .dest{ font-weight:700; text-transform:uppercase; }
+  .dest small{
+    display:block;
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--mute);
+    font-weight:400;
+    margin-top:2px;
+  }
+  .gate{ font-weight:700; font-variant-numeric:tabular-nums; }
+  .st{
+    justify-self:start;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border:1px solid currentColor;
+  }
+  .on{ color:var(--ok); }
+  .board{ color:var(--warn); }
+  .final{ color:#ff8a3d; }
+  .delay{ color:var(--hot); }
+  .gone{ color:var(--gone); }
+  main{ flex:1; }
+  .ident{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .ident dl{
+    margin:0;
+    padding:10px 28px;
+    background:var(--panel);
+    display:flex;
+    gap:16px;
+    align-items:baseline;
+  }
+  .ident dt{
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+  }
+  .ident dd{
+    margin:0;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--amber);
+    font-variant-numeric:tabular-nums;
+  }
+  footer{
+    padding:12px 28px;
+    border-top:1px solid var(--line);
+    color:var(--mute);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+  }
+</style>
+</head>
+<body>
+  <div class="banner">
+    <span>Nice Côte d'Azur · Flight Information Display</span>
+    <b>Board software  v1</b>
+  </div>
+  <header>
+    <div>
+      <div class="mark">NCE · Terminal 2</div>
+      <h1>Departures <span>T2</span></h1>
+    </div>
+    <div class="clock">
+      <div class="t" id="clock">08:12</div>
+      <div class="d" id="date">Tuesday 8 September</div>
+    </div>
+  </header>
+  <div class="ident">
+    <dl>
+      <dt>Pod</dt>
+      <dd>__POD_NAME__</dd>
+    </dl>
+    <dl>
+      <dt>Hostname</dt>
+      <dd>__HOSTNAME__</dd>
+    </dl>
+  </div>
+  <div class="cols">
+    <div>Flight</div><div>Time</div><div>Destination</div><div>Gate</div><div>Status</div>
+  </div>
+  <main>
+    <div class="row">
+      <div class="fn">AF7701</div>
+      <div class="tm">08:15</div>
+      <div class="dest">Paris CDG<small>Air France</small></div>
+      <div class="gate">A12</div>
+      <div class="st board">Boarding</div>
+    </div>
+    <div class="row">
+      <div class="fn">BA2633</div>
+      <div class="tm">09:40</div>
+      <div class="dest">London LGW<small>British Airways</small></div>
+      <div class="gate">B04</div>
+      <div class="st on">On time</div>
+    </div>
+    <div class="row">
+      <div class="fn">LH2265</div>
+      <div class="tm">10:05</div>
+      <div class="dest">Frankfurt FRA<small>Lufthansa</small></div>
+      <div class="gate">A08</div>
+      <div class="st on">On time</div>
+    </div>
+    <div class="row">
+      <div class="fn">U21842</div>
+      <div class="tm">10:35</div>
+      <div class="dest">London LGW<small>easyJet</small></div>
+      <div class="gate">B11</div>
+      <div class="st delay">Delayed 11:10</div>
+    </div>
+    <div class="row">
+      <div class="fn">IB8571</div>
+      <div class="tm">11:20</div>
+      <div class="dest">Madrid MAD<small>Iberia</small></div>
+      <div class="gate">A03</div>
+      <div class="st on">On time</div>
+    </div>
+    <div class="row">
+      <div class="fn">EK076</div>
+      <div class="tm">12:10</div>
+      <div class="dest">Dubai DXB<small>Emirates</small></div>
+      <div class="gate">C01</div>
+      <div class="st gone">Gate closed</div>
+    </div>
+  </main>
+  <footer>
+    <span>Nice Côte d'Azur Airport · Terminal 2 departure board</span>
+    <span>Static files · httpd-24 · port 8080 · /var/www/html/index.html</span>
+  </footer>
+  <script>
+    (function(){
+      function pad(n){ return n<10 ? "0"+n : ""+n; }
+      var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+      var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      function tick(){
+        var d=new Date();
+        var el=document.getElementById("clock");
+        var dt=document.getElementById("date");
+        if(el) el.textContent=pad(d.getHours())+":"+pad(d.getMinutes());
+        if(dt) dt.textContent=days[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()];
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
