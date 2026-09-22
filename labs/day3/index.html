@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 3 — Configuration, storage and reliability — DO108</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   PHOENIX FORMATIONS - Student Book DO280 4.18
+   Feuille de style « Red Hat like » - écran + impression PDF (A4)
+   Palette officielle Red Hat : https://www.redhat.com/en/about/brand/standards/color
+   ===================================================================== */
+
+:root{
+  --rh-red:        #ee0000;   /* Red Hat Red (red-50)  */
+  --rh-red-dark:   #a30000;
+  --rh-red-soft:   #fdeaea;
+  --rh-black:      #151515;   /* gray-95 */
+  --rh-gray-90:    #1f1f1f;
+  --rh-gray-80:    #292929;
+  --rh-gray-70:    #383838;
+  --rh-gray-60:    #4d4d4d;
+  --rh-gray-50:    #707070;
+  --rh-gray-40:    #a3a3a3;
+  --rh-gray-30:    #c7c7c7;
+  --rh-gray-20:    #e0e0e0;
+  --rh-gray-10:    #f2f2f2;
+  --rh-orange:     #f5921b;
+  --rh-yellow:     #ffcc17;
+  --rh-teal:       #37a3a3;
+  --rh-purple:     #5e40be;
+  --rh-blue:       #0066cc;   /* bleu « info » PatternFly */
+  --rh-blue-soft:  #e7f1fa;
+  --rh-teal-soft:  #e8f5f5;
+  --rh-orange-soft:#fdf3e6;
+
+  --font-display: "Red Hat Display", "Overpass", "Liberation Sans", Arial, sans-serif;
+  --font-text:    "Red Hat Text", "Overpass", "Liberation Sans", Arial, sans-serif;
+  --font-mono:    "Red Hat Mono", "Liberation Mono", "DejaVu Sans Mono", Consolas, monospace;
+}
+
+/* ---------- Mise en page paginée ---------------------------------- */
+@page{
+  size: A4;
+  margin: 20mm 17mm 18mm 17mm;
+
+  @top-left{
+    content: string(chaptitre);
+    font-family: var(--font-text);
+    font-size: 7.5pt;
+    color: #707070;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    vertical-align: bottom;
+    padding-bottom: 3mm;
+  }
+  @top-right{
+    content: "DO280 4.18 - Administration niveau 2";
+    font-family: var(--font-text);
+    font-size: 7.5pt;
+    color: #a3a3a3;
+    vertical-align: bottom;
+    padding-bottom: 3mm;
+  }
+  @bottom-left{
+    content: "Phoenix Formations - support de cours";
+    font-family: var(--font-text);
+    font-size: 7.5pt;
+    color: #a3a3a3;
+    vertical-align: top;
+    padding-top: 3mm;
+  }
+  @bottom-right{
+    content: counter(page);
+    font-family: var(--font-display);
+    font-size: 9pt;
+    font-weight: 700;
+    color: #ee0000;
+    vertical-align: top;
+    padding-top: 3mm;
+  }
+}
+@page divider{ margin: 0; @top-left{content:""} @top-right{content:""} @bottom-left{content:""} @bottom-right{content:""} }
+@page cover{ margin: 0; @top-left{content:""} @top-right{content:""} @bottom-left{content:""} @bottom-right{content:""} }
+@page :blank{ @top-left{content:""} @top-right{content:""} }
+
+/* ---------- Base ---------------------------------------------------- */
+*{ box-sizing: border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family: var(--font-text);
+  font-size: 10.2pt;
+  line-height: 1.55;
+  color: var(--rh-gray-90);
+  margin: 0;
+  hyphens: manual;
+}
+p{ margin: 0 0 .62em; text-align: justify; hyphens: auto; }
+li{ hyphens: auto; }
+strong{ font-weight: 700; color: var(--rh-black); }
+em{ font-style: italic; }
+a{ color: var(--rh-blue); text-decoration: none; }
+sup{ font-size: .7em; }
+
+/* ---------- Couverture --------------------------------------------- */
+.cover{ page: cover; break-after: page; position: relative;
+        height: 297mm; width: 210mm; background: var(--rh-black); color:#fff; overflow:hidden; }
+.cover-bar{ position:absolute; top:0; left:0; width:100%; height:14mm; background: var(--rh-red); }
+.cover-mark{ position:absolute; top:26mm; left:20mm; font-family:var(--font-display); font-weight:900;
+             font-size:13pt; letter-spacing:.22em; text-transform:uppercase; color:#fff; }
+.cover-mark span{ color: var(--rh-red); }
+.cover-rule{ position:absolute; top:40mm; left:20mm; width:38mm; height:3.5mm; background: var(--rh-red); }
+.cover-body{ position:absolute; top:62mm; left:20mm; right:20mm; }
+.cover-kicker{ font-family:var(--font-display); font-size:11pt; font-weight:500; letter-spacing:.18em;
+               text-transform:uppercase; color: var(--rh-gray-40); margin-bottom:6mm; }
+.cover-title{ font-family:var(--font-display); font-weight:900; font-size:40pt; line-height:1.03;
+              letter-spacing:-.02em; margin:0 0 5mm; }
+.cover-title .accent{ color: var(--rh-red); }
+.cover-sub{ font-family:var(--font-display); font-weight:400; font-size:15pt; line-height:1.35;
+            color:#e0e0e0; max-width:130mm; }
+.cover-part{ display:inline-block; margin-top:9mm; padding:2.5mm 5mm; border:1.5px solid var(--rh-red);
+             font-family:var(--font-display); font-weight:700; font-size:11pt; letter-spacing:.1em;
+             text-transform:uppercase; color:#fff; }
+.cover-meta{ position:absolute; left:20mm; right:20mm; bottom:22mm; padding-top:6mm;
+             font-size:9pt; color:var(--rh-gray-30); border-top:1px solid #383838; }
+.cover-meta table{ width:100%; border-collapse:collapse; margin:0; }
+.cover-meta td{ width:33.33%; padding:0 8mm 0 0; border:0; background:none; vertical-align:top;
+                color:var(--rh-gray-30); font-size:9pt; }
+.cover-meta .admlab{ display:block; font-family:var(--font-display); font-size:7.5pt; font-weight:700;
+                  letter-spacing:.14em; text-transform:uppercase; color:var(--rh-red); margin-bottom:1.5mm; }
+.cover-meta .val{ color:#fff; font-weight:500; }
+.cover-grid{ position:absolute; right:-30mm; top:150mm; width:150mm; height:150mm;
+             border:1.5px solid rgba(238,0,0,.35); transform:rotate(45deg); }
+.cover-grid2{ position:absolute; right:-10mm; top:180mm; width:90mm; height:90mm;
+              border:1.5px solid rgba(255,255,255,.10); transform:rotate(45deg); }
+
+/* ---------- Titres --------------------------------------------------- */
+h1.chap{
+  font-family: var(--font-display); font-weight:900; font-size:23pt; line-height:1.1;
+  color: var(--rh-black); margin:0 0 4mm; letter-spacing:-.015em;
+  break-before: page; padding-top: 2mm;
+}
+.chap-title{ string-set: chaptitre content(text); }
+.chap-num{ display:block; font-family:var(--font-display); font-weight:700; font-size:9.5pt;
+           letter-spacing:.2em; text-transform:uppercase; color:var(--rh-red); margin-bottom:2.5mm; }
+h1.chap::after{ content:""; display:block; width:26mm; height:3px; background:var(--rh-red); margin-top:4mm; }
+h1.nobreak{ break-before: auto; }
+
+h2{ font-family:var(--font-display); font-weight:700; font-size:14pt; color:var(--rh-black);
+    margin:8mm 0 2.5mm; line-height:1.2; break-after: avoid; }
+h3{ font-family:var(--font-display); font-weight:700; font-size:11.2pt; color:var(--rh-gray-80);
+    margin:5.5mm 0 1.8mm; break-after: avoid; }
+h4{ font-family:var(--font-display); font-weight:700; font-size:10pt; color:var(--rh-gray-60);
+    margin:4mm 0 1.2mm; text-transform:uppercase; letter-spacing:.06em; break-after: avoid; }
+
+ul,ol{ margin:0 0 .7em; padding-left: 5.5mm; }
+li{ margin-bottom:.28em; }
+ul{ list-style: none; padding-left: 6mm; }
+ul > li{ position:relative; }
+ul > li::before{ content:""; position:absolute; left:-4.2mm; top:.52em;
+                 width:1.8mm; height:1.8mm; background:var(--rh-red); }
+ul ul > li::before{ background:var(--rh-gray-40); }
+ol{ list-style: decimal; padding-left: 6.5mm; }
+ol li::marker{ font-family:var(--font-display); font-weight:700; color:var(--rh-red); }
+
+/* ---------- Encadré « objectifs » ------------------------------------ */
+.objectifs{ background: var(--rh-gray-10); border-left: 4px solid var(--rh-black);
+            padding: 5mm 6mm 4mm; margin: 0 0 7mm; break-inside: auto; }
+.objectifs h4{ margin:0 0 2.5mm; color: var(--rh-black); font-size:9pt; }
+.objectifs ul{ margin-bottom:0; }
+.objectifs li::before{ background: var(--rh-black); }
+
+/* ---------- Admonitions ---------------------------------------------- */
+.adm{ display:flex; gap:4mm; margin: 4.5mm 0; padding: 3.5mm 4.5mm 3mm; break-inside: avoid;
+      border-left: 4px solid var(--rh-gray-40); background: var(--rh-gray-10); font-size:9.6pt; }
+.adm .ico{ flex:0 0 6.5mm; height:6.5mm; border-radius:50%; background:var(--rh-gray-50); color:#fff;
+           font-family:var(--font-display); font-weight:900; font-size:9pt; line-height:6.5mm;
+           text-align:center; margin-top:.4mm; }
+.adm .bd{ flex:1; }
+.adm .admlab{ display:block; font-family:var(--font-display); font-weight:700; font-size:8pt;
+           letter-spacing:.13em; text-transform:uppercase; margin-bottom:1.2mm; color:var(--rh-gray-60); }
+.adm p:last-child{ margin-bottom:0; }
+.adm ul:last-child, .adm ol:last-child{ margin-bottom:0; }
+
+.adm.note      { border-color: var(--rh-blue);   background: var(--rh-blue-soft); }
+.adm.note .ico { background: var(--rh-blue); }
+.adm.note .admlab { color: #004080; }
+
+.adm.astuce      { border-color: var(--rh-teal);  background: var(--rh-teal-soft); }
+.adm.astuce .ico { background: var(--rh-teal); }
+.adm.astuce .admlab { color: #1f6b6b; }
+
+.adm.important      { border-color: var(--rh-orange); background: var(--rh-orange-soft); }
+.adm.important .ico { background: var(--rh-orange); }
+.adm.important .admlab { color: #8a4f00; }
+
+.adm.attention      { border-color: var(--rh-red);  background: var(--rh-red-soft); }
+.adm.attention .ico { background: var(--rh-red); }
+.adm.attention .admlab { color: var(--rh-red-dark); }
+
+.adm.verif      { border-color: var(--rh-purple); background:#f0ecfb; }
+.adm.verif .ico { background: var(--rh-purple); }
+.adm.verif .admlab { color:#3f2a86; }
+
+/* ---------- Blocs de code -------------------------------------------- */
+.term{ background: var(--rh-black); color:#e6e6e6; font-family: var(--font-mono); font-size:8.6pt;
+       line-height:1.5; padding: 3.5mm 4.5mm; margin: 3mm 0 4.5mm; border-left:4px solid var(--rh-red);
+       white-space: pre-wrap; word-break: break-word; break-inside: avoid; }
+.term .p{ color: var(--rh-gray-40); }              /* prompt          */
+.term .c{ color:#fff; font-weight:500; }           /* commande        */
+.term .o{ color:#9fb3c8; }                         /* sortie          */
+.term .ok{ color:#5ecb8b; }
+.term .ko{ color:#ff6b6b; }
+.term .cm{ color: var(--rh-gray-50); font-style: italic; }
+
+.file{ margin: 3mm 0 4.5mm; break-inside: auto; }
+.file .name{ break-after: avoid; font-family: var(--font-mono); font-size:8pt; font-weight:700; color:#fff;
+             background: var(--rh-gray-70); display:inline-block; padding:1.2mm 3.5mm; }
+.file pre{ margin:0; background: var(--rh-gray-10); border:1px solid var(--rh-gray-20);
+           border-left:4px solid var(--rh-gray-70); font-family: var(--font-mono); font-size:8.6pt;
+           line-height:1.5; padding:3.5mm 4.5mm; white-space: pre-wrap; word-break: break-word; }
+code{ font-family: var(--font-mono); font-size:.9em; background: var(--rh-gray-10);
+      border:1px solid var(--rh-gray-20); border-radius:2px; padding:.02em .28em; color:var(--rh-gray-90); }
+.term code, .file code, h1 code, h2 code, h3 code{ background:none; border:none; padding:0; }
+
+/* ---------- Tableaux -------------------------------------------------- */
+table{ width:100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size:9.2pt;
+       break-inside: avoid; table-layout: fixed; }
+th, td{ overflow-wrap: break-word; }
+caption{ caption-side: top; text-align:left; font-family:var(--font-display); font-weight:700;
+         font-size:8.5pt; letter-spacing:.1em; text-transform:uppercase; color:var(--rh-red);
+         padding-bottom:1.8mm; }
+th{ background: var(--rh-black); color:#fff; font-family:var(--font-display); font-weight:700;
+    font-size:8.6pt; letter-spacing:.04em; text-align:left; padding:2.2mm 3mm; border:0; }
+td{ padding:2.1mm 3mm; border-bottom:1px solid var(--rh-gray-20); vertical-align: top; }
+tbody tr:nth-child(even){ background: #fafafa; }
+td code{ font-size:.86em; }
+table.compact td, table.compact th{ padding:1.6mm 2.6mm; font-size:8.8pt; }
+.tag{ display:inline-block; font-family:var(--font-display); font-weight:700; font-size:7.2pt;
+      letter-spacing:.08em; text-transform:uppercase; padding:.6mm 2mm; border-radius:2px; }
+.tag.lab{ background: var(--rh-red); color:#fff; }
+.tag.demo{ background: var(--rh-purple); color:#fff; }
+.tag.opt{ background: var(--rh-gray-40); color:#fff; }
+.tag.core{ background: var(--rh-black); color:#fff; }
+
+/* ---------- Bloc « travaux pratiques » -------------------------------- */
+.tp{ border:1.5px solid var(--rh-gray-20); margin:6mm 0; break-inside: auto; }
+.tp-hd{ background: var(--rh-red); color:#fff; padding:2.8mm 4.5mm; break-after: avoid;
+         font-family:var(--font-display); font-weight:700; font-size:10.5pt; }
+.tp-hd .k{ display:block; font-size:7.5pt; font-weight:700; letter-spacing:.16em;
+            text-transform:uppercase; opacity:.85; margin-bottom:.8mm; }
+.tp-bd{ padding:4.5mm 5mm 3.5mm; }
+.tp-bd > *:last-child{ margin-bottom:0; }
+.tp-meta{ display:flex; gap:6mm; font-size:8.4pt; color:var(--rh-gray-50);
+           border-bottom:1px solid var(--rh-gray-20); padding-bottom:2.5mm; margin-bottom:3.5mm; }
+.tp-meta b{ font-family:var(--font-display); color:var(--rh-gray-80); }
+.steps{ counter-reset: step; list-style:none; padding-left:0; }
+.steps > li{ counter-increment: step; position:relative; padding-left:8mm; margin-bottom:3mm; }
+.steps > li::before{ content: counter(step); position:absolute; left:0; top:.05em;
+      width:5.6mm; height:5.6mm; background:var(--rh-black); color:#fff; border-radius:50%;
+      font-family:var(--font-display); font-weight:700; font-size:8pt; line-height:5.6mm; text-align:center; }
+
+/* ---------- Sommaire --------------------------------------------------- */
+.toc{ break-after: page; }
+.toc h1{ font-family:var(--font-display); font-weight:900; font-size:23pt; margin:0 0 6mm;
+         letter-spacing:-.015em; }
+.toc h1::after{ content:""; display:block; width:26mm; height:3px; background:var(--rh-red); margin-top:4mm; }
+.toc ol{ list-style:none; padding:0; margin:0; }
+.toc li{ margin:0; }
+.toc a{ display:flex; align-items:baseline; color:var(--rh-gray-90); text-decoration:none;
+        padding:1.4mm 0; border-bottom:1px dotted var(--rh-gray-30); }
+.toc .t{ flex:1; }
+.toc .n{ font-family:var(--font-display); font-weight:700; color:var(--rh-red); font-size:9pt;
+         min-width:11mm; }
+.toc .t{ padding-right:3mm; }
+.toc .lvl2 a{ padding-left:11mm; font-size:9.3pt; color:var(--rh-gray-60); border-bottom-style:none; }
+.toc .lvl2 .n{ min-width:0; color:var(--rh-gray-40); margin-right:2.2mm; }
+.toc a::after{ content: target-counter(attr(href), page); font-family:var(--font-display);
+               font-weight:700; font-size:9pt; color:var(--rh-gray-50); margin-left:4mm; }
+
+/* ---------- Divers ------------------------------------------------------ */
+.frontmatter{ break-after: page; }
+.legal{ font-size:8.6pt; color: var(--rh-gray-60); }
+.legal h3{ font-size:9.5pt; color:var(--rh-gray-80); }
+.kv{ width:100%; font-size:9.4pt; margin:3mm 0 5mm; }
+.kv td{ border-bottom:1px solid var(--rh-gray-20); padding:2mm 0; }
+.kv td:first-child{ width:44mm; font-family:var(--font-display); font-weight:700; color:var(--rh-gray-60);
+                    font-size:8.6pt; letter-spacing:.05em; text-transform:uppercase; }
+.pill{ display:inline-block; background:var(--rh-black); color:#fff; font-family:var(--font-display);
+       font-weight:700; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase;
+       padding:1mm 3mm; margin-bottom:3mm; }
+.lead{ font-family:var(--font-display); font-size:11.4pt; line-height:1.45; color:var(--rh-gray-60);
+       margin-bottom:5mm; text-align:left; }
+.two{ display:flex; gap:6mm; }
+.two > *{ flex:1; }
+.rule{ height:1px; background:var(--rh-gray-20); margin:7mm 0; border:0; }
+.center{ text-align:center; }
+.small{ font-size:8.8pt; color:var(--rh-gray-60); }
+figure{ margin:5mm 0; break-inside: avoid; }
+figcaption{ font-size:8.4pt; color:var(--rh-gray-50); margin-top:2mm; font-style:italic; }
+.schema{ width:100%; }
+
+figure.draw{ margin:5mm 0 6mm; break-inside:avoid; }
+figure.draw img{ width:100%; height:auto; display:block; border:1px solid var(--rh-gray-20); background:#fff; }
+figure.draw figcaption{ font-size:8.4pt; color:var(--rh-gray-50); margin-top:2.2mm; font-style:italic; }
+figure.draw figcaption code{ font-size:.92em; }
+.checklist{ list-style:none; padding-left:0; }
+.checklist li{ position:relative; padding-left:7mm; margin-bottom:1.8mm; }
+.checklist li::before{ content:""; position:absolute; left:0; top:.28em; width:3.6mm; height:3.6mm;
+      border:1.4px solid var(--rh-gray-50); background:#fff; }
+
+/* ---------- Confort de lecture à l'écran -------------------------------- */
+@media screen{
+  body{ background: var(--rh-gray-20); }
+  .page-wrap{ max-width: 210mm; margin: 0 auto; background:#fff; padding: 18mm 17mm 22mm;
+              box-shadow: 0 2px 18px rgba(0,0,0,.18); }
+  .cover{ margin: 0 auto; box-shadow: 0 2px 18px rgba(0,0,0,.25); }
+  .partdiv{ height:auto; padding: 24mm 16mm; margin: 8mm 0; }
+  .toc a::after{ content:""; }
+  h1.chap{ break-before: auto; margin-top: 14mm; border-top:1px solid var(--rh-gray-20); padding-top:10mm; }
+  .screen-note{ max-width:210mm; margin:8mm auto 4mm; font-size:9pt; color:var(--rh-gray-60);
+                background:#fff; border-left:4px solid var(--rh-red); padding:4mm 5mm; }
+}
+@media print{ .screen-note{ display:none; } .page-wrap{ padding:0; } }
+
+/* ---------- Séparateur de partie (édition intégrale) --------------------- */
+.partdiv{ page: divider; break-before: page; break-after: page;
+          width: 210mm; height: 297mm; background: var(--rh-black); color:#fff;
+          padding: 70mm 22mm 22mm; position: relative; overflow: hidden; }
+.partdiv::before{ content:""; position:absolute; top:0; left:0; width:100%; height:10mm; background:var(--rh-red); }
+.partdiv-num{ font-family:var(--font-display); font-weight:700; font-size:10pt; letter-spacing:.22em;
+              text-transform:uppercase; color: var(--rh-red); margin-bottom: 6mm; }
+.partdiv-title{ font-family:var(--font-display); font-weight:900; font-size:32pt; line-height:1.06;
+                letter-spacing:-.02em; margin:0 0 5mm; color:#fff; }
+.partdiv-title::after{ content:""; display:block; width:30mm; height:3px; background:var(--rh-red); margin-top:7mm; }
+.partdiv-sub{ font-family:var(--font-display); font-size:13pt; color: var(--rh-gray-30); margin-bottom:14mm; }
+.partdiv-list{ font-size:10.5pt; line-height:2; color: var(--rh-gray-20); border-top:1px solid var(--rh-gray-70);
+               padding-top:7mm; }
+.toc .tocpart a{ border-bottom:1px solid var(--rh-black); margin-top:4mm; padding-top:3mm;
+                 font-family:var(--font-display); font-weight:700; font-size:10.5pt; color:var(--rh-black); }
+.toc .tocpart .n{ color:var(--rh-red); min-width:6mm; }
+
+/* ---------- Conducteur de formation ------------------------------------- */
+table.run td{ font-size:8.7pt; padding:1.7mm 2.4mm; }
+table.run th{ font-size:8.3pt; padding:1.9mm 2.4mm; }
+table.run td:first-child{ font-family:var(--font-mono); font-weight:700; color:var(--rh-red);
+                          white-space:nowrap; font-size:8.4pt; }
+table.run td:nth-child(2){ font-family:var(--font-display); font-weight:700; color:var(--rh-gray-60);
+                           text-align:center; font-size:8.4pt; }
+table.run tr.pause td{ background:var(--rh-gray-10); color:var(--rh-gray-50); font-style:italic; }
+table.run tr.pause td:first-child{ color:var(--rh-gray-50); }
+table.run tr.repas td{ background:var(--rh-black); color:#fff; font-style:italic; }
+table.run tr.repas td:first-child{ color:#fff; }
+.tag.imp{ background:var(--rh-orange); color:#fff; }
+.jalon{ background:var(--rh-black); color:#fff; padding:3mm 4.5mm; margin:4mm 0;
+        font-family:var(--font-display); font-size:9.5pt; break-inside:avoid; }
+.jalon strong{ color:#fff; }
+.jalon .h{ color:var(--rh-red); font-weight:900; font-family:var(--font-mono); }
+
+/* ---------- Conducteur : compléments ------------------------------------ */
+table.run{ table-layout:fixed; }
+table.run td:nth-child(4){ font-family:var(--font-mono); font-size:7.5pt; color:var(--rh-gray-50);
+                           text-align:center; }
+table.run td:nth-child(5){ text-align:center; }
+table.run td .k{ display:block; font-size:8.1pt; color:var(--rh-gray-50); font-style:italic;
+                 margin-top:.8mm; line-height:1.35; }
+table.run td .k b{ color:var(--rh-red-dark); font-style:normal; }
+.pri{ display:inline-block; font-family:var(--font-display); font-weight:700; font-size:6.7pt;
+      letter-spacing:.05em; text-transform:uppercase; padding:.5mm 1.5mm; border-radius:2px; color:#fff; }
+.pri.s{ background:var(--rh-red); }
+.pri.i{ background:var(--rh-orange); }
+.pri.a{ background:var(--rh-gray-40); }
+.arb{ border:1.5px solid var(--rh-red); border-left-width:5px; padding:3.5mm 4.5mm; margin:5mm 0;
+      background:var(--rh-red-soft); break-inside:avoid; }
+.arb h4{ margin:0 0 2mm; color:var(--rh-red-dark); font-family:var(--font-display); font-size:9.6pt;
+         letter-spacing:.04em; text-transform:uppercase; }
+.arb p, .arb li{ font-size:9.5pt; }
+.arb ul{ margin:0; padding-left:5mm; }
+.quiz{ border:1.5px solid var(--rh-gray-20); border-top:4px solid var(--rh-black);
+       padding:3.5mm 4.5mm; margin:5mm 0; background:var(--rh-gray-10); break-inside:avoid; }
+.quiz h4{ margin:0 0 2mm; font-family:var(--font-display); font-size:9.6pt; letter-spacing:.04em;
+          text-transform:uppercase; color:var(--rh-black); }
+.quiz ol{ margin:0; padding-left:5mm; }
+.quiz li{ margin-bottom:2mm; font-size:9.4pt; }
+.quiz .rep{ display:block; color:var(--rh-teal); font-size:9pt; }
+.quiz .rep::before{ content:"→ "; font-weight:700; }
+.dayhead{ background:var(--rh-black); color:#fff; padding:4mm 5mm; margin:0 0 5mm; break-inside:avoid; }
+.dayhead .t{ font-family:var(--font-display); font-weight:900; font-size:12.5pt; color:#fff; }
+.dayhead .s{ font-size:9.2pt; color:var(--rh-gray-30); margin-top:1.5mm; }
+.dayhead table{ margin:3.5mm 0 0; width:100%; table-layout:fixed; }
+.dayhead td{ border:0; border-top:1px solid var(--rh-gray-70); color:var(--rh-gray-20);
+             font-size:8.5pt; padding:2mm 3mm 0 0; vertical-align:top; line-height:1.4; }
+.dayhead td b{ display:block; font-family:var(--font-display); font-size:7.6pt; font-weight:700;
+               letter-spacing:.09em; text-transform:uppercase; color:var(--rh-red); margin-bottom:1mm; }
+table.run{ break-inside:auto; }
+table.run thead{ display:table-header-group; }
+table.run tr{ break-inside:avoid; }
+table.semaine{ font-size:7.9pt; table-layout:fixed; break-inside:auto; }
+table.semaine th{ font-size:8pt; padding:2mm; text-align:center; }
+table.semaine td{ padding:2mm; vertical-align:top; line-height:1.36; }
+table.semaine td:first-child{ font-family:var(--font-mono); font-size:7.4pt; font-weight:700;
+                              color:var(--rh-red); text-align:center; background:var(--rh-gray-10); }
+table.semaine td b{ display:block; font-family:var(--font-display); font-size:7.8pt; color:var(--rh-black); }
+table.semaine tr.j td{ background:var(--rh-black); color:#fff; font-family:var(--font-display);
+                       font-weight:700; text-align:center; font-size:8.2pt; }
+</style>
+<style>
+@page{
+  @top-right{ content: "DO108 · OpenShift 4.18 - Administration Level 1"; }
+  @bottom-left{ content: "Phoenix Formations - student book"; }
+}
+section table{ break-inside:auto; }
+section table thead{ display:table-header-group; }
+section table tr{ break-inside:avoid; }
+.dayhead table, .cover-meta table{ break-inside:avoid; }
+</style>
+<style>
+html{ scroll-behavior:smooth; }
+body{
+  background:#f2f2f2;
+}
+.page-wrap{
+  max-width:210mm;
+  margin:0 auto;
+  background:#fff;
+  padding:18mm 16mm 22mm;
+  box-shadow:0 0 0 1px #e0e0e0;
+}
+h1.chap{ break-before:auto; padding-top:0; }
+.cover{ display:none; }
+.lab-nav{
+  position:sticky; top:0; z-index:20;
+  background:#151515; color:#fff;
+  font-family:var(--font-display);
+  font-size:9.5pt;
+  letter-spacing:.04em;
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  padding:10px 16px;
+}
+.lab-nav a{ color:#fff; }
+.lab-nav a:hover{ color:#ffcc17; }
+.lab-nav .kicker{
+  font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:#ee0000; margin-right:8px;
+}
+.lab-nav .crumb{ color:#c7c7c7; }
+.index-wrap{ max-width:210mm; margin:0 auto; background:#fff; padding:16mm 16mm 22mm; box-shadow:0 0 0 1px #e0e0e0; }
+.index-wrap h1{ font-family:var(--font-display); font-weight:900; font-size:26pt; margin:0 0 4mm; }
+.index-wrap h2{ font-family:var(--font-display); font-weight:700; font-size:14pt; color:#ee0000; margin:10mm 0 3mm; }
+.index-wrap ul{ list-style:none; padding:0; margin:0 0 4mm; }
+.index-wrap li{ border-bottom:1px solid #e0e0e0; }
+.index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
+.index-wrap li a:hover{ color:#ee0000; }
+.index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+</style>
+</head>
+<body>
+<nav class="lab-nav">
+  <span class="kicker">DO108</span>
+  <a href="../index.html">Labs</a>
+  <a href="../index.html">Index</a>
+  
+  <span class="crumb">Day 3 — Configuration, storage and reliability</span>
+</nav>
+<div class="page-wrap">
+<div class="objectifs"><h4>Chapters and labs this day</h4><p><a href="chapter-10/index.html">Chapter 10 — Configuration and persistent storage</a> · <a href="chapter-11/index.html">Chapter 11 — Configuring applications for reliability</a></p></div>
+<section id="part4" class="partdiv">
+  <div class="partdiv-num">Part 4</div>
+  <h1 class="partdiv-title">Day 3 - Configuration, storage and reliability</h1>
+  <div class="partdiv-sub">Making it survive a restart, a reschedule and a bad day</div>
+  <div class="partdiv-list">Chapter 10 - Configuration and persistent storage<br>Chapter 11 - Configuring applications for reliability</div>
+</section>
+
+
+<section id="j3intro">
+<h1 class="chap"><span class="chap-num">Day 3 opening</span><span class="chap-title">Making it worth trusting</span></h1>
+
+<p class="lead">Yesterday you made the flight board run and made it reachable. Today you make it something an
+airport would actually depend on.</p>
+
+<h2 id="s-j3-1">Where we start</h2>
+
+<p>Two things you built yesterday would not survive a review. The page content lives inside the container, so it
+vanishes at every restart and every update. The database password was typed on a command line, where it is in
+your shell history and in the pod specification, readable by anyone with access to the project. And the database
+itself keeps its data on a disk that disappears with the pod.</p>
+
+<p>Underneath that, a third problem, quieter and worse: the cluster cannot tell a healthy pod from a broken one.
+A pod that is running but serving errors keeps receiving traffic, for ever, and nothing in the platform
+notices.</p>
+
+<h2 id="s-j3-2">The day in four movements</h2>
+
+<table>
+  <thead><tr><th style="width:24mm">Slot</th><th style="width:44mm">What</th><th>Why it is there</th></tr></thead>
+  <tbody>
+    <tr><td>Morning, first block</td><td>Chapter 10 &mdash; configuration and credentials</td><td>One image, many environments. Config maps, secrets, and the difference between injecting a variable and mounting a file.</td></tr>
+    <tr><td>Morning, second block</td><td>Chapter 10 &mdash; persistent storage</td><td>Claims, access modes, storage classes, and stateful sets: where data lives when the pod does not.</td></tr>
+    <tr><td>Afternoon, first block</td><td>Chapter 11 &mdash; health probes</td><td>Teaching the cluster the difference between running and working.</td></tr>
+    <tr><td>Afternoon, second block</td><td>Chapter 11 &mdash; requests, limits, autoscaling</td><td>What the scheduler needs from you, what the kernel does at the limit, and how capacity follows load.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p>Today is the day whose manifests you will still be using in six months. Keep every file in
+  <code>~/do108/day3/</code>, and give each one a name you would recognise in a repository: the collection is
+  the real deliverable of this course.</p></div>
+</div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p>Check where you are before starting:</p>
+  <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">echo $U &amp;&amp; oc project ${U}-platform &amp;&amp; oc get all</span></div>
+  <p>If yesterday's project is gone, rebuild it from your day-2 manifests &mdash; which is itself a useful test
+  of whether they are complete.</p></div>
+</div>
+
+</section>
+
+
+<!-- ====================== CHAPTER 10 ====================== -->
+<section id="ch10">
+<h1 class="chap"><span class="chap-num">Chapter 10</span><span class="chap-title">Configuration and persistent storage</span></h1>
+
+<div class="objectifs">
+  <h4>By the end of this chapter you will be able to</h4>
+  <ul>
+    <li>explain why configuration and credentials must live outside the container image;</li>
+    <li>create config maps and secrets from literals and from files, and read them back;</li>
+    <li>inject them as environment variables or as mounted files, and choose between the two;</li>
+    <li>request persistent storage with a claim, and read the access modes without guessing;</li>
+    <li>choose a storage class deliberately, and say what happens to the data when the claim is deleted;</li>
+    <li>deploy a database as a StatefulSet with a volume per replica, behind a headless service.</li>
+  </ul>
+</div>
+
+<h2 id="s10-1">10.1 Why configuration does not belong in the image</h2>
+
+<p>On day 2 you did two things that felt reasonable and were both wrong. You copied a file into a running
+container with <code>oc cp</code>, and it disappeared at the next restart. You put a database password on a
+command line, where it went into your shell history and into the pod specification for anyone in the project to
+read.</p>
+
+<p>The rule is simple, and it is the same rule for every platform: <strong>one image, many
+environments</strong>. The image contains the application. Everything that differs between development, test
+and production &mdash; addresses, feature flags, credentials, page content &mdash; is supplied at run time. If
+you have to rebuild an image to change a hostname, the image is wrong.</p>
+
+<table>
+  <thead><tr><th style="width:34mm">Object</th><th style="width:36mm">Holds</th><th>Protected how</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ConfigMap</strong></td><td>Non-sensitive settings: parameters, whole configuration files, page content</td><td>Not at all. Anyone who can read the project can read it.</td></tr>
+    <tr><td><strong>Secret</strong></td><td>Passwords, tokens, keys, certificates</td><td>By access control, and by not being displayed in most outputs. <strong>Not by encryption.</strong></td></tr>
+  </tbody>
+</table>
+<figure class="draw" id="fig-16-config-secret-storage">
+  <img src="../../../../../draws/chapter-10/16-config-secret-storage.svg" alt="ConfigMap and Secret injection, and PVC, PV and StorageClass">
+  <figcaption>Figure 10.1 - Settings and credentials live outside the image. Persistent data is requested with a claim.</figcaption>
+</figure>
+
+
+<div class="adm attention">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Caution</span>
+  <p><strong>A Secret is Base64-encoded, not encrypted.</strong> Anyone who can read secrets in a project can
+  decode every one of them with a single command. What protects a secret is the permission to read it &mdash;
+  which is a level 2 topic &mdash; and, optionally, encryption of the cluster's etcd database, which a cluster
+  administrator configures. Choosing <code>Secret</code> over <code>ConfigMap</code> is a statement of intent
+  and a hook for access control; it is not, by itself, protection.</p></div>
+</div>
+
+<h2 id="s10-2">10.2 Creating config maps and secrets</h2>
+
+<div class="term"><span class="cm"># From literal values</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create configmap fids-settings \
+  --from-literal=REFRESH_SECONDS=30 \
+  --from-literal=TERMINAL=T2</span>
+
+<span class="cm"># From a whole file: the key is the file name, the value is its content</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create configmap fids-page --from-file=index.html=./index.html</span>
+
+<span class="cm"># From a directory: one key per file</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create configmap fids-conf --from-file=./conf.d/</span>
+
+<span class="cm"># A generic secret</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create secret generic fids-db-credentials \
+  --from-literal=POSTGRESQL_USER=fids \
+  --from-literal=POSTGRESQL_PASSWORD=fids-training \
+  --from-literal=POSTGRESQL_DATABASE=flights</span>
+
+<span class="cm"># A TLS secret, from a certificate and its key</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create secret tls fids-tls --cert=./tls.crt --key=./tls.key</span></div>
+
+<p>Reading them back:</p>
+
+<div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get configmap fids-settings -o yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get secret fids-db-credentials -o jsonpath='{.data.POSTGRESQL_USER}' | base64 --decode; echo</span>
+<span class="o">fids</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc extract secret/fids-db-credentials --to /tmp/creds --confirm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">ls /tmp/creds</span>
+<span class="o">POSTGRESQL_DATABASE  POSTGRESQL_PASSWORD  POSTGRESQL_USER</span></div>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p><code>oc extract</code> writes one file per key, which is the sane way to edit a secret or a large
+  configuration file. Change the file, then push it back with
+  <code>oc set data secret/&lt;name&gt; --from-file=/tmp/creds/POSTGRESQL_PASSWORD</code>. Editing Base64 by
+  hand in a YAML file is how people end up with a trailing newline inside a password.</p></div>
+</div>
+
+<h3>Written as manifests</h3>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-settings-configmap.yaml</div>
+  <pre>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fids-settings
+data:
+  REFRESH_SECONDS: "30"
+  TERMINAL: "T2"
+  index.html: |-
+    &lt;!doctype html&gt;
+    &lt;html&gt;&lt;head&gt;&lt;title&gt;NCE - Departures&lt;/title&gt;&lt;/head&gt;
+    &lt;body&gt;
+      &lt;h1&gt;Nice Cote d'Azur - Departures - Terminal 2&lt;/h1&gt;
+      &lt;p&gt;AF7701 08:15 Paris CDG - Boarding&lt;/p&gt;
+      &lt;p&gt;BA2633 09:40 London LGW - On time&lt;/p&gt;
+    &lt;/body&gt;&lt;/html&gt;</pre>
+</div>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-db-secret.yaml</div>
+  <pre>apiVersion: v1
+kind: Secret
+metadata:
+  name: fids-db-credentials
+type: Opaque
+stringData:                 # stringData takes plain text; the API encodes it
+  POSTGRESQL_USER: fids
+  POSTGRESQL_PASSWORD: fids-training
+  POSTGRESQL_DATABASE: flights</pre>
+</div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p>Use <code>stringData</code> when you write a manifest by hand and <code>data</code> when you read one back
+  &mdash; the API accepts the first and always returns the second, Base64-encoded. A ConfigMap has
+  <code>data</code> for text and <code>binaryData</code> for anything that is not valid UTF-8, such as a
+  keystore or an image.</p></div>
+</div>
+
+<h2 id="s10-3">10.3 Injecting: variables or files</h2>
+
+<p>There are two ways in, and the choice has real consequences.</p>
+
+<table>
+  <thead><tr><th style="width:32mm">Method</th><th style="width:44mm">The application sees</th><th>Updated when the source changes?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Environment variables</strong></td><td>Variables in its process environment</td><td><strong>No.</strong> The pod must be restarted.</td></tr>
+    <tr><td><strong>Mounted volume</strong></td><td>One file per key, in a directory</td><td><strong>Yes</strong>, eventually &mdash; the kubelet refreshes the files. But the application must re-read them, which most do not.</td></tr>
+  </tbody>
+</table>
+
+<h3>As environment variables</h3>
+
+<div class="file">
+  <div class="name">Injecting one value, and then all of them</div>
+  <pre>apiVersion: v1
+kind: Pod
+metadata:
+  name: fids-api
+spec:
+  containers:
+    - name: api
+      image: registry.access.redhat.com/ubi9/python-311:latest
+      env:
+        - name: TERMINAL                    # one key, renamed
+          valueFrom:
+            configMapKeyRef:
+              name: fids-settings
+              key: TERMINAL
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fids-db-credentials
+              key: POSTGRESQL_PASSWORD
+      envFrom:
+        - configMapRef:                     # every key, as-is
+            name: fids-settings</pre>
+</div>
+
+<p>The same thing, imperatively, on an existing deployment:</p>
+
+<div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-api --from configmap/fids-settings</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-db --from secret/fids-db-credentials</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-api --list</span></div>
+
+<h3>As mounted files</h3>
+
+<div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-web --add \
+  --type configmap --configmap-name fids-page \
+  --mount-path /var/www/html --name page</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-web</span><span class="cm">    # list the volumes</span></div>
+
+<p>Kubernetes creates one file per key in the mount path, named for the key, containing the value. Mounting a
+config map over a directory <strong>replaces what was there</strong> in the image &mdash; which is exactly what
+you want for a web root, and exactly what you must not do to <code>/etc</code>.</p>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p>Changing a config map or a secret does <strong>not</strong> restart the pods that consume it. If the values
+  arrive as environment variables, nothing at all happens until you restart:</p>
+  <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc rollout restart deployment/fids-api</span></div>
+  <p>This is the single most common &ldquo;I changed the config and nothing happened&rdquo; on Kubernetes.</p></div>
+</div>
+
+<h2 id="lab10-1">10.4 Lab 10.1 &mdash; Real flight data on the board</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 10.1 &mdash; Config maps and secrets</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Put the board content in a config map and the database
+    credentials in a secret, and see what survives a restart. <strong>Time.</strong> 25 minutes.
+    <strong>Prerequisites.</strong> The <code>${U}-platform</code> project from day 2.</div>
+
+    <ol class="steps">
+      <li><p><strong>Write the page,</strong> then make a config map of it:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-platform</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">mkdir -p ~/do108/day3 &amp;&amp; cd ~/do108/day3</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">cat &gt; index.html &lt;&lt;'PAGE'</span>
+<span class="c">&lt;!doctype html&gt;</span>
+<span class="c">&lt;html&gt;&lt;head&gt;&lt;title&gt;NCE - Departures&lt;/title&gt;&lt;/head&gt;</span>
+<span class="c">&lt;body&gt;&lt;h1&gt;Nice Cote d'Azur - Departures - Terminal 2&lt;/h1&gt;</span>
+<span class="c">&lt;p&gt;AF7701 08:15 Paris CDG - Boarding&lt;/p&gt;</span>
+<span class="c">&lt;p&gt;BA2633 09:40 London LGW - On time&lt;/p&gt;</span>
+<span class="c">&lt;/body&gt;&lt;/html&gt;</span>
+<span class="c">PAGE</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create configmap fids-page --from-file=index.html=./index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get configmap fids-page -o yaml | head -20</span></div></li>
+
+      <li><p><strong>Mount it over the web root:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-web --add \
+  --type configmap --configmap-name fids-page \
+  --mount-path /var/www/html --name page</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">FIDS=$(oc get route fids-web -o jsonpath='{.spec.host}')</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">curl -s http://$FIDS/ | head -3</span></div>
+        <p>The real departures page. Note that setting the volume triggered a rollout &mdash; the pod template
+        changed, so new pods were created.</p></li>
+
+      <li><p><strong>Now prove that it survives.</strong> This is the whole point of the chapter:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod -l app=fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">sleep 20 &amp;&amp; curl -s http://$FIDS/ | head -3</span></div>
+        <p>Still there. On day 2 the same test lost the page, because the content lived in the container. Now it
+        lives in the cluster, and the container is disposable again.</p></li>
+
+      <li><p><strong>Change the content without touching the application:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">sed -i 's/Boarding/Final call/' ~/do108/day3/index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set data configmap/fids-page --from-file=index.html=~/do108/day3/index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">sleep 60 &amp;&amp; curl -s http://$FIDS/ | grep -i call</span></div>
+        <div class="adm note">
+          <div class="ico">i</div>
+          <div class="bd"><span class="admlab">Note</span>
+          <p>Mounted files are refreshed by the kubelet, but not instantly &mdash; allow up to about a minute. If
+          you cannot wait, or if the application caches its configuration,
+          <code>oc rollout restart deployment/fids-web</code> is the reliable answer.</p></div>
+        </div></li>
+
+      <li><p><strong>Create the database credentials as a secret</strong> &mdash; never again on a command
+        line:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create secret generic fids-db-credentials \
+  --from-literal=POSTGRESQL_USER=fids \
+  --from-literal=POSTGRESQL_PASSWORD=fids-training \
+  --from-literal=POSTGRESQL_DATABASE=flights</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get secret fids-db-credentials</span>
+<span class="o">NAME                  TYPE     DATA   AGE</span>
+<span class="o">fids-db-credentials   Opaque   3      5s</span></div></li>
+
+      <li><p><strong>See how little a secret protects,</strong> so that you never over-trust one:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get secret fids-db-credentials -o jsonpath='{.data.POSTGRESQL_PASSWORD}' | base64 --decode; echo</span>
+<span class="o">fids-training</span></div>
+        <p>One command, no privilege beyond reading the project. Encoding is not encryption.</p></li>
+
+      <li><p><strong>Deploy the database using the secret:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-db --from secret/fids-db-credentials</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-db --list</span></div>
+        <p>The values are referenced, not copied: the deployment holds a pointer to the secret. Rotating the
+        password means changing the secret and restarting, not editing the deployment.</p></li>
+
+      <li><p><strong>Prove the database works,</strong> then destroy it and see what you lose:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-db -- psql -U fids -d flights \
+  -c "CREATE TABLE flight (id int, dest text); INSERT INTO flight VALUES (7701,'CDG');"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-db -- psql -U fids -d flights -c "SELECT * FROM flight;"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod -l app=fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">sleep 30 &amp;&amp; oc exec deployment/fids-db -- psql -U fids -d flights -c "SELECT * FROM flight;"</span>
+<span class="o">ERROR:  relation "flight" does not exist</span></div>
+        <p>The credentials survived. The data did not. That is the second half of this chapter.</p></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>The board shows real departures and keeps showing them after every pod in the deployment is deleted; the
+      database starts from a secret and holds no password on any command line; and you have watched a table
+      disappear because nothing persisted it.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s10-5">10.5 Storage that survives</h2>
+
+<p>A container's file system is ephemeral: it is created when the container starts and destroyed when it stops.
+Persistent storage is requested, not configured &mdash; you say what you need, and the cluster provides it.</p>
+
+<table>
+  <thead><tr><th style="width:44mm">Object</th><th>Who creates it</th></tr></thead>
+  <tbody>
+    <tr><td><strong>PersistentVolume</strong> (PV)<br><span class="small">cluster-scoped</span></td><td>The administrator, or a provisioner automatically. It represents a real piece of storage.</td></tr>
+    <tr><td><strong>PersistentVolumeClaim</strong> (PVC)<br><span class="small">namespaced</span></td><td><strong>You.</strong> It states what you need: a size, an access mode, optionally a class. It never names a technology.</td></tr>
+    <tr><td><strong>StorageClass</strong><br><span class="small">cluster-scoped</span></td><td>The administrator. It describes a kind of storage and knows how to create volumes on demand.</td></tr>
+  </tbody>
+</table>
+
+<p>That separation is the point: you ask for &ldquo;5 GiB, writable by one node&rdquo; and you never need to
+know whether it is NFS, iSCSI, an EBS volume or an LVM logical volume. Your manifest works on every cluster.</p>
+
+<h3>Access modes</h3>
+
+<table>
+  <thead><tr><th style="width:44mm">Mode</th><th style="width:16mm">Short</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>ReadWriteOnce</code></td><td>RWO</td><td>Read-write by <strong>one node</strong>. Several pods on that node can mount it. The common case, and what most block storage supports.</td></tr>
+    <tr><td><code>ReadWriteOncePod</code></td><td>RWOP</td><td>Read-write by <strong>exactly one pod</strong> in the cluster. The strongest guarantee; recommended for databases where it is available.</td></tr>
+    <tr><td><code>ReadOnlyMany</code></td><td>ROX</td><td>Read-only by many nodes.</td></tr>
+    <tr><td><code>ReadWriteMany</code></td><td>RWX</td><td>Read-write by many nodes. Only shared file storage such as NFS supports it.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm attention">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Caution</span>
+  <p>Neither RWO nor RWX makes concurrent writing <strong>safe</strong>. RWO permits two pods on the same node to
+  mount the same volume at once; RWX permits any number anywhere. Kubernetes does not arbitrate: two database
+  instances writing to one volume will corrupt it, exactly as two text editors saving the same file would.
+  Correctness is the application's job, and RWOP is the mode that removes the temptation.</p></div>
+</div>
+
+<h3>Asking for storage</h3>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-db-pvc.yaml</div>
+  <pre>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fids-db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  # storageClassName: gp3-csi     # name it explicitly in production</pre>
+</div>
+
+<div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day3/fids-db-pvc.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span>
+<span class="o">NAME           STATUS   VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS   AGE</span>
+<span class="o">fids-db-data   Bound    pvc-3f1a...   2Gi        RWO            gp3-csi        6s</span>
+
+<span class="cm"># Attach it to a deployment, mount point included</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-db --add \
+  --name data --type pvc --claim-name fids-db-data \
+  --mount-path /var/lib/pgsql/data</span></div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p>A claim that stays <code>Pending</code> is telling you something specific: nothing available satisfies it.
+  Usually the size is larger than any free volume, the access mode is not supported by the class, or the named
+  class does not exist. <code>oc describe pvc &lt;name&gt;</code> says which.</p></div>
+</div>
+
+<h2 id="s10-6">10.6 Storage classes, and what happens to your data</h2>
+
+<div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get storageclass</span>
+<span class="o">NAME              PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE      AGE</span>
+<span class="o">gp3-csi (default) ebs.csi.aws.com      Delete          WaitForFirstConsumer   41d</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe storageclass gp3-csi</span></div>
+
+<p>Four fields of a storage class change what happens to you:</p>
+
+<table>
+  <thead><tr><th style="width:44mm">Field</th><th>Consequence</th></tr></thead>
+  <tbody>
+    <tr><td><code>provisioner</code></td><td>Which driver creates the volumes. Determines the access modes and volume modes you can actually get.</td></tr>
+    <tr><td><code>reclaimPolicy</code></td><td><code>Delete</code>: deleting the claim destroys the volume <strong>and the data</strong>. <code>Retain</code>: the volume survives and an administrator must dispose of it. <code>Delete</code> is the default for CSI drivers when the class says nothing.</td></tr>
+    <tr><td><code>volumeBindingMode</code></td><td><code>Immediate</code> creates the volume as soon as the claim exists; <code>WaitForFirstConsumer</code> waits until a pod uses it, so the volume is created where the pod will actually run. The second avoids unschedulable pods in a multi-zone cluster.</td></tr>
+    <tr><td><code>allowVolumeExpansion</code></td><td>Whether you may grow a claim by editing it. <strong>Growing only</strong> &mdash; no storage class shrinks a volume.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p><strong>Always name the storage class in your manifest.</strong> The default class is a cluster-wide setting
+  that an administrator can change without telling you, and a manifest that relies on it will one day bind to a
+  different kind of storage with a different reclaim policy. Naming the class is one line and removes a whole
+  category of surprise.</p></div>
+</div>
+
+<div class="adm attention">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Caution</span>
+  <p><code>oc delete pvc</code> against a <code>Delete</code> class destroys the data, permanently, with no
+  confirmation. Deleting the whole project does the same thing to every claim in it. In-use protection delays
+  the deletion while pods are still attached, which reads like the platform refusing &mdash; it is not; it is
+  waiting.</p></div>
+</div>
+
+<h2 id="lab10-2">10.7 Lab 10.2 &mdash; Give the database a home</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 10.2 &mdash; Persistent volumes</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Make the flight database survive the loss of its pod.
+    <strong>Time.</strong> 25 minutes.</div>
+
+    <ol class="steps">
+      <li><p><strong>See what the cluster offers:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get storageclass</span></div>
+        <p>Write down the name of the default class and its reclaim policy. If there is only one, that is normal
+        for a training cluster; the lab uses it and names it explicitly anyway.</p></li>
+
+      <li><p><strong>Claim some storage:</strong></p>
+        <div class="file">
+          <div class="name">~/do108/day3/fids-db-pvc.yaml</div>
+          <pre>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fids-db-data
+  labels:
+    app.kubernetes.io/part-of: fids
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi</pre>
+        </div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day3/fids-db-pvc.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pvc fids-db-data | tail -8</span></div>
+        <div class="adm note">
+          <div class="ico">i</div>
+          <div class="bd"><span class="admlab">Note</span>
+          <p>If the status is <code>Pending</code> with an event mentioning <em>waiting for first
+          consumer</em>, that is not a failure: the class uses
+          <code>WaitForFirstConsumer</code>, and the volume will be created when a pod claims it in the next
+          step.</p></div>
+        </div></li>
+
+      <li><p><strong>Attach it to the database:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-db --add \
+  --name data --type pvc --claim-name fids-db-data \
+  --mount-path /var/lib/pgsql/data</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span></div>
+        <p>The claim is now <code>Bound</code>. Look at the deployment to see what the command actually
+        wrote:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-db -o yaml | grep -A6 'volumeMounts:\|volumes:'</span></div></li>
+
+      <li><p><strong>Write data, then destroy the pod:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-db -- psql -U fids -d flights \
+  -c "CREATE TABLE flight (id int, dest text); INSERT INTO flight VALUES (7701,'CDG');"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod -l app=fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-db -- psql -U fids -d flights -c "SELECT * FROM flight;"</span>
+<span class="o">  id  | dest</span>
+<span class="o">------+------</span>
+<span class="o"> 7701 | CDG</span></div>
+        <p>The same test that failed at the end of Lab 10.1 now passes. Nothing about the application changed
+        &mdash; only where it keeps its files.</p></li>
+
+      <li><p><strong>Look at the volume from the storage side:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc fids-db-data -o jsonpath='{.spec.volumeName}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-db -- df -h /var/lib/pgsql/data</span></div></li>
+
+      <li><p><strong>Try to delete the claim while it is in use:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pvc fids-db-data --timeout=10s</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span></div>
+        <p>The deletion is accepted but does not complete: in-use protection holds it while a pod is attached.
+        The claim shows <code>Terminating</code> and the data is still there. It will disappear the moment the
+        last pod releases it &mdash; which is worth knowing before you type this on a real cluster.</p>
+        <div class="adm attention">
+          <div class="ico">!</div>
+          <div class="bd"><span class="admlab">Caution</span>
+          <p>Do not scale <code>fids-db</code> to zero now, or the deletion will complete and take the data with
+          it. If you want to keep the claim, remove the deletion by recreating it after detaching, and note in
+          your own runbook that a queued deletion is invisible in <code>oc get pvc</code> beyond the word
+          <code>Terminating</code>.</p></div>
+        </div></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>The table survives the deletion of the database pod; you can name the storage class used, its reclaim
+      policy, and what would happen to your table if you deleted the claim and the class said
+      <code>Delete</code>.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s10-8">10.8 When replicas are not interchangeable</h2>
+
+<p>A Deployment assumes its pods are identical and disposable. For a database that is false: replica 0 holds
+different data from replica 1, and a pod that comes back must come back <em>as itself</em>, with its own
+volume.</p>
+
+<p>A <strong>StatefulSet</strong> provides exactly that:</p>
+
+<table>
+  <thead><tr><th style="width:38mm">Guarantee</th><th>What it means in practice</th></tr></thead>
+  <tbody>
+    <tr><td>Stable names</td><td>Pods are <code>fids-db-0</code>, <code>fids-db-1</code>, … and keep those names for ever &mdash; not a random suffix.</td></tr>
+    <tr><td>Stable storage</td><td>Each pod gets <strong>its own</strong> claim, created from a template and named <code>&lt;template&gt;-&lt;set&gt;-&lt;n&gt;</code>. A restarted pod is reattached to the same volume.</td></tr>
+    <tr><td>Ordered start</td><td>Pods start one at a time, in order, each waiting for the previous one to be ready.</td></tr>
+    <tr><td>Stable DNS</td><td>With a headless service, each pod is reachable individually at <code>&lt;pod&gt;.&lt;service&gt;.&lt;project&gt;.svc.cluster.local</code>.</td></tr>
+  </tbody>
+</table>
+
+<h3>The headless service</h3>
+
+<p>A normal Service hides its pods behind one address. A database cluster needs the opposite: to address a
+specific member. Setting <code>clusterIP: None</code> makes the DNS name resolve to the pod addresses
+themselves.</p>
+<figure class="draw" id="fig-21-statefulset-headless">
+  <img src="../../../../../draws/chapter-10/21-statefulset-headless.svg" alt="StatefulSet with stable pods and a headless Service">
+  <figcaption>Figure 10.2 - Stable names, one volume each, and a headless Service so members can address each other.</figcaption>
+</figure>
+
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-db-headless.yaml</div>
+  <pre>apiVersion: v1
+kind: Service
+metadata:
+  name: fids-db
+  labels:
+    app.kubernetes.io/name: fids-db
+spec:
+  clusterIP: None          # headless: no single virtual IP
+  selector:
+    app.kubernetes.io/name: fids-db
+  ports:
+    - name: postgresql
+      port: 5432</pre>
+</div>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-db-statefulset.yaml</div>
+  <pre>apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fids-db
+spec:
+  serviceName: fids-db            # the headless service, which must exist first
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fids-db
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fids-db
+        app.kubernetes.io/part-of: fids
+    spec:
+      containers:
+        - name: postgresql
+          image: quay.io/sclorg/postgresql-15-c9s:latest
+          ports:
+            - containerPort: 5432
+              name: postgresql
+          envFrom:
+            - secretRef:
+                name: fids-db-credentials
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/pgsql/data
+  volumeClaimTemplates:           # one claim per pod, created automatically
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi</pre>
+</div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p>StatefulSets can only be created from a manifest &mdash; there is no <code>oc create statefulset</code>.
+  And <code>oc delete statefulset</code> deliberately <strong>leaves the claims behind</strong>, so that deleting
+  the workload does not destroy the data. Cleaning up means deleting the claims as a separate, conscious act.</p></div>
+</div>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p>A StatefulSet gives each replica its own storage and its own identity. It does <strong>not</strong>
+  replicate your data between them &mdash; that is the database's job, configured inside the application. Two
+  PostgreSQL pods in a StatefulSet are two independent databases until you configure replication, which is
+  beyond the scope of this course.</p></div>
+</div>
+
+<h2 id="lab10-3">10.9 Lab 10.3 &mdash; The database as a StatefulSet</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 10.3 &mdash; Identity and per-pod storage</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Replace the database Deployment with a StatefulSet, and observe
+    stable names, per-pod volumes and individually addressable pods. <strong>Time.</strong> 25 minutes.</div>
+
+    <ol class="steps">
+      <li><p><strong>Remove the Deployment version,</strong> keeping the secret:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span></div></li>
+
+      <li><p><strong>Create the headless service first</strong> &mdash; the StatefulSet refuses to work without
+        it:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day3/fids-db-headless.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get service fids-db</span>
+<span class="o">NAME      TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE</span>
+<span class="o">fids-db   ClusterIP   </span><span class="ok">None</span><span class="o">         &lt;none&gt;        5432/TCP   4s</span></div>
+        <p><code>CLUSTER-IP: None</code> is the headless marker.</p></li>
+
+      <li><p><strong>Create the StatefulSet</strong> and watch the pods start in order:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day3/fids-db-statefulset.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -w</span>
+<span class="o">NAME        READY   STATUS    RESTARTS   AGE</span>
+<span class="o">fids-db-0   1/1     </span><span class="ok">Running</span><span class="o">   0          22s</span>
+<span class="o">fids-db-1   0/1     Pending   0          1s</span></div>
+        <p>Predictable names, and <code>fids-db-1</code> does not start until <code>fids-db-0</code> is
+        ready.</p></li>
+
+      <li><p><strong>Look at the claims that were created for you:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span>
+<span class="o">NAME               STATUS   VOLUME        CAPACITY   ACCESS MODES</span>
+<span class="o">data-fids-db-0     Bound    pvc-6c2e...   2Gi        RWO</span>
+<span class="o">data-fids-db-1     Bound    pvc-91af...   2Gi        RWO</span></div>
+        <p>One per pod, named <code>&lt;template&gt;-&lt;set&gt;-&lt;ordinal&gt;</code>. You wrote one template
+        and got two independent volumes.</p></li>
+
+      <li><p><strong>Prove that the two replicas are genuinely separate:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-db-0 -- psql -U fids -d flights \
+  -c "CREATE TABLE flight (id int); INSERT INTO flight VALUES (7701);"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-db-1 -- psql -U fids -d flights -c "SELECT * FROM flight;"</span>
+<span class="o">ERROR:  relation "flight" does not exist</span></div>
+        <p>Two databases, two volumes, no replication. That is the <em>Important</em> box of §10.8, demonstrated.</p></li>
+
+      <li><p><strong>Address one pod specifically,</strong> which is what a headless service is for:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run dnscheck --rm -it --restart=Never \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest -- /bin/sh</span>
+<span class="p">sh-5.1$</span> <span class="c">getent hosts fids-db</span><span class="cm">              # every pod</span>
+<span class="p">sh-5.1$</span> <span class="c">getent hosts fids-db-0.fids-db</span><span class="cm">    # exactly one pod</span>
+<span class="p">sh-5.1$</span> <span class="c">exit</span></div></li>
+
+      <li><p><strong>Destroy a pod and confirm it comes back as itself:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod fids-db-0</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -w</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-db-0 -- psql -U fids -d flights -c "SELECT * FROM flight;"</span></div>
+        <p>Same name, same volume, same data. A Deployment could not promise any of the three.</p></li>
+
+      <li><p><strong>Scale up, then down, and watch the claims:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc scale statefulset/fids-db --replicas=3</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pvc</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc scale statefulset/fids-db --replicas=2</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods,pvc</span></div>
+        <p>Scaling down removed the pod and <strong>kept the claim</strong>. Scale back up and
+        <code>fids-db-2</code> finds its old data waiting. This is deliberate, and it is also how a project
+        quietly fills up with orphaned volumes.</p></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>You can state three things a StatefulSet guarantees that a Deployment does not, show the per-pod claims,
+      resolve one specific pod by DNS name, and explain why <code>fids-db-1</code> could not see
+      <code>fids-db-0</code>'s table.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="lab10-4">10.10 Workshop 10.4 &mdash; Externalise everything</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag core">Workshop</span> Workshop 10.4 &mdash; Nothing left in the image</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Rebuild the weather feed application with no configuration and
+    no credentials anywhere except config maps and secrets, and no data outside a volume.
+    <strong>Time.</strong> 30 minutes. <strong>Deliverable.</strong> Manifests in
+    <code>~/do108/day3/awos/</code>.</div>
+
+    <p><strong>The specification.</strong> The runway weather feed, <code>awos</code>, must be deployed in a new
+    project <code>${U}-awos</code> and satisfy every line below:</p>
+
+    <table class="compact">
+      <thead><tr><th style="width:38mm">Requirement</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Web component</td><td><code>awos-web</code>, image <code>registry.access.redhat.com/ubi9/httpd-24:latest</code>, two replicas, published on a route</td></tr>
+        <tr><td>Page content</td><td>Served from a ConfigMap named <code>awos-page</code>, mounted at <code>/var/www/html</code>. The page must contain the words <code>METAR LFMN</code></td></tr>
+        <tr><td>Settings</td><td>A ConfigMap <code>awos-settings</code> with <code>SENSOR_ID=LFMN-01</code> and <code>POLL_SECONDS=60</code>, injected into <code>awos-web</code> as environment variables</td></tr>
+        <tr><td>Database</td><td><code>awos-db</code>, image <code>quay.io/sclorg/postgresql-15-c9s:latest</code>, as a <strong>StatefulSet</strong> with one replica behind a headless service</td></tr>
+        <tr><td>Credentials</td><td>A Secret <code>awos-db-credentials</code>. No password may appear in any manifest committed to your directory in plain text on a command line</td></tr>
+        <tr><td>Storage</td><td>The database keeps its data on a 1 GiB volume created by a volume claim template, with the storage class named explicitly</td></tr>
+        <tr><td>Labels</td><td>Everything carries <code>app.kubernetes.io/part-of: awos</code></td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Acceptance test.</strong> Run these, in order, and all must pass:</p>
+
+    <ol class="steps">
+      <li>The route returns 200 and the body contains <code>METAR LFMN</code>.</li>
+      <li><code>oc set env deployment/awos-web --list</code> shows <code>SENSOR_ID</code> and
+      <code>POLL_SECONDS</code>.</li>
+      <li>Deleting every <code>awos-web</code> pod does not change the page.</li>
+      <li>Creating a table in <code>awos-db-0</code>, deleting that pod, and querying again returns the table.</li>
+      <li>Changing the ConfigMap page content and waiting changes what the route serves, with no rollout.</li>
+      <li>No manifest in <code>~/do108/day3/awos/</code> contains a readable password, and
+      <code>history | grep -c PASSWORD</code> returns 0.</li>
+    </ol>
+
+    <div class="adm astuce">
+      <div class="ico">*</div>
+      <div class="bd"><span class="admlab">Tip</span>
+      <p>Requirement 6 is the interesting one. <code>--from-file</code> with a file you create outside your shell
+      history, or <code>oc create secret generic --from-env-file</code>, are the two usual answers. Decide which
+      you would defend in a review, and be ready to say why.</p></div>
+    </div>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>Six tests, all passing, and a directory of manifests that rebuilds the application on an empty project.
+      Then clean up: <code>oc delete project ${U}-awos</code>.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s10-11">10.11 Watch out, and summary</h2>
+
+<h3>Watch out</h3>
+
+<table>
+  <thead><tr><th style="width:52mm">Trap</th><th>What is really happening</th></tr></thead>
+  <tbody>
+    <tr><td>&ldquo;I changed the config map and nothing happened&rdquo;</td><td>Values injected as environment variables need a restart: <code>oc rollout restart</code>. Mounted files update, but slowly, and only if the application re-reads them.</td></tr>
+    <tr><td>Treating a Secret as encrypted</td><td>It is Base64. One command decodes it. Access control is what protects it.</td></tr>
+    <tr><td>A trailing newline in a password</td><td><code>echo secret | base64</code> encodes the newline too. Use <code>--from-literal</code>, <code>stringData</code>, or <code>echo -n</code>.</td></tr>
+    <tr><td>Mounting a config map over <code>/etc</code></td><td>The mount replaces the whole directory, and the container loses everything the image put there.</td></tr>
+    <tr><td>Relying on the default storage class</td><td>An administrator can change it. Name the class in the manifest.</td></tr>
+    <tr><td>Two pods writing to one RWO volume</td><td>Permitted on the same node, and corrupting. Use <code>ReadWriteOncePod</code> where the class supports it.</td></tr>
+    <tr><td><code>oc delete pvc</code> on a <code>Delete</code> class</td><td>The data is gone. No confirmation, no undo.</td></tr>
+    <tr><td>Deleting a StatefulSet to clean up</td><td>The claims stay. Storage costs continue, and a new set of the same name adopts them.</td></tr>
+  </tbody>
+</table>
+
+<h3>Command reference for this chapter</h3>
+
+<table class="compact">
+  <thead><tr><th style="width:72mm">Command</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr><td><code>oc create configmap &lt;n&gt; --from-literal=K=V --from-file=&lt;f&gt;</code></td><td>Create a config map</td></tr>
+    <tr><td><code>oc create secret generic &lt;n&gt; --from-literal=K=V</code></td><td>Create a secret</td></tr>
+    <tr><td><code>oc create secret tls &lt;n&gt; --cert=&lt;c&gt; --key=&lt;k&gt;</code></td><td>A certificate secret</td></tr>
+    <tr><td><code>oc extract secret/&lt;n&gt; --to &lt;dir&gt; --confirm</code></td><td>One file per key, for editing</td></tr>
+    <tr><td><code>oc set data configmap/&lt;n&gt; --from-file=&lt;f&gt;</code></td><td>Push a changed file back</td></tr>
+    <tr><td><code>oc set env deployment/&lt;n&gt; --from configmap/&lt;c&gt; [--prefix P]</code></td><td>Inject as variables</td></tr>
+    <tr><td><code>oc set env deployment/&lt;n&gt; --list</code></td><td>What a workload actually receives</td></tr>
+    <tr><td><code>oc set volume deployment/&lt;n&gt; --add --type configmap …</code></td><td>Inject as files</td></tr>
+    <tr><td><code>oc set volume deployment/&lt;n&gt; --add --type pvc --claim-name …</code></td><td>Attach persistent storage</td></tr>
+    <tr><td><code>oc get storageclass</code> · <code>oc describe storageclass &lt;n&gt;</code></td><td>What storage is available, and its reclaim policy</td></tr>
+    <tr><td><code>oc get pvc</code> · <code>oc describe pvc &lt;n&gt;</code></td><td>Claim status, and why it is pending</td></tr>
+    <tr><td><code>oc rollout restart deployment/&lt;n&gt;</code></td><td>Pick up changed environment values</td></tr>
+    <tr><td><code>oc scale statefulset/&lt;n&gt; --replicas=N</code></td><td>Grow or shrink a stateful set</td></tr>
+  </tbody>
+</table>
+
+<h3>Summary</h3>
+
+<ul>
+  <li>One image, many environments: settings and credentials are supplied at run time, never baked in.</li>
+  <li>ConfigMaps hold settings and files; Secrets hold credentials and are encoded, not encrypted.</li>
+  <li>Injected as environment variables, values need a pod restart; mounted as files, they refresh on their own
+  but the application must re-read them.</li>
+  <li>Persistent storage is requested through a claim that states size and access mode and never names a
+  technology.</li>
+  <li>Access modes describe who may mount, not who may safely write; correctness stays the application's
+  responsibility.</li>
+  <li>The storage class decides how the volume is created and whether deleting the claim destroys the data
+  &mdash; name it explicitly.</li>
+  <li>StatefulSets give stable names, ordered start-up and one volume per replica, and leave the claims behind
+  when deleted; they do not replicate data.</li>
+</ul>
+
+<h3>To go further</h3>
+<ul>
+  <li>Kubernetes, <em>ConfigMaps</em> and <em>Secrets</em> &mdash; <code>kubernetes.io/docs/concepts/configuration/</code></li>
+  <li>Kubernetes, <em>Persistent volumes</em> &mdash; <code>kubernetes.io/docs/concepts/storage/persistent-volumes/</code></li>
+  <li>OpenShift Container Platform 4.18, <em>Storage</em> &mdash; <code>docs.redhat.com</code></li>
+</ul>
+
+</section>
+
+
+<!-- ====================== CHAPTER 11 ====================== -->
+<section id="ch11">
+<h1 class="chap"><span class="chap-num">Chapter 11</span><span class="chap-title">Configuring applications for reliability</span></h1>
+
+<div class="objectifs">
+  <h4>By the end of this chapter you will be able to</h4>
+  <ul>
+    <li>list what the platform expects from an application before it can keep it available;</li>
+    <li>choose between a startup, a readiness and a liveness probe, and set their timings deliberately;</li>
+    <li>explain what resource requests do to scheduling, and what limits do to a running container;</li>
+    <li>recognise an out-of-memory kill and a throttled container from their evidence;</li>
+    <li>configure a horizontal pod autoscaler, and say why it needs requests to exist at all.</li>
+  </ul>
+</div>
+
+<h2 id="s11-1">11.1 What the platform expects of an application</h2>
+
+<p>Kubernetes keeps applications running. It cannot do that for an application that does not co-operate. Five
+behaviours are expected, and every one of them is the application's responsibility, not the platform's:</p>
+
+<table>
+  <thead><tr><th style="width:52mm">The application must</th><th>Otherwise</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Tolerate being restarted</strong>, at any moment, without warning</td><td>Every recovery mechanism the platform has is a restart. An application that needs a graceful, coordinated shutdown to stay consistent cannot be made highly available by the cluster.</td></tr>
+    <tr><td><strong>Answer health probes</strong></td><td>The cluster cannot tell a working pod from a wedged one, and keeps sending traffic to both.</td></tr>
+    <tr><td><strong>Run as several instances at once</strong></td><td>Scaling is impossible, and so is a rolling update without an outage.</td></tr>
+    <tr><td><strong>Use a predictable amount of CPU and memory</strong></td><td>The scheduler has nothing to reason with, and one application can starve every other on the node.</td></tr>
+    <tr><td><strong>Run without privileges</strong></td><td>It will not start &mdash; chapter 8.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p><strong>A crashed pod is not the hard case.</strong> A crashed pod is replaced automatically, and you may
+  never notice. The hard case is the pod that is <em>running</em> and not working: a thread pool exhausted, a
+  deadlock, a lost database connection it never retries. Without probes, that pod stays in the Service's
+  endpoint list and keeps receiving requests for as long as it stays alive. Everything in §11.2 exists for that
+  pod.</p></div>
+</div>
+
+<h2 id="s11-2">11.2 Health probes</h2>
+
+<p>Three probes, three different questions, three different consequences.</p>
+
+<table>
+  <thead><tr><th style="width:30mm">Probe</th><th style="width:44mm">Question</th><th>Consequence of failure</th></tr></thead>
+  <tbody>
+    <tr><td><strong>startup</strong></td><td>Has it finished starting?</td><td>The pod is restarted. While it runs, the other two probes are suspended &mdash; which is exactly why it exists.</td></tr>
+    <tr><td><strong>readiness</strong></td><td>Can it take traffic right now?</td><td>The pod's address is <strong>removed from the Service</strong>. The pod keeps running, and is put back when it recovers.</td></tr>
+    <tr><td><strong>liveness</strong></td><td>Is it still alive at all?</td><td>The container is <strong>restarted</strong>, according to the restart policy.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p>The distinction that matters in practice: <strong>readiness removes traffic, liveness kills the
+  container</strong>. If you are not sure which you want, you almost always want readiness first. A liveness
+  probe that is too aggressive turns a slow moment into a restart loop, and a restart loop into an outage.</p></div>
+</div>
+<figure class="draw" id="fig-17-health-probes">
+  <img src="../../../../../draws/chapter-11/17-health-probes.svg" alt="Startup, readiness and liveness probes and how they are tested">
+  <figcaption>Figure 11.1 - Three probes, three questions. Readiness removes traffic; liveness restarts the container.</figcaption>
+</figure>
+
+
+<h3>Three ways to test</h3>
+
+<table class="compact">
+  <thead><tr><th style="width:30mm">Type</th><th style="width:36mm">Succeeds when</th><th>Use for</th></tr></thead>
+  <tbody>
+    <tr><td><code>httpGet</code></td><td>The response code is 200&ndash;399</td><td>Anything that speaks HTTP. The usual choice.</td></tr>
+    <tr><td><code>exec</code></td><td>The command exits 0</td><td>Databases and non-HTTP services &mdash; for example <code>pg_isready</code>.</td></tr>
+    <tr><td><code>tcpSocket</code></td><td>The connection is accepted</td><td>A last resort: it proves a port is open, not that the application works.</td></tr>
+  </tbody>
+</table>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-web-probes.yaml (fragment)</div>
+  <pre>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fids-web
+spec:
+  template:
+    spec:
+      containers:
+        - name: httpd-24
+          image: registry.access.redhat.com/ubi9/httpd-24:latest
+          startupProbe:                # up to 30 x 2s = 60s to start
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:              # out of the Service after ~6s of failure
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 2
+          livenessProbe:               # restarted after ~30s of failure
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3</pre>
+</div>
+
+<h3>Timings, and the arithmetic nobody does</h3>
+
+<table class="compact">
+  <thead><tr><th style="width:38mm">Field</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>periodSeconds</code></td><td>How often the probe runs.</td></tr>
+    <tr><td><code>failureThreshold</code></td><td>How many consecutive failures before the probe is considered failed.</td></tr>
+    <tr><td><code>timeoutSeconds</code></td><td>How long to wait for an answer. The default is 1 second, which is short for a busy application.</td></tr>
+    <tr><td><code>initialDelaySeconds</code></td><td>How long to wait before the first check. A startup probe is usually a better answer than a long delay.</td></tr>
+  </tbody>
+</table>
+
+<p>Multiply the two first fields and you get the real detection time. <code>periodSeconds: 10</code> with
+<code>failureThreshold: 3</code> means a broken pod keeps taking traffic for <strong>up to thirty
+seconds</strong>. That may be fine, or it may be your entire error budget &mdash; but it should be a decision,
+not an accident.</p>
+
+<div class="adm attention">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Caution</span>
+  <p>A health endpoint must be <strong>cheap</strong>. The cluster calls it on every pod, every few seconds, for
+  ever. An endpoint that queries the database on each call turns your health check into a load generator, and
+  makes a slow database look like a fleet of dead pods &mdash; which the liveness probe then restarts, one after
+  another.</p></div>
+</div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p><code>oc set probe</code> adds probes without editing YAML, and exists only in <code>oc</code>:</p>
+  <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --readiness \
+  --get-url http://:8080/ --period-seconds 3 --failure-threshold 2</span></div></div>
+</div>
+
+<h2 id="lab11-1">11.3 Lab 11.1 &mdash; Probes on the flight board</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 11.1 &mdash; Readiness and liveness, observed</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Add probes, then break the application from the inside and watch
+    each probe do its own job. <strong>Time.</strong> 25 minutes.
+    <strong>Prerequisites.</strong> <code>${U}-platform</code> with <code>fids-web</code> and its route.</div>
+
+    <ol class="steps">
+      <li><p><strong>Show the problem first.</strong> Break the application without killing the process:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-platform</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc scale deployment/fids-web --replicas=3</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=fids-web -o name | head -1)</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'rm -f /var/www/html/index.html'</span></div>
+        <div class="adm note">
+          <div class="ico">i</div>
+          <div class="bd"><span class="admlab">Note</span>
+          <p>If the web root is mounted from the config map of chapter 10, it is read-only. Remove the volume for
+          this lab &mdash; <code>oc set volume deployment/fids-web --remove --name page</code> &mdash; and put it
+          back at the end.</p></div>
+        </div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">FIDS=$(oc get route fids-web -o jsonpath='{.spec.host}')</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">for i in $(seq 1 9); do curl -s -o /dev/null -w '%{http_code} ' http://$FIDS/; done; echo</span>
+<span class="o">200 403 200 200 403 200 403 200 200</span></div>
+        <p>One pod in three is serving errors, the platform is perfectly happy, and nothing anywhere says so.
+        The pod is <code>Running</code> and <code>1/1 READY</code>.</p></li>
+
+      <li><p><strong>Add a readiness probe:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --readiness \
+  --get-url http://:8080/ --period-seconds 3 --failure-threshold 2</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span></div></li>
+
+      <li><p><strong>Break one pod again,</strong> and watch the platform react this time:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=fids-web -o name | head -1)</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'rm -f /var/www/html/index.html'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=fids-web -w</span>
+<span class="o">NAME                        READY   STATUS    RESTARTS   AGE</span>
+<span class="o">fids-web-7d4f8c9b5-2xk9p    </span><span class="ko">0/1</span><span class="o">     Running   0          4m</span>
+<span class="o">fids-web-7d4f8c9b5-lm4tv    1/1     Running   0          4m</span>
+<span class="o">fids-web-7d4f8c9b5-q7wzc    1/1     Running   0          4m</span></div>
+        <p><code>0/1 READY</code>, still <code>Running</code>, zero restarts. Check the endpoints and the
+        traffic:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get endpoints fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">for i in $(seq 1 9); do curl -s -o /dev/null -w '%{http_code} ' http://$FIDS/; done; echo</span>
+<span class="o">200 200 200 200 200 200 200 200 200</span></div>
+        <p>Two endpoints instead of three, and every request now succeeds. The broken pod was taken out of
+        rotation, and nobody was paged.</p></li>
+
+      <li><p><strong>Heal it,</strong> and watch it rejoin on its own:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'echo "NCE departures" &gt; /var/www/html/index.html'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get endpoints fids-web</span></div>
+        <p>Readiness is continuous, not one-shot: the pod is added back without any intervention.</p></li>
+
+      <li><p><strong>Now add a liveness probe</strong> and see the different consequence:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --liveness \
+  --get-url http://:8080/ --period-seconds 5 --failure-threshold 2</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=fids-web -o name | head -1)</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'rm -f /var/www/html/index.html'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=fids-web -w</span></div>
+        <p>Within about ten seconds the <code>RESTARTS</code> column increments and the pod becomes healthy
+        again &mdash; because restarting recreates the container from the image, which still contains the
+        original page. Read the evidence:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe $POD | grep -A4 'Last State\|Liveness'</span></div></li>
+
+      <li><p><strong>Add a startup probe</strong> and read the whole set back:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --startup \
+  --get-url http://:8080/ --period-seconds 2 --failure-threshold 30</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o yaml | grep -A8 'Probe:'</span></div></li>
+
+      <li><p><strong>Make a deliberate mistake,</strong> because you will see it in the wild:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --liveness --get-url http://:9999/</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=fids-web -w</span></div>
+        <p>Every pod now restarts for ever: a liveness probe pointed at a port nothing listens on. This is the
+        most common self-inflicted outage in Kubernetes. Undo it:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set probe deployment/fids-web --liveness --get-url http://:8080/</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span></div></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>You can describe, from what you saw, the difference between a pod at <code>0/1 Running</code> and a pod
+      whose <code>RESTARTS</code> counter is climbing &mdash; and say which probe caused each.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s11-4">11.4 Requests: telling the scheduler what you need</h2>
+
+<p>When you create a pod, the scheduler filters the nodes that could take it, scores those that remain, and
+picks the best. The filtering step uses <strong>requests</strong>: the minimum CPU and memory the pod says it
+needs.</p>
+
+<div class="file">
+  <div class="name">Requests and limits, in the pod template</div>
+  <pre>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fids-web
+spec:
+  template:
+    spec:
+      containers:
+        - name: httpd-24
+          image: registry.access.redhat.com/ubi9/httpd-24:latest
+          resources:
+            requests:              # what the scheduler reserves
+              cpu: 100m
+              memory: 128Mi
+            limits:                # what the container may never exceed
+              cpu: 500m
+              memory: 512Mi</pre>
+</div>
+
+<table class="compact">
+  <thead><tr><th style="width:34mm">Unit</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>1000m</code></td><td>One full CPU core. <code>100m</code> is a tenth of a core; <code>0.5</code> and <code>500m</code> are the same thing.</td></tr>
+    <tr><td><code>128Mi</code></td><td>128 mebibytes (2<sup>20</sup> bytes). <code>128M</code> is 128 megabytes (10<sup>6</sup>) &mdash; not the same, and the difference has caused real incidents.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p><strong>A request reserves capacity; it does not cap consumption.</strong> A container requesting 128Mi can
+  use two gigabytes if the node has them. The request is a promise the scheduler makes to <em>you</em>; the limit
+  is a promise you make to <em>everyone else</em>. A pod with no requests is scheduled anywhere, at random, and
+  is the first to be evicted when a node runs short.</p></div>
+</div>
+
+<div class="term"><span class="cm"># The command that avoids YAML indentation mistakes</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/fids-web \
+  --requests cpu=100m,memory=128Mi --limits cpu=500m,memory=512Mi</span>
+
+<span class="cm"># What is actually set</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o jsonpath=\
+'{.spec.template.spec.containers[0].resources}{"\n"}'</span>
+
+<span class="cm"># Why a pod will not schedule</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod &lt;pod&gt; | grep -A5 Events</span>
+<span class="o">  Warning  FailedScheduling  0/3 nodes are available: 3 Insufficient memory.</span></div>
+
+<h2 id="s11-5">11.5 Limits: protecting everyone else</h2>
+
+<p>Limits are enforced by the Linux kernel, through control groups &mdash; and the two resources behave
+completely differently.</p>
+
+<table>
+  <thead><tr><th style="width:26mm">Resource</th><th>At the limit</th><th style="width:50mm">Evidence</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Memory</strong></td><td>The kernel's OOM killer <strong>kills a process</strong>. The container is then restarted by the restart policy.</td><td><code>reason: OOMKilled</code> and <code>exitCode: 137</code> in <code>status.containerStatuses[].lastState.terminated</code>, and a growing <code>RESTARTS</code> count.</td></tr>
+    <tr><td><strong>CPU</strong></td><td>The container is <strong>throttled</strong>. Nothing is killed; everything gets slower, even if the node is idle.</td><td>No event, no restart, no log line. Only latency &mdash; which makes it the harder one to diagnose.</td></tr>
+  </tbody>
+</table>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p>A memory limit is the correct mitigation for a leaking application: it caps the blast radius and turns an
+  unbounded leak into a periodic restart, which buys time while the leak is fixed. A CPU limit is different
+  &mdash; set it when you need consistent behaviour across clusters whose nodes differ, and be aware that you
+  are choosing predictable slowness over opportunistic speed.</p></div>
+</div>
+
+<h3>What the cluster shows you</h3>
+
+<div class="term"><span class="cm"># Per-node requests and limits, in aggregate (cluster-admin)</span>
+<span class="p">[admin@laptop ~]$</span> <span class="c">oc describe node &lt;node&gt; | sed -n '/Allocated resources/,/Events/p'</span>
+
+<span class="cm"># Real usage, not reservations (cluster-admin)</span>
+<span class="p">[admin@laptop ~]$</span> <span class="c">oc adm top pods -n user1-platform</span>
+<span class="p">[admin@laptop ~]$</span> <span class="c">oc adm top nodes</span></div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p><code>oc describe node</code> prints &ldquo;Total limits may be over 100 percent, i.e.
+  overcommitted&rdquo;. That is normal and intended: a node can promise more <em>limit</em> than it owns, because
+  not every container peaks at once. It may never overcommit <em>requests</em> &mdash; those are reservations,
+  and that is why a pod requesting more than any node can offer stays <code>Pending</code> for ever.</p></div>
+</div>
+
+<h2 id="lab11-2">11.6 Lab 11.2 &mdash; Requests, limits and an OOM kill</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 11.2 &mdash; Making the platform kill your container</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Set requests and limits, then trigger an out-of-memory kill on
+    purpose and read the evidence. <strong>Time.</strong> 25 minutes.</div>
+
+    <ol class="steps">
+      <li><p><strong>See what you have today:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o jsonpath=\
+'{.spec.template.spec.containers[0].resources}{"\n"}'</span>
+<span class="o">{}</span></div>
+        <p>Empty. Every deployment you created this week is unschedulable-anywhere and evictable-first, and
+        neither of those is a property you chose.</p></li>
+
+      <li><p><strong>Set them:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/fids-web \
+  --requests cpu=50m,memory=64Mi --limits cpu=200m,memory=256Mi</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o jsonpath=\
+'{.spec.template.spec.containers[0].resources}{"\n"}'</span></div></li>
+
+      <li><p><strong>Ask for something impossible,</strong> and read the refusal:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment greedy \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest -- sleep 3600</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/greedy --requests memory=900Gi</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=greedy</span>
+<span class="o">NAME                      READY   STATUS    RESTARTS   AGE</span>
+<span class="o">greedy-6f9c8d7b4-x2mnp    0/1     </span><span class="ko">Pending</span><span class="o">   0          20s</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod -l app=greedy | grep -A4 Events</span>
+<span class="o">  Warning  FailedScheduling  0/3 nodes are available: 3 Insufficient memory.</span></div>
+        <p><code>Pending</code> plus <code>FailedScheduling</code> is a request problem, always. Clean up:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment greedy</span></div></li>
+
+      <li><p><strong>Now break a limit on purpose.</strong> A container that allocates far more memory than it is
+        allowed:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment hungry \
+  --image=registry.access.redhat.com/ubi9/python-311:latest \
+  -- python3 -c "import time; a=bytearray(600*1024*1024); time.sleep(600)"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/hungry --requests memory=64Mi --limits memory=128Mi</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=hungry -w</span>
+<span class="o">NAME                      READY   STATUS      RESTARTS   AGE</span>
+<span class="o">hungry-5c7d9f8b6-4nqrt    0/1     </span><span class="ko">OOMKilled</span><span class="o">   0          8s</span>
+<span class="o">hungry-5c7d9f8b6-4nqrt    0/1     </span><span class="ko">CrashLoopBackOff</span><span class="o">   1   25s</span></div>
+        <p>The container asked for 600 MiB against a 128 MiB limit. The kernel killed it, the restart policy
+        restarted it, and it will do the same thing for ever.</p></li>
+
+      <li><p><strong>Read the evidence properly.</strong> This is the part to remember:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=hungry -o name | head -1)</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get $POD -o jsonpath=\
+'{.status.containerStatuses[0].lastState.terminated.reason}{" exit "}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\n"}'</span>
+<span class="o">OOMKilled exit 137</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs $POD --previous</span></div>
+        <p>The logs are empty &mdash; the process was killed by the kernel, so it had no chance to say anything.
+        <code>OOMKilled</code> and exit code <strong>137</strong> are the whole diagnosis, and they live in the
+        pod status, not in any log.</p></li>
+
+      <li><p><strong>Fix it the two possible ways,</strong> and think about which is right:</p>
+        <div class="term"><span class="cm"># (a) Raise the limit - correct if the application legitimately needs the memory</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/hungry --limits memory=768Mi</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=hungry</span>
+
+<span class="cm"># (b) Leave the limit and fix the application - correct if it is a leak</span></div>
+        <p>Raising a limit to stop an <code>OOMKilled</code> is a decision about what the application
+        <em>should</em> use, not a workaround. Doing it reflexively is how a leak reaches production with a
+        16&nbsp;GiB limit.</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment hungry</span></div></li>
+
+      <li><p><strong>Watch a CPU limit throttle instead of kill:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment busy \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
+  -- /bin/sh -c 'while true; do :; done'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/busy --requests cpu=50m --limits cpu=100m</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=busy</span></div>
+        <p>The pod stays <code>Running</code>, for ever, with zero restarts &mdash; while consuming a tenth of a
+        core instead of a whole one. No event, no log, no warning. If your trainer has cluster rights,
+        <code>oc adm top pods</code> shows it pinned at exactly the limit.</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment busy</span></div></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>You can name the status field that proves an out-of-memory kill, quote its exit code, explain why the
+      logs were empty, and describe what a container hitting its CPU limit looks like &mdash; which is the harder
+      question, because the answer is &ldquo;normal, only slower&rdquo;.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s11-7">11.7 Horizontal pod autoscaling</h2>
+
+<p>A <strong>HorizontalPodAutoscaler</strong> changes the replica count of a Deployment or a StatefulSet
+according to a measured metric &mdash; usually CPU. It is a control loop in the controller manager, checking
+roughly every fifteen seconds.</p>
+
+<div class="schema">
+<table class="compact">
+  <thead><tr><th style="width:14mm">Step</th><th>What the loop does</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1</strong></td><td>Read the target from the HPA &mdash; for example, 60&nbsp;% CPU.</td></tr>
+    <tr><td><strong>2</strong></td><td>Collect the current usage of every targeted pod from the metrics server.</td></tr>
+    <tr><td><strong>3</strong></td><td>Express each pod's usage as a <strong>percentage of its CPU request</strong>.</td></tr>
+    <tr><td><strong>4</strong></td><td>Average across pods, compare with the target, and compute a new replica count.</td></tr>
+    <tr><td><strong>5</strong></td><td>Scale, within the configured minimum and maximum.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="adm important">
+  <div class="ico">!</div>
+  <div class="bd"><span class="admlab">Important</span>
+  <p>Step 3 is why <strong>an autoscaler cannot work without resource requests</strong>. &ldquo;Sixty per
+  cent&rdquo; means sixty per cent <em>of the request</em>; with no request there is nothing to take a percentage
+  of. A deployment created with <code>oc create deployment</code> has no requests, so its HPA shows
+  <code>&lt;unknown&gt;</code> in the <code>TARGETS</code> column and never scales. That symptom is almost always
+  this cause.</p></div>
+</div>
+<figure class="draw" id="fig-23-requests-limits-hpa">
+  <img src="../../../../../draws/chapter-11/23-requests-limits-hpa.svg" alt="Resource request, limit and horizontal pod autoscaler">
+  <figcaption>Figure 11.2 - A request reserves; a limit caps; the HPA is a percentage of the request.</figcaption>
+</figure>
+
+
+<div class="term"><span class="cm"># Imperatively</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc autoscale deployment/fids-web --min=2 --max=6 --cpu-percent=60</span>
+
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa</span>
+<span class="o">NAME       REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS</span>
+<span class="o">fids-web   Deployment/fids-web   4%/60%    2         6         2</span></div>
+
+<div class="file">
+  <div class="name">~/do108/day3/fids-web-hpa.yaml</div>
+  <pre>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: fids-web
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: fids-web
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60</pre>
+</div>
+
+<div class="adm note">
+  <div class="ico">i</div>
+  <div class="bd"><span class="admlab">Note</span>
+  <p>A brand-new HPA shows <code>&lt;unknown&gt;</code> for a few minutes while metrics accumulate; that is
+  normal. <code>&lt;unknown&gt;</code> that never resolves is the missing-request problem above.
+  <code>oc describe hpa</code> says so explicitly, in its <code>ScalingActive</code> condition.</p></div>
+</div>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p>Autoscaling on <strong>memory</strong> is possible and rarely useful. Most runtimes &mdash; the JVM
+  especially &mdash; claim memory at start-up and never give it back, so memory usage does not track load. If
+  the metric does not move with the traffic, the autoscaler cannot help.</p></div>
+</div>
+
+<h2 id="lab11-3">11.8 Lab 11.3 &mdash; An autoscaler that actually scales</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 11.3 &mdash; HPA, observed end to end</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Build an HPA, see it fail for the classic reason, fix it, and
+    watch it scale under real load. <strong>Time.</strong> 25 minutes.
+    <strong>Note.</strong> Keep <code>maxReplicas</code> at 4 &mdash; the cluster is shared.</div>
+
+    <ol class="steps">
+      <li><p><strong>Create a deployment with no requests,</strong> deliberately:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment awos-feed \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
+  -- /bin/sh -c 'while true; do :; done'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc autoscale deployment/awos-feed --min=1 --max=4 --cpu-percent=50</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa awos-feed</span>
+<span class="o">NAME        REFERENCE                TARGETS         MINPODS   MAXPODS   REPLICAS</span>
+<span class="o">awos-feed   Deployment/awos-feed     </span><span class="ko">&lt;unknown&gt;/50%</span><span class="o">   1         4         1</span></div>
+        <p>Wait two minutes. Still <code>&lt;unknown&gt;</code>. Ask the cluster why:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe hpa awos-feed | grep -A6 Conditions</span>
+<span class="o">  ScalingActive   False   FailedGetResourceMetric   ... missing request for cpu</span></div>
+        <p>The cluster told you the answer in one line. That is the failure mode to recognise instantly.</p></li>
+
+      <li><p><strong>Add the requests and a limit,</strong> and watch the HPA come alive:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/awos-feed --requests cpu=50m --limits cpu=100m</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/awos-feed</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa awos-feed -w</span></div>
+        <p>Within a few minutes <code>TARGETS</code> becomes a number. Because the container runs a busy loop
+        throttled at 100m against a 50m request, it sits near 200&nbsp;% of its request &mdash; well above the
+        50&nbsp;% target.</p></li>
+
+      <li><p><strong>Watch it scale up:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa,pods -l app=awos-feed -w</span>
+<span class="o">NAME        REFERENCE              TARGETS    MINPODS   MAXPODS   REPLICAS</span>
+<span class="o">awos-feed   Deployment/awos-feed   198%/50%   1         4         4</span></div>
+        <p>Four pods, the configured maximum. The maximum is not a suggestion &mdash; it is what stops one
+        application from consuming a cluster, which matters a great deal when nine other people are working on
+        it.</p></li>
+
+      <li><p><strong>Read the decision log:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe hpa awos-feed | tail -12</span>
+<span class="o">  Normal  SuccessfulRescale  2m    horizontal-pod-autoscaler  New size: 2; reason: cpu ...</span>
+<span class="o">  Normal  SuccessfulRescale  1m    horizontal-pod-autoscaler  New size: 4; reason: cpu ...</span></div>
+        <p>Every scaling decision, with its reason and its timestamp. This is what you read after an incident to
+        find out whether the autoscaler helped or made things worse.</p></li>
+
+      <li><p><strong>Remove the load and watch it scale back:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/awos-feed \
+  ubi-minimal=registry.access.redhat.com/ubi9/ubi-minimal:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc patch deployment awos-feed --type=json \
+  -p='[{"op":"replace","path":"/spec/template/spec/containers/0/command","value":["/bin/sh","-c","sleep 3600"]}]'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa awos-feed -w</span></div>
+        <div class="adm note">
+          <div class="ico">i</div>
+          <div class="bd"><span class="admlab">Note</span>
+          <p>Scaling down is deliberately slower than scaling up &mdash; the controller waits before removing
+          pods, so that a brief lull does not cause a stampede when the load returns. Allow several minutes; do
+          not conclude that it is broken.</p></div>
+        </div></li>
+
+      <li><p><strong>Give <code>fids-web</code> the same treatment,</strong> properly this time, and keep it:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day3/fids-web-hpa.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment awos-feed &amp;&amp; oc delete hpa awos-feed</span></div></li>
+    </ol>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>You have seen <code>&lt;unknown&gt;</code>, found the reason in <code>oc describe hpa</code>, fixed it
+      with requests, watched a real scale-up, and read the <code>SuccessfulRescale</code> events. You can explain
+      in one sentence why an HPA needs a request.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="lab11-4">11.9 Workshop 11.4 &mdash; Make the platform trustworthy</h2>
+
+<div class="tp">
+  <div class="tp-hd"><span class="tag core">Workshop</span> Workshop 11.4 &mdash; Production-ready, on paper and in fact</div>
+  <div class="tp-bd">
+    <div class="tp-meta"><strong>Goal.</strong> Bring the whole airport platform up to a standard you could
+    defend in a review. <strong>Time.</strong> 30 minutes.
+    <strong>Scope.</strong> The <code>${U}-platform</code> project.</div>
+
+    <p><strong>The standard.</strong> Your platform team has published a checklist. Every workload in the
+    project must satisfy it:</p>
+
+    <table class="compact">
+      <thead><tr><th style="width:38mm">Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Requests everywhere</td><td>Every container declares a CPU and a memory request. No <code>resources: {}</code> anywhere.</td></tr>
+        <tr><td>Limits everywhere</td><td>Every container declares a memory limit. CPU limits only where behaviour must be predictable &mdash; and you must be able to justify each one.</td></tr>
+        <tr><td>Readiness on anything that serves traffic</td><td>Detection within ten seconds, at most.</td></tr>
+        <tr><td>Liveness, carefully</td><td>Only where a stuck process is a real possibility, and never faster than the readiness probe.</td></tr>
+        <tr><td>Startup probe on the database</td><td>PostgreSQL needs time; the liveness probe must not fire during start-up.</td></tr>
+        <tr><td>Two replicas minimum on the web tier</td><td>And an HPA between 2 and 4 at 60&nbsp;% CPU.</td></tr>
+        <tr><td>Everything in files</td><td><code>~/do108/day3/platform/</code> rebuilds the project from empty.</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Acceptance test.</strong></p>
+
+    <ol class="steps">
+      <li>No container in the project has an empty <code>resources</code> block. Prove it with a single
+      <code>oc get ... -o jsonpath</code> command over all deployments and stateful sets.</li>
+      <li>Deleting the index page inside one <code>fids-web</code> pod removes exactly that pod from the
+      endpoints within ten seconds, and the route keeps returning 200 throughout.</li>
+      <li><code>oc get hpa</code> shows a numeric value in <code>TARGETS</code>, not
+      <code>&lt;unknown&gt;</code>.</li>
+      <li>The database survives the deletion of its pod, with its data, and its startup probe does not cause a
+      restart loop.</li>
+      <li>You can state, for each CPU limit you set, the reason you set it &mdash; and remove any you cannot
+      justify.</li>
+    </ol>
+
+    <div class="adm astuce">
+      <div class="ico">*</div>
+      <div class="bd"><span class="admlab">Tip</span>
+      <p>For test 1, this is the shape of the answer:</p>
+      <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,statefulset -o jsonpath=\
+'{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[*].resources}{"\n"}{end}'</span></div>
+      <p>Anything printing <code>{}</code> is a failure. That one-liner is worth keeping: it is a code review of
+      a whole namespace in one command.</p></div>
+    </div>
+
+    <div class="adm verif">
+      <div class="ico">?</div>
+      <div class="bd"><span class="admlab">Check</span>
+      <p>All five tests pass, and your <code>platform/</code> directory rebuilds the project on an empty
+      namespace. Test 5 is not decoration: an unjustified CPU limit is a self-inflicted slowdown, and being able
+      to say why it is there is the difference between configuration and cargo cult.</p></div>
+    </div>
+  </div>
+</div>
+
+<h2 id="s11-10">11.10 Watch out, and summary</h2>
+
+<h3>Watch out</h3>
+
+<table>
+  <thead><tr><th style="width:52mm">Trap</th><th>What is really happening</th></tr></thead>
+  <tbody>
+    <tr><td>A liveness probe on the wrong port or path</td><td>Every pod restarts for ever. The most common self-inflicted outage there is. Add readiness first, liveness later.</td></tr>
+    <tr><td>A liveness probe with no startup probe on a slow application</td><td>The pod is killed before it has finished starting, and never starts at all.</td></tr>
+    <tr><td>An expensive health endpoint</td><td>The probes become a load generator, and a slow dependency turns into a fleet-wide restart.</td></tr>
+    <tr><td><code>periodSeconds</code> × <code>failureThreshold</code> never computed</td><td>A broken pod serves errors for thirty seconds because nobody multiplied 10 by 3.</td></tr>
+    <tr><td>No requests</td><td>Random placement, first to be evicted, and no autoscaling &mdash; ever.</td></tr>
+    <tr><td>Requests set to average usage</td><td>The node is overcommitted and evicts pods under load. Size requests for the peak.</td></tr>
+    <tr><td><code>128M</code> where you meant <code>128Mi</code></td><td>A 7&nbsp;% shortfall, which is enough to cause an OOM kill at exactly the wrong moment.</td></tr>
+    <tr><td>Raising a limit to stop an <code>OOMKilled</code></td><td>Sometimes correct, often a leak being hidden. Decide which, and write it down.</td></tr>
+    <tr><td>HPA stuck at <code>&lt;unknown&gt;</code></td><td>No CPU request on the target. <code>oc describe hpa</code> says so.</td></tr>
+  </tbody>
+</table>
+
+<h3>Command reference for this chapter</h3>
+
+<table class="compact">
+  <thead><tr><th style="width:70mm">Command</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr><td><code>oc set probe deployment/&lt;n&gt; --readiness --get-url http://:8080/</code></td><td>Add a readiness probe</td></tr>
+    <tr><td><code>oc set probe deployment/&lt;n&gt; --liveness|--startup …</code></td><td>The other two probes</td></tr>
+    <tr><td><code>oc set probe … --period-seconds N --failure-threshold N</code></td><td>Set the timings deliberately</td></tr>
+    <tr><td><code>oc set resources deployment/&lt;n&gt; --requests cpu=…,memory=…</code></td><td>Reserve capacity</td></tr>
+    <tr><td><code>oc set resources deployment/&lt;n&gt; --limits cpu=…,memory=…</code></td><td>Cap consumption</td></tr>
+    <tr><td><code>oc autoscale deployment/&lt;n&gt; --min=N --max=N --cpu-percent=N</code></td><td>Create an HPA</td></tr>
+    <tr><td><code>oc get hpa</code> · <code>oc describe hpa &lt;n&gt;</code></td><td>Current state, conditions and scaling events</td></tr>
+    <tr><td><code>oc get pod &lt;p&gt; -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'</code></td><td>Proof of an OOM kill</td></tr>
+    <tr><td><code>oc rollout restart deployment/&lt;n&gt;</code></td><td>Restart every pod in order</td></tr>
+    <tr><td><code>oc adm top pods</code> · <code>oc describe node</code></td><td>Real usage against reservations <span class="small">(cluster-admin)</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Summary</h3>
+
+<ul>
+  <li>High availability is a contract: the application must tolerate restarts, answer probes, run in several
+  copies, behave predictably and run unprivileged.</li>
+  <li>Readiness removes a pod from the Service; liveness restarts the container; a startup probe protects a slow
+  start from both.</li>
+  <li>Detection time is <code>periodSeconds</code> × <code>failureThreshold</code> &mdash; compute it on
+  purpose.</li>
+  <li>Requests are reservations that drive scheduling; limits are caps enforced by the kernel.</li>
+  <li>Exceeding a memory limit kills the process (<code>OOMKilled</code>, exit 137); exceeding a CPU limit
+  throttles it silently.</li>
+  <li>An HPA measures usage as a percentage of the request, so without requests it can never work.</li>
+  <li>Set a maximum on every autoscaler: it is what protects the rest of the cluster from your application.</li>
+</ul>
+
+<h3>To go further</h3>
+<ul>
+  <li>Kubernetes, <em>Configure liveness, readiness and startup probes</em> &mdash; <code>kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/</code></li>
+  <li>Kubernetes, <em>Resource management for pods and containers</em> &mdash; <code>kubernetes.io/docs/concepts/configuration/manage-resources-containers/</code></li>
+  <li>OpenShift Container Platform 4.18, <em>Nodes</em> &mdash; automatically scaling pods, <code>docs.redhat.com</code></li>
+</ul>
+
+</section>
+
+
+<section id="synth3">
+<h1 class="chap"><span class="chap-num">End of day 3</span><span class="chap-title">Summary, and getting ready for day 4</span></h1>
+
+<h2 id="s-e3-1">What you can do this evening</h2>
+
+<ul>
+  <li>Take every setting and every credential out of a container image, and put them where they belong.</li>
+  <li>Explain, precisely, what a Secret protects you against and what it does not.</li>
+  <li>Choose between injecting configuration as environment variables and mounting it as files &mdash; and know
+  which one needs a restart.</li>
+  <li>Claim persistent storage without knowing anything about the underlying technology.</li>
+  <li>Read an access mode, and say why it is not a safety guarantee.</li>
+  <li>Deploy a database as a StatefulSet with one volume per replica behind a headless service.</li>
+  <li>Add readiness, liveness and startup probes, and compute their real detection time.</li>
+  <li>Set requests and limits, and recognise an out-of-memory kill from its exit code alone.</li>
+  <li>Configure an autoscaler, and diagnose the one reason it usually does nothing.</li>
+</ul>
+
+<h2 id="s-e3-2">Where the running example stands</h2>
+
+<table class="compact">
+  <thead><tr><th style="width:40mm">Component</th><th>State tonight</th></tr></thead>
+  <tbody>
+    <tr><td><code>fids-web</code></td><td>Content from a ConfigMap, readiness and liveness probes, requests and limits, and an autoscaler between two and six replicas. Removing the page from one pod takes that pod out of rotation and nothing else.</td></tr>
+    <tr><td><code>fids-api</code></td><td>Deployed, reachable by name, with resources declared.</td></tr>
+    <tr><td><code>fids-db</code></td><td>A StatefulSet with a volume per replica, credentials from a Secret, and data that survives the loss of its pod.</td></tr>
+    <tr><td><code>bagtrack</code></td><td>Still a CronJob, still bounded, still harmless.</td></tr>
+    <tr><td>Configuration</td><td>Entirely outside the images. Changing the board means changing a ConfigMap.</td></tr>
+    <tr><td>Reliability</td><td>Real. The cluster can now tell a working pod from a wedged one, and acts on the difference.</td></tr>
+    <tr><td>Images</td><td><strong>Still <code>:latest</code>.</strong> Every deployment can change under you at the next pod restart, and nobody would know which version is running. That is tomorrow morning.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s-e3-3">Three questions to check yourself</h2>
+
+<div class="quiz">
+  <h4>Answer without looking back, then check</h4>
+  <ol>
+    <li>You update a ConfigMap that a deployment consumes as environment variables. What happens to the running
+      pods, and what do you do about it?
+      <span class="rep">Nothing happens: environment variables are read once, at container start.
+      <code>oc rollout restart deployment/&lt;name&gt;</code>. Mounted files are different &mdash; they refresh,
+      slowly, and only help if the application re-reads them.</span></li>
+    <li>A pod shows <code>RESTARTS 7</code> and its logs are empty. Which single command settles it, and what are
+      you looking for?
+      <span class="rep"><code>oc get pod &lt;p&gt; -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'</code>
+      &mdash; looking for <code>reason: OOMKilled</code> and <code>exitCode: 137</code>. The logs are empty
+      because the kernel killed the process without warning it.</span></li>
+    <li>Your HPA has shown <code>&lt;unknown&gt;</code> for twenty minutes. What is wrong, and where does the
+      cluster tell you?
+      <span class="rep">The target has no CPU request, so utilisation cannot be computed.
+      <code>oc describe hpa &lt;name&gt;</code> shows <code>ScalingActive False FailedGetResourceMetric …
+      missing request for cpu</code>.</span></li>
+  </ol>
+</div>
+
+<h2 id="s-e3-4">Tomorrow: changing it without breaking it</h2>
+
+<p>Day 4 is about change. In the morning you learn to say exactly which image is running &mdash; tags, digests
+and why <code>:latest</code> is a promise nobody made &mdash; then to roll a new version out gradually, watch it
+land, and roll it back in one command when it does not. You will also meet image streams and image change
+triggers, which are OpenShift's answer to updating an application without editing it.</p>
+
+<p>The afternoon is yours: a complete platform, built from an empty project against a written specification,
+inside a time box. Everything you have done since Monday, in one exercise.</p>
+
+<div class="adm astuce">
+  <div class="ico">*</div>
+  <div class="bd"><span class="admlab">Tip</span>
+  <p><strong>Spend twenty minutes tonight on your manifests, not on new material.</strong> Delete
+  <code>${U}-platform</code>, recreate it, and rebuild everything from <code>~/do108/day3/</code> alone. Whatever
+  fails to come back is what you will be missing tomorrow afternoon, when the clock is running.</p></div>
+</div>
+
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fids-db
+  labels:
+    app.kubernetes.io/name: fids-db
+spec:
+  clusterIP: None          # headless: no single virtual IP
+  selector:
+    app.kubernetes.io/name: fids-db
+  ports:
+    - name: postgresql
+      port: 5432
