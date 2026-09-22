@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 2 assessment — DO108</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rh-red:#ee0000; --rh-red-dark:#a30000; --rh-red-soft:#fdeaea;
+  --rh-black:#151515; --rh-gray-90:#1f1f1f; --rh-gray-70:#383838;
+  --rh-gray-60:#4d4d4d; --rh-gray-50:#707070; --rh-gray-40:#a3a3a3;
+  --rh-gray-20:#e0e0e0; --rh-gray-10:#f2f2f2;
+  --rh-teal:#37a3a3; --rh-teal-soft:#e8f5f5;
+  --rh-blue:#0066cc; --rh-blue-soft:#e7f1fa;
+  --rh-purple:#5e40be; --ok:#2e7d52; --ok-bg:#e7f1ec; --bad-bg:#fdeaea;
+  --font-display:"Red Hat Display","Liberation Sans",Arial,sans-serif;
+  --font-text:"Red Hat Text","Liberation Sans",Arial,sans-serif;
+  --font-mono:"Red Hat Mono","Liberation Mono",Consolas,monospace;
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:#f2f2f2; color:var(--rh-gray-90);
+  font-family:var(--font-text); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{ color:var(--rh-blue); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+code{ font-family:var(--font-mono); font-size:.9em; background:var(--rh-gray-10);
+  border:1px solid var(--rh-gray-20); padding:.05em .3em; }
+.lab-nav{
+  position:sticky; top:0; z-index:30;
+  background:#151515; color:#fff;
+  font-family:var(--font-display); font-size:14px; letter-spacing:.04em;
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  padding:10px 16px;
+}
+.lab-nav a{ color:#fff; }
+.lab-nav a:hover{ color:#ffcc17; text-decoration:none; }
+.lab-nav .kicker{ font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#ee0000; }
+.lab-nav .crumb{ color:#c7c7c7; }
+.page-wrap{ max-width:920px; margin:0 auto; background:#fff; padding:36px 40px 56px; box-shadow:0 0 0 1px #e0e0e0; }
+h1.chap{ font-family:var(--font-display); font-weight:900; font-size:28px; margin:0 0 8px; letter-spacing:-.015em; }
+.chap-num{ display:block; font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--rh-red); margin-bottom:6px; }
+h1.chap::after{ content:""; display:block; width:88px; height:3px; background:var(--rh-red); margin-top:12px; }
+.lead{ font-family:var(--font-display); font-size:16px; color:var(--rh-gray-60); margin:0 0 18px; }
+h2{ font-family:var(--font-display); font-weight:700; font-size:18px; margin:32px 0 10px; padding-top:8px; border-top:1px solid var(--rh-gray-20); }
+h2 .n{ color:var(--rh-red); font-family:var(--font-mono); margin-right:8px; }
+.objectifs{ background:var(--rh-gray-10); border-left:4px solid var(--rh-black); padding:14px 16px; margin:0 0 22px; }
+.objectifs h4{ margin:0 0 6px; font-family:var(--font-display); font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+.objectifs p{ margin:0; }
+.scorebar{
+  position:sticky; top:44px; z-index:20;
+  display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--rh-gray-20); padding:10px 14px; margin:0 0 22px;
+}
+.scorebar .meta{ font-size:13px; color:var(--rh-gray-50); }
+.scorebar button, .actions button{
+  font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:.04em;
+  border:0; cursor:pointer; padding:8px 14px; background:var(--rh-red); color:#fff;
+}
+.scorebar button.ghost, .actions button.ghost{ background:#fff; color:var(--rh-black); border:1px solid var(--rh-gray-20); }
+.scorebar button:focus, .actions button:focus, .choice:focus-visible, .chip:focus-visible, .drop:focus-visible{
+  outline:2px solid var(--rh-red); outline-offset:2px;
+}
+.q{ border:1px solid var(--rh-gray-20); padding:14px 16px; margin:0 0 12px; }
+.q.ok{ background:var(--ok-bg); border-color:var(--ok); }
+.q.bad{ background:var(--bad-bg); border-color:var(--rh-red); }
+.q h3{ font-family:var(--font-display); font-size:15px; font-weight:700; margin:0 0 10px; }
+.q h3 .tag{ display:inline-block; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  background:var(--rh-black); color:#fff; padding:2px 6px; margin-right:8px; vertical-align:middle; }
+.choices{ display:flex; flex-direction:column; gap:6px; }
+.choice{
+  display:flex; gap:10px; align-items:flex-start; text-align:left;
+  width:100%; background:#fff; border:1px solid var(--rh-gray-20); padding:8px 10px;
+  font:inherit; cursor:pointer;
+}
+.choice:hover{ border-color:var(--rh-black); }
+.choice.on{ border-color:var(--rh-red); background:var(--rh-red-soft); }
+.choice .mark{ flex:0 0 22px; font-family:var(--font-display); font-weight:700; color:var(--rh-red); }
+.why{ display:none; margin:10px 0 0; font-size:13.5px; color:var(--rh-gray-60); }
+.q.ok .why, .q.bad .why{ display:block; }
+.dnd{ border:1px solid var(--rh-gray-20); padding:14px 16px; margin:0 0 16px; }
+.dnd h3{ font-family:var(--font-display); font-size:15px; margin:0 0 8px; }
+.dnd p.hint{ margin:0 0 12px; font-size:13.5px; color:var(--rh-gray-50); }
+.pool, .slots{ display:flex; flex-wrap:wrap; gap:8px; min-height:44px; }
+.pool{ background:var(--rh-gray-10); padding:10px; margin-bottom:12px; }
+.chip{
+  font-family:var(--font-mono); font-size:12.5px; background:#fff; border:1px solid var(--rh-gray-40);
+  padding:6px 10px; cursor:grab; user-select:none;
+}
+.chip.held{ outline:2px solid var(--rh-red); }
+.drop{
+  min-height:38px; min-width:120px; flex:1 1 160px;
+  border:1px dashed var(--rh-gray-40); background:#fafafa; padding:6px;
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+.drop.over{ border-color:var(--rh-red); background:var(--rh-red-soft); }
+.drop .lab{ font-family:var(--font-display); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--rh-gray-50); width:100%; margin-bottom:2px; }
+.slots.stack{ flex-direction:column; }
+.slots.stack .drop{ flex:none; width:100%; }
+.yaml{
+  font-family:var(--font-mono); font-size:12.5px; background:var(--rh-gray-10);
+  border-left:4px solid var(--rh-gray-70); padding:12px 14px; line-height:1.7;
+}
+.yaml .drop{ display:inline-flex; min-width:140px; min-height:28px; vertical-align:middle; flex:none; margin:0 4px; }
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
+#result{ display:none; border-left:4px solid var(--rh-black); background:var(--rh-gray-10); padding:14px 16px; margin-top:18px; }
+#result.show{ display:block; }
+#result h2{ border:0; margin:0 0 8px; padding:0; }
+#result .big{ font-family:var(--font-display); font-weight:900; font-size:32px; }
+@media (max-width:720px){
+  .page-wrap{ padding:20px 16px 40px; }
+}
+</style>
+</head>
+<body>
+<nav class="lab-nav">
+  <span class="kicker">DO108</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <span class="crumb">Assessment — Days 1 and 2</span>
+</nav>
+<div class="page-wrap">
+
+<h1 class="chap"><span class="chap-num">Assessment</span>Days 1 and 2 — check yourself</h1>
+<p class="lead">Concepts, YAML, platform components, how an application is reached, and how nodes and pods are networked. No cluster required. Drag a chip onto a slot, or click the chip then the slot.</p>
+
+<div class="objectifs">
+  <h4>How this works</h4>
+  <p>Fourteen multiple-choice questions, then four drag-and-drop boards. Submit when you are done. Each correct QCM and each correctly placed chip is one point.</p>
+</div>
+
+<div class="scorebar">
+  <div class="meta">Answered <span id="progress">0</span> · Submit to score</div>
+  <div>
+    <button type="button" class="ghost" id="btn-reset">Reset</button>
+    <button type="button" id="btn-score">Submit answers</button>
+  </div>
+</div>
+
+<h2><span class="n">A</span> Multiple choice</h2>
+
+<div class="q" data-q="q1" data-answer="b">
+  <h3><span class="tag">Concept</span> A container on OpenShift is</h3>
+  <div class="choices"></div>
+  <p class="why">A container is a process isolated by kernel namespaces and limited by cgroups — not a small virtual machine.</p>
+</div>
+<div class="q" data-q="q2" data-answer="c">
+  <h3><span class="tag">Concept</span> <code>oc apply</code> prints <code>created</code>. That means</h3>
+  <div class="choices"></div>
+  <p class="why">The object is recorded in etcd. Controllers converge afterwards. <code>created</code> is not <code>Running</code>.</p>
+</div>
+<div class="q" data-q="q3" data-answer="a">
+  <h3><span class="tag">Concept</span> A Route</h3>
+  <div class="choices"></div>
+  <p class="why">A Route is an OpenShift object on Kubernetes extension points. <code>kubectl</code> works on OpenShift; a Route means nothing to plain Kubernetes.</p>
+</div>
+<div class="q" data-q="q4" data-answer="b">
+  <h3><span class="tag">Concept</span> You delete a pod that a Deployment owns. What happens?</h3>
+  <div class="choices"></div>
+  <p class="why">The ReplicaSet still wants <em>n</em> matching pods, so it creates a replacement. To stop the workload, change the Deployment (or delete it).</p>
+</div>
+<div class="q" data-q="q5" data-answer="c">
+  <h3><span class="tag">YAML</span> A Deployment is rejected on create. Check first</h3>
+  <div class="choices"></div>
+  <p class="why"><code>spec.selector.matchLabels</code> and <code>spec.template.metadata.labels</code> must agree. If they do not, the API refuses the object.</p>
+</div>
+<div class="q" data-q="q6" data-answer="a">
+  <h3><span class="tag">YAML</span> In a Service, <code>port</code> and <code>targetPort</code></h3>
+  <div class="choices"></div>
+  <p class="why"><code>port</code> is what clients connect to. <code>targetPort</code> is where traffic is delivered inside the container. They are often the same number, which hides the difference.</p>
+</div>
+<div class="q" data-q="q7" data-answer="b">
+  <h3><span class="tag">YAML</span> A Job with <code>restartPolicy: Always</code></h3>
+  <div class="choices"></div>
+  <p class="why">A Job must complete. <code>Always</code> is rejected. Use <code>OnFailure</code> or <code>Never</code>.</p>
+</div>
+<div class="q" data-q="q8" data-answer="c">
+  <h3><span class="tag">Components</span> The control plane includes</h3>
+  <div class="choices"></div>
+  <p class="why">API server, etcd, scheduler and controllers. kubelet and CRI-O run on workers (and on a one-node training cluster they share the machine).</p>
+</div>
+<div class="q" data-q="q9" data-answer="a">
+  <h3><span class="tag">Components</span> The object you write and change is the</h3>
+  <div class="choices"></div>
+  <p class="why">You write the Deployment. It owns the ReplicaSet. The ReplicaSet owns the pods. Never edit the ReplicaSet.</p>
+</div>
+<div class="q" data-q="q10" data-answer="b">
+  <h3><span class="tag">Components</span> OpenShift’s container runtime is</h3>
+  <div class="choices"></div>
+  <p class="why">CRI-O. Images are OCI; an image built elsewhere still runs here.</p>
+</div>
+<div class="q" data-q="q11" data-answer="c">
+  <h3><span class="tag">Access</span> A browser gets HTTP 503 from a Route hostname. First look at</h3>
+  <div class="choices"></div>
+  <p class="why">The wildcard DNS still reaches HAProxy. 503 means the router found nothing to send to: no Route, or a Route whose Service has no endpoints. Check Route → Service → endpoints.</p>
+</div>
+<div class="q" data-q="q12" data-answer="a">
+  <h3><span class="tag">Access</span> A ClusterIP Service is reachable from</h3>
+  <div class="choices"></div>
+  <p class="why">ClusterIP is internal. Your laptop is not on the pod or service network. Publish HTTP with a Route.</p>
+</div>
+<div class="q" data-q="q13" data-answer="b">
+  <h3><span class="tag">Networking</span> You must never put a pod IP in a ConfigMap because</h3>
+  <div class="choices"></div>
+  <p class="why">Pod IPs are not stable. Reschedule, scale or roll and the address changes. Use the Service DNS name (<code>fids-api</code> in the same project).</p>
+</div>
+<div class="q" data-q="q14" data-answer="c">
+  <h3><span class="tag">Networking</span> <code>oc get endpoints fids-api</code> shows <code>&lt;none&gt;</code>. That is</h3>
+  <div class="choices"></div>
+  <p class="why">The Service selector matches no ready pod — wrong labels, or no pod is Ready. Empty endpoints is the complete diagnosis for “the service returns 503”.</p>
+</div>
+
+<h2><span class="n">B</span> Drag and drop</h2>
+
+<div class="dnd" id="dd-life" data-kind="order">
+  <h3>B1 — The trip a create request takes</h3>
+  <p class="hint">Order the six steps, first to last. Click a chip, then a slot — or drag.</p>
+  <div class="pool" id="pool-life"></div>
+  <div class="slots stack" id="slots-life"></div>
+</div>
+
+<div class="dnd" id="dd-roles" data-kind="match">
+  <h3>B2 — Which object does the work?</h3>
+  <p class="hint">Drop one object onto each responsibility.</p>
+  <div class="pool" id="pool-roles"></div>
+  <div class="slots stack" id="slots-roles"></div>
+</div>
+
+<div class="dnd" id="dd-yaml" data-kind="match">
+  <h3>B3 — Complete the Deployment YAML</h3>
+  <p class="hint">Drop each value into the skeleton. Selector labels and pod labels must match.</p>
+  <div class="pool" id="pool-yaml"></div>
+  <div class="yaml" id="yaml-skel"></div>
+</div>
+
+<div class="dnd" id="dd-path" data-kind="order">
+  <h3>B4 — How a browser reaches a pod</h3>
+  <p class="hint">North–south HTTP on OpenShift, from the laptop to the container.</p>
+  <div class="pool" id="pool-path"></div>
+  <div class="slots stack" id="slots-path"></div>
+</div>
+
+<div class="actions">
+  <button type="button" id="btn-score-2">Submit answers</button>
+  <button type="button" class="ghost" id="btn-reset-2">Reset</button>
+</div>
+<div id="result">
+  <h2>Result</h2>
+  <p class="big"><span id="score-n">0</span> / <span id="score-d">0</span></p>
+  <p id="score-msg"></p>
+</div>
+
+</div>
+<script>
+const QCM = {
+  q1: [
+    ["a", "A small virtual machine with its own kernel"],
+    ["b", "A process isolated by namespaces and limited by cgroups"],
+    ["c", "A lightweight guest operating system"],
+  ],
+  q2: [
+    ["a", "The container is running and serving traffic"],
+    ["b", "The image has been pulled onto a node"],
+    ["c", "The object is stored in etcd; the cluster will converge later"],
+  ],
+  q3: [
+    ["a", "Is an OpenShift object and means nothing to plain Kubernetes"],
+    ["b", "Is a standard Kubernetes object, same as Ingress"],
+    ["c", "Replaces the Service; you do not need both"],
+  ],
+  q4: [
+    ["a", "It stays deleted until you oc apply again"],
+    ["b", "The ReplicaSet creates a new pod within seconds"],
+    ["c", "The scheduler restarts the same pod name on another node"],
+  ],
+  q5: [
+    ["a", "Whether the image tag is latest"],
+    ["b", "Whether the project has a quota"],
+    ["c", "Whether selector.matchLabels and template labels agree"],
+  ],
+  q6: [
+    ["a", "port is what clients dial; targetPort is the port inside the pod"],
+    ["b", "They must always be different numbers"],
+    ["c", "targetPort is the ClusterIP; port is the node port"],
+  ],
+  q7: [
+    ["a", "Is required so failed tasks restart forever"],
+    ["b", "Is rejected; a Job must use OnFailure or Never"],
+    ["c", "Is ignored; Jobs always complete"],
+  ],
+  q8: [
+    ["a", "kubelet, CRI-O and the HAProxy router"],
+    ["b", "kubelet and CRI-O only"],
+    ["c", "API server, etcd, scheduler and controllers"],
+  ],
+  q9: [
+    ["a", "Deployment"],
+    ["b", "ReplicaSet"],
+    ["c", "Pod"],
+  ],
+  q10: [
+    ["a", "Docker Engine"],
+    ["b", "CRI-O"],
+    ["c", "containerd on every edition"],
+  ],
+  q11: [
+    ["a", "Laptop DNS — the hostname does not resolve"],
+    ["b", "The application logs inside the pod"],
+    ["c", "The Route, then the Service, then endpoints"],
+  ],
+  q12: [
+    ["a", "Pods inside the cluster only, not your laptop"],
+    ["b", "Any browser, because ClusterIP is public"],
+    ["c", "Only the node that runs the pod"],
+  ],
+  q13: [
+    ["a", "Pod IPs are RFC1918 and browsers cannot use them"],
+    ["b", "The address changes when the pod is recreated"],
+    ["c", "OVN-Kubernetes blocks traffic to pod IPs"],
+  ],
+  q14: [
+    ["a", "A CoreDNS outage"],
+    ["b", "The Route TLS certificate is wrong"],
+    ["c", "The selector matches no ready pod"],
+  ],
+};
+
+const LIFE = [
+  ["life-1", "Client sends HTTPS to the API server on :6443", "1"],
+  ["life-2", "API server authenticates, authorises, admits", "2"],
+  ["life-3", "Object is written to etcd — command returns created", "3"],
+  ["life-4", "Scheduler binds the pod to a node", "4"],
+  ["life-5", "kubelet + CRI-O pull the image and start containers", "5"],
+  ["life-6", "kubelet reports status; oc get pods reads it", "6"],
+];
+
+const ROLES = [
+  ["role-dep", "Deployment", "You write this. Holds the pod template, replica count and update strategy."],
+  ["role-rs", "ReplicaSet", "Keeps exactly n matching pods. One per template hash. Never edit it."],
+  ["role-pod", "Pod", "What the scheduler places: one or more containers, one IP, one node."],
+  ["role-svc", "Service", "Stable ClusterIP and DNS name in front of changing pod IPs."],
+  ["role-rt", "Route", "Publishes HTTP(S) on a hostname through the HAProxy router."],
+  ["role-job", "Job", "Runs to completion and retries on failure. Not a long-lived server."],
+];
+
+const YAML = [
+  ["y-api", "apps/v1", "api"],
+  ["y-kind", "Deployment", "kind"],
+  ["y-name", "fids-api", "name"],
+  ["y-rep", "3", "replicas"],
+  ["y-sel", "app.kubernetes.io/name: fids-api", "selector"],
+  ["y-lab", "app.kubernetes.io/name: fids-api", "labels"],
+  ["y-img", "ghcr.io/ocp-training/fids-api:latest", "image"],
+];
+
+const PATH = [
+  ["p-1", "Browser on your laptop", "1"],
+  ["p-2", "Wildcard DNS for *.apps.<cluster>", "2"],
+  ["p-3", "HAProxy router (openshift-ingress)", "3"],
+  ["p-4", "Route object (Host header)", "4"],
+  ["p-5", "ClusterIP Service", "5"],
+  ["p-6", "Endpoints (ready pod IPs)", "6"],
+  ["p-7", "Pod on the OVN pod network", "7"],
+];
+
+let held = null;
+
+function el(html) {
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+}
+
+function renderQcm() {
+  document.querySelectorAll(".q[data-q]").forEach((box) => {
+    const id = box.dataset.q;
+    const host = box.querySelector(".choices");
+    host.innerHTML = "";
+    QCM[id].forEach(([key, text]) => {
+      const b = el(`<button type="button" class="choice" data-key="${key}"><span class="mark">${key.toUpperCase()}</span><span>${text}</span></button>`);
+      b.addEventListener("click", () => {
+        host.querySelectorAll(".choice").forEach((c) => c.classList.remove("on"));
+        b.classList.add("on");
+        box.dataset.picked = key;
+        updateProgress();
+      });
+      host.appendChild(b);
+    });
+  });
+}
+
+function chip(id, text) {
+  const c = el(`<span class="chip" draggable="true" data-id="${id}">${text}</span>`);
+  c.addEventListener("dragstart", (e) => {
+    held = c;
+    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.effectAllowed = "move";
+  });
+  c.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelectorAll(".chip.held").forEach((x) => x.classList.remove("held"));
+    if (held === c) { held = null; return; }
+    held = c;
+    c.classList.add("held");
+  });
+  return c;
+}
+
+function bindDrop(zone) {
+  zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("over");
+    const id = e.dataTransfer.getData("text/plain");
+    const c = document.querySelector(`.chip[data-id="${id}"]`);
+    if (c) place(c, zone);
+  });
+  zone.addEventListener("click", () => {
+    if (held) place(held, zone);
+  });
+}
+
+function place(c, zone) {
+  const single = zone.dataset.multi !== "1";
+  if (single) {
+    zone.querySelectorAll(".chip").forEach((old) => {
+      const home = document.getElementById(old.dataset.home);
+      if (home) home.appendChild(old);
+    });
+  }
+  zone.appendChild(c);
+  c.classList.remove("held");
+  held = null;
+  updateProgress();
+}
+
+function fillOrder(poolId, slotsId, items, labelPrefix) {
+  const pool = document.getElementById(poolId);
+  const slots = document.getElementById(slotsId);
+  pool.innerHTML = "";
+  slots.innerHTML = "";
+  const shuffled = items.slice().sort(() => Math.random() - 0.5);
+  shuffled.forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = poolId;
+    pool.appendChild(c);
+  });
+  items.forEach((_, i) => {
+    const z = el(`<div class="drop" data-expect="${items[i][0]}"><span class="lab">${labelPrefix} ${i + 1}</span></div>`);
+    bindDrop(z);
+    slots.appendChild(z);
+  });
+}
+
+function fillMatch(poolId, slotsId, items) {
+  const pool = document.getElementById(poolId);
+  const slots = document.getElementById(slotsId);
+  pool.innerHTML = "";
+  slots.innerHTML = "";
+  const shuffled = items.slice().sort(() => Math.random() - 0.5);
+  shuffled.forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = poolId;
+    pool.appendChild(c);
+  });
+  items.forEach(([id, , desc]) => {
+    const z = el(`<div class="drop" data-expect="${id}"><span class="lab">${desc}</span></div>`);
+    bindDrop(z);
+    slots.appendChild(z);
+  });
+}
+
+function fillYaml() {
+  const pool = document.getElementById("pool-yaml");
+  pool.innerHTML = "";
+  YAML.slice().sort(() => Math.random() - 0.5).forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = "pool-yaml";
+    pool.appendChild(c);
+  });
+  const slot = (expect) =>
+    `<span class="drop" data-expect="${expect}"></span>`;
+  document.getElementById("yaml-skel").innerHTML =
+    `apiVersion: ${slot("y-api")}<br>` +
+    `kind: ${slot("y-kind")}<br>` +
+    `metadata:<br>` +
+    `&nbsp;&nbsp;name: ${slot("y-name")}<br>` +
+    `spec:<br>` +
+    `&nbsp;&nbsp;replicas: ${slot("y-rep")}<br>` +
+    `&nbsp;&nbsp;selector:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${slot("y-sel")}<br>` +
+    `&nbsp;&nbsp;template:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;metadata:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${slot("y-lab")}<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;spec:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containers:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: api<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: ${slot("y-img")}`;
+  document.querySelectorAll("#yaml-skel .drop").forEach(bindDrop);
+}
+
+function qcmAnswered() {
+  return [...document.querySelectorAll(".q[data-q]")].filter((q) => q.dataset.picked).length;
+}
+
+function dndPlaced() {
+  return document.querySelectorAll(".drop .chip").length;
+}
+
+function updateProgress() {
+  document.getElementById("progress").textContent = qcmAnswered() + " QCM · " + dndPlaced() + " chips placed";
+}
+
+function scoreQcm() {
+  let n = 0, d = 0;
+  document.querySelectorAll(".q[data-q]").forEach((box) => {
+    d += 1;
+    const ok = box.dataset.picked === box.dataset.answer;
+    box.classList.toggle("ok", ok);
+    box.classList.toggle("bad", !ok);
+    if (ok) n += 1;
+  });
+  return [n, d];
+}
+
+function scoreDnd() {
+  let n = 0, d = 0;
+  document.querySelectorAll(".drop[data-expect]").forEach((z) => {
+    d += 1;
+    const c = z.querySelector(".chip");
+    const ok = c && c.dataset.id === z.dataset.expect;
+    z.style.borderColor = ok ? "var(--ok)" : "var(--rh-red)";
+    z.style.background = ok ? "var(--ok-bg)" : (c ? "var(--bad-bg)" : "#fafafa");
+    if (ok) n += 1;
+  });
+  return [n, d];
+}
+
+function submit() {
+  const [a, b] = scoreQcm();
+  const [c, d] = scoreDnd();
+  const n = a + c, tot = b + d;
+  document.getElementById("score-n").textContent = n;
+  document.getElementById("score-d").textContent = tot;
+  const pct = tot ? Math.round((n / tot) * 100) : 0;
+  let msg = "Review the red items and the explanations under each QCM.";
+  if (pct === 100) msg = "All correct. You can explain the chain Deployment → ReplicaSet → Pod, and Route → Service → endpoints.";
+  else if (pct >= 75) msg = "Solid. Re-read the misses — especially empty endpoints and created vs Running.";
+  else if (pct >= 50) msg = "The ideas are landing. Revisit chapter 6 (architecture) and chapter 9 (Service / Route).";
+  else msg = "Start again from Day 1 chapter 6, then the Deployment YAML and the networking figures in chapter 9.";
+  document.getElementById("score-msg").textContent = pct + "% — " + msg;
+  document.getElementById("result").classList.add("show");
+  document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function reset() {
+  document.querySelectorAll(".q").forEach((q) => {
+    delete q.dataset.picked;
+    q.classList.remove("ok", "bad");
+    q.querySelectorAll(".choice").forEach((c) => c.classList.remove("on"));
+  });
+  document.getElementById("result").classList.remove("show");
+  held = null;
+  fillOrder("pool-life", "slots-life", LIFE, "Step");
+  fillMatch("pool-roles", "slots-roles", ROLES);
+  fillYaml();
+  fillOrder("pool-path", "slots-path", PATH, "Hop");
+  updateProgress();
+}
+
+renderQcm();
+reset();
+document.getElementById("btn-score").addEventListener("click", submit);
+document.getElementById("btn-score-2").addEventListener("click", submit);
+document.getElementById("btn-reset").addEventListener("click", reset);
+document.getElementById("btn-reset-2").addEventListener("click", reset);
+</script>
+</body>
+</html>
