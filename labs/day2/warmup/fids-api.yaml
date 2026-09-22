@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fids-api
+  labels:
+    app.kubernetes.io/name: fids-api
+    app.kubernetes.io/part-of: fids
+spec:
+  # TODO: the flight API must run 3 copies
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fids-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fids-api
+        app.kubernetes.io/part-of: fids
+    spec:
+      containers:
+        - name: api
+          # TODO: image — use ghcr.io/ocp-training/fids-api (add a tag)
+          ports:
+            - name: http
+              # TODO: containerPort — the process listens here
