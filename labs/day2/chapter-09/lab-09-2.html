@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 6.2 — Assess the cluster — DO108</title>
+<title>Lab 9.2 — The nightly baggage reconciliation — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -460,65 +460,91 @@ h1.chap{ break-before:auto; padding-top:0; }
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Lab 6.2 — Assess the cluster</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-09-2-correction.html">Correction</a>
+  <span class="crumb">Lab 9.2 — The nightly baggage reconciliation</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab6-2">6.8 Lab 6.2 - Assess the cluster</h2>
+<h2 id="lab9-2">9.4 Lab 9.2 &mdash; The nightly baggage reconciliation</h2>
 
 <div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> <span class="tag demo">Partly demo</span> Lab 6.2 - Is this cluster healthy?</div>
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 9.2 &mdash; Jobs and CronJobs</div>
   <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Answer the question with evidence, from the console.
-    <strong>Time.</strong> 20 minutes. <strong>Note.</strong> Steps 1 to 3 need cluster-wide read rights; your
-    trainer runs them on screen. Steps 4 to 6 you run yourself.</div>
+    <div class="tp-meta"><strong>Goal.</strong> Run a task that is meant to finish, then put it on a schedule.
+    <strong>Time.</strong> 20 minutes.</div>
 
     <ol class="steps">
-      <li><p><span class="tag demo">Demo</span> <strong>Cluster operators.</strong> <em>Administrator → Home →
-        Overview</em>, then scroll to <em>Status</em>. Every operator should be available. Click through to
-        <em>Cluster operators</em> and look at one in detail: its conditions, and the namespaces it owns.</p></li>
+      <li><p><strong>Run it once,</strong> imperatively, to see the shape:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create job bagtrack-once \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
+  -- /bin/sh -c "echo Reconciling baggage; sleep 5; echo Done"</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get job,pod</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs job/bagtrack-once</span></div>
+        <p>The Job is <code>Complete</code> and its pod is <code>Completed</code>. Neither is restarted &mdash;
+        that is the difference from a Deployment.</p></li>
 
-      <li><p><span class="tag demo">Demo</span> <strong>Nodes.</strong> <em>Compute → Nodes</em>. Note how many
-        there are and their roles. Open one: the <em>Terminal</em> tab opens a shell on the node itself, through
-        a debug pod, where <code>chroot /host</code> then <code>systemctl status kubelet</code> and
-        <code>systemctl status crio</code> show the two services every node must run.</p>
-        <div class="adm attention">
-          <div class="ico">!</div>
-          <div class="bd"><span class="admlab">Caution</span>
-          <p>A node terminal is a root shell on a cluster machine. It is for reading, never for fixing. Anything
-          you change there is undone by the Machine Config Operator, or breaks the node.</p></div>
-        </div></li>
+      <li><p><strong>Make one fail on purpose</strong> and watch the retries:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create job bagtrack-broken \
+  --image=registry.access.redhat.com/ubi9/ubi-minimal:latest -- /bin/false</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l job-name=bagtrack-broken -w</span></div>
+        <p>Pods appear, fail, and are recreated with a growing delay. After the backoff limit the Job stops and
+        stays failed. Read the reason:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe job bagtrack-broken | tail -12</span></div></li>
 
-      <li><p><span class="tag demo">Demo</span> <strong>Alerts.</strong> <em>Observe → Alerting</em>, then the
-        <em>Alerting rules</em> tab. Search for <code>storage</code>, open one rule, and read its
-        <em>Description</em> and its <em>Expression</em> - the actual query that decides when it fires.</p></li>
+      <li><p><strong>Put it on a schedule.</strong> Two minutes, so that you see it run during the lab:</p>
+        <div class="file">
+          <div class="name">~/do108/day2/bagtrack-cronjob.yaml</div>
+          <pre>apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bagtrack-nightly
+  labels:
+    app.kubernetes.io/name: bagtrack
+    app.kubernetes.io/part-of: fids
+spec:
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: reconcile
+              image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+              command: ["/bin/sh", "-c", "echo Reconciled baggage; sleep 5; echo Done"]</pre>
+        </div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day2/bagtrack-cronjob.yaml</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get cronjob</span>
+<span class="o">NAME               SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE</span>
+<span class="o">bagtrack-nightly   */2 * * * *   False     0        &lt;none&gt;          10s</span></div>
+        <p>Wait for the next even minute, then:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get jobs</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs job/$(oc get jobs -o jsonpath='{.items[-1:].metadata.name}')</span></div></li>
 
-      <li><p><strong>Your own events.</strong> Back in your project, go to <em>Home → Events</em> and read the
-        history of Lab 6.1: <code>Scheduled</code>, <code>Pulling</code>, <code>Pulled</code>,
-        <code>Created</code>, <code>Started</code>. That is the six-step trip of §6.3, recorded.</p></li>
+      <li><p><strong>Trigger a run without waiting</strong> &mdash; the command every operator eventually
+        needs:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create job bagtrack-manual --from=cronjob/bagtrack-nightly</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs job/bagtrack-manual</span></div></li>
 
-      <li><p><strong>Your own metrics.</strong> <em>Workloads → Pods</em>, open your <code>fids-web</code> pod,
-        and select the <em>Metrics</em> tab. CPU and memory over time, for one pod. Note how little it uses -
-        chapter 11 will ask you to put a number on that.</p></li>
+      <li><p><strong>Suspend the schedule</strong> &mdash; what you do during a maintenance window:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc patch cronjob bagtrack-nightly -p '{"spec":{"suspend":true}}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get cronjob</span></div></li>
 
-      <li><p><strong>Break something on purpose,</strong> and watch the cluster say so. From the CLI:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run broken --image=registry.access.redhat.com/ubi9/does-not-exist:latest</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods</span>
-<span class="o">NAME                        READY   STATUS             RESTARTS   AGE</span>
-<span class="o">broken                      0/1     </span><span class="ko">ImagePullBackOff</span><span class="o">   0          40s</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod broken | tail -12</span></div>
-        <p>Read the events at the bottom of <code>describe</code>. The cluster tells you, in plain words, that
-        it could not pull the image. Then remove it:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod broken</span></div></li>
+      <li><p><strong>Clean up the batch objects,</strong> keeping the deployments:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete job --all &amp;&amp; oc delete cronjob --all</span></div></li>
     </ol>
 
     <div class="adm verif">
       <div class="ico">?</div>
       <div class="bd"><span class="admlab">Check</span>
-      <p>You can now answer &ldquo;is the cluster healthy?&rdquo; with a sentence of the form: <em>&ldquo;yes -
-      all cluster operators are available, all nodes are Ready, and nothing critical is firing&rdquo;</em>. An
-      answer without those three pieces of evidence is a guess.</p></div>
+      <p>You can explain the difference between <code>Completed</code> and <code>Running</code>, why a Job's
+      <code>restartPolicy</code> cannot be <code>Always</code>, and what <code>concurrencyPolicy: Forbid</code>
+      protects you from at two in the morning.</p></div>
     </div>
   </div>
 </div>

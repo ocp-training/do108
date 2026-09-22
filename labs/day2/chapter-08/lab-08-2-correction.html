@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 7.3 — Extract precise answers — DO108</title>
+<title>Correction — Lab 8.2 — Inspect before you deploy — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,74 +455,59 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Lab 7.3 — Extract precise answers</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-08-2.html">Lab</a>
+  <span class="crumb">Correction · Lab 8.2 — Inspect before you deploy</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab7-3">7.9 Lab 7.3 - Extract precise answers</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 7.3 - One value at a time</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Produce a single, exact value for each question - the kind of
-    thing you would put in a script or a monitoring check. <strong>Time.</strong> 20 minutes.</div>
-
-    <ol class="steps">
-      <li><p><strong>Deploy a second component</strong> so that you have more than one object to filter:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-fids</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment fids-api \
-  --image=registry.access.redhat.com/ubi9/python-311:latest \
-  -- python3 -m http.server 8080</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -w</span></div></li>
-
-      <li><p><strong>The IP address of every pod</strong>, one per line:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.podIP}{"\n"}{end}'</span></div></li>
-
-      <li><p><strong>The image each deployment runs</strong>, as a table:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy -o custom-columns=\
-NAME:.metadata.name,\
-REPLICAS:.spec.replicas,\
-IMAGE:.spec.template.spec.containers[0].image</span></div></li>
-
-      <li><p><strong>The one value you will reuse all week</strong> - your route's hostname, ready to be pasted
-        into <code>curl</code>:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get route fids-web -o jsonpath='{.spec.host}{"\n"}'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">curl -s -o /dev/null -w '%{http_code}\n' http://$(oc get route fids-web -o jsonpath='{.spec.host}')</span>
-<span class="o">200</span></div></li>
-
-      <li><p><strong>The conditions of your deployment</strong>, as a readable table:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -o jsonpath=\
-'{range .status.conditions[*]}{.type}{"\t"}{.status}{"\t"}{.reason}{"\n"}{end}'</span>
-<span class="o">Available    True    MinimumReplicasAvailable</span>
-<span class="o">Progressing  True    NewReplicaSetAvailable</span></div></li>
-
-      <li><p><strong>Everything about your project, saved to a file</strong> - the backup habit:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,svc,route -o yaml &gt; ~/do108/day1/fids-snapshot.yaml</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">wc -l ~/do108/day1/fids-snapshot.yaml</span></div>
-        <div class="adm important">
-          <div class="ico">!</div>
-          <div class="bd"><span class="admlab">Important</span>
-          <p>That file is a <strong>snapshot</strong>, not a manifest: it contains <code>status</code>,
-          <code>uid</code>, <code>resourceVersion</code> and cluster-generated defaults. Applying it to another
-          cluster will fail or produce something different. Chapter 9 shows what to strip.</p></div>
-        </div></li>
-    </ol>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>Every command produced exactly one value or one clean table - no scrolling, no manual reading. If you
-      found yourself piping to <code>grep</code> and <code>awk</code>, redo that step with JSONPath: text
-      processing on API output is fragile, and there is a proper way.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Lab 8.2 — Inspect before you deploy</span></h1>
+<p><a href="lab-08-2.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>For any image you can state digest, command/user, ports, and required environment — before creating a pod.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>The console cannot inspect a remote image the way <code>oc image info</code> does. After a pod exists: Pod → Details (image, command) and YAML (env).</p></li><li><p>Create <code>fids-db</code> without env → CrashLoopBackOff. Logs tab (and Previous) name POSTGRESQL_USER / PASSWORD / DATABASE.</p></li><li><p>Edit the pod or delete and recreate with those three variables. Terminal → <code>psql -U fids -d flights -c '\l'</code>.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc image info registry.access.redhat.com/ubi9/httpd-24:latest --filter-by-os linux/amd64</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc image info registry.access.redhat.com/ubi9/python-311:latest --filter-by-os linux/amd64</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc image info quay.io/sclorg/postgresql-15-c9s:latest --filter-by-os linux/amd64</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc image info registry.access.redhat.com/ubi9/httpd-24:latest --filter-by-os linux/amd64 -o json | grep -m1 digest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest --env POSTGRESQL_USER=fids --env POSTGRESQL_PASSWORD=fids-training --env POSTGRESQL_DATABASE=flights</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-db -- psql -U fids -d flights -c '\l'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-db -- id</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">DBIP=$(oc get pod fids-db -o jsonpath='{.status.podIP}')</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run dbclient --rm -it --restart=Never --image=quay.io/sclorg/postgresql-15-c9s:latest --env PGPASSWORD=fids-training -- psql -h $DBIP -U fids -d flights -c 'SELECT version();'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod fids-db</span></div>
   </div>
 </div>
+
+<div class="adm note"><div class="ico">i</div><div class="bd"><span class="admlab">Typical image facts</span>
+<p>httpd-24: user 1001, port 8080. python-311: user 1001, port 8080. postgresql-15-c9s: exposes 5432, requires the three POSTGRESQL_* variables.
+Recreating the DB pod changes <code>DBIP</code> — that is why Services exist.</p></div></div>
+
 
 </div>
 </body>

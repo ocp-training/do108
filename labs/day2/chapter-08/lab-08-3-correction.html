@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 7.2 — Explore the API without documentation — DO108</title>
+<title>Correction — Lab 8.3 — Diagnose three broken pods — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,67 +455,54 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Lab 7.2 — Explore the API without documentation</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-08-3.html">Lab</a>
+  <span class="crumb">Correction · Lab 8.3 — Diagnose three broken pods</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab7-2">7.7 Lab 7.2 - Explore the API without documentation</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 7.2 - The cluster documents itself</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Answer real questions using only the cluster.
-    <strong>Time.</strong> 15 minutes. <strong>Rule.</strong> No browser, no search engine.</div>
-
-    <ol class="steps">
-      <li><p><strong>How many resource types does this cluster know,</strong> and how do they split?</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources -o name | wc -l</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources --namespaced=true -o name | wc -l</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources --namespaced=false -o name | wc -l</span></div></li>
-
-      <li><p><strong>Which types does OpenShift add?</strong> Compare a Kubernetes group with an OpenShift one:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources --api-group apps</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources --api-group route.openshift.io</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc api-resources --api-group project.openshift.io</span></div></li>
-
-      <li><p><strong>What exactly is a Route?</strong> Read the description, then find the field that carries
-        the hostname:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc explain route</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc explain route.spec</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc explain route.spec.to</span></div></li>
-
-      <li><p><strong>Find a field you will need in chapter 11,</strong> without being told where it lives:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc explain pod.spec.containers.livenessProbe</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc explain pod.spec.containers.resources.limits</span></div></li>
-
-      <li><p><strong>Read the real object,</strong> and compare it with what you wrote:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o yaml | head -40</span></div>
-        <p>Notice how much the cluster added: annotations, a <code>uid</code>, a
-        <code>resourceVersion</code>, a full <code>status</code> block, and defaults for every field you left
-        out. This is why an exported object is not a manifest - chapter 9 comes back to it.</p></li>
-
-      <li><p><strong>Read the conditions</strong> of your deployment:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o yaml | sed -n '/^status:/,$p'</span></div>
-        <p>Find <code>Available</code> and <code>Progressing</code>, and read their <code>reason</code> and
-        <code>message</code>.</p></li>
-    </ol>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>Close the book and answer three questions from the cluster alone: what is the short name of
-      <code>persistentvolumeclaims</code>? Is a <code>Node</code> namespaced? What is the field that sets the
-      number of replicas of a Deployment? If you needed fewer than four commands for the three, you have the
-      reflex.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Lab 8.3 — Diagnose three broken pods</span></h1>
+<p><a href="lab-08-3.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>STATUS → next command: Pending/ImagePullBackOff → describe; CrashLoopBackOff → logs --previous; Running → logs / rsh.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>Workloads → Pods: <code>ImagePullBackOff</code> on the bad tag. Events tab names the missing tag. Edit YAML image → <code>…/httpd-24:latest</code> (one of the few mutable pod fields).</p></li><li><p>Postgres pod: Logs → Previous. Recreate with the three env vars (Environment tab or CLI).</p></li><li><p>Copy a file into a running pod is CLI-only (<code>oc cp</code>). After delete+recreate the page is gone — nothing persisted it.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-web --image=registry.access.redhat.com/ubi9/httpd-24:2.4-9999 --port=8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod fids-web | tail -8</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc patch pod/fids-web --type=json -p='[{"op":"replace","path":"/spec/containers/0/image","value":"registry.access.redhat.com/ubi9/httpd-24:latest"}]'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-db --previous</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod fids-db</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest --env POSTGRESQL_USER=fids --env POSTGRESQL_PASSWORD=fids-training --env POSTGRESQL_DATABASE=flights</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc cp ~/do108/day2/index.html fids-web:/var/www/html/index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc port-forward pod/fids-web 8080:8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc debug pod/fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod --all</span></div>
   </div>
 </div>
+
 
 </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 0 — Prove your workstation works — DO108</title>
+<title>Correction — Workshop 8.4 — The 06:40 incident — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,105 +455,56 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="index.html">Index</a>
-  <span class="crumb">Lab 0 — Prove your workstation works</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-08-4.html">Lab</a>
+  <span class="crumb">Correction · Workshop 8.4 — The 06:40 incident</span>
 </nav>
 <div class="page-wrap">
-<h2 id="s3-5">3.5 Lab 0 - Prove your workstation works</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 0 - Workstation validation</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Prove, end to end, that your workstation can log in, create a
-    project, pull an image and run a pod. <strong>Time.</strong> 15 minutes. <strong>When.</strong> Before day 1
-    if possible; otherwise in the first slot of day 1.</div>
-
-    <ol class="steps">
-      <li><p><strong>Check the client.</strong> The version should start with <code>4.18</code>.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc version --client</span></div></li>
-
-      <li><p><strong>Log in</strong>, replacing <code>wnt8h</code> with the cluster identifier and
-        <code>user1</code> with your own account.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">export U=user1</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc login -u $U https://api.cluster-wnt8h.dynamic.redhatworkshops.io:6443</span></div>
-        <p>If this hangs and then times out, port 6443 is filtered - go to the troubleshooting table below.</p></li>
-
-      <li><p><strong>Confirm who you are and where you are.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc whoami</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc whoami --show-console</span></div>
-        <p>Open the console URL in your browser and log in with the same credentials. You should reach a page
-        titled <em>Overview</em>. Leave the tab open; you will use it all week.</p></li>
-
-      <li><p><strong>Create your validation project.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-check</span>
-<span class="o">Now using project "user1-check" on server "https://api.cluster-wnt8h...:6443".</span></div></li>
-
-      <li><p><strong>Run a pod.</strong> This is the real test: it exercises authentication, the scheduler, and
-        the image pull path from a public registry.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run check --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
-  --restart=Never --command -- sleep 300</span>
-<span class="o">pod/check created</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -w</span>
-<span class="o">NAME    READY   STATUS              RESTARTS   AGE</span>
-<span class="o">check   0/1     ContainerCreating   0          4s</span>
-<span class="o">check   1/1     </span><span class="ok">Running</span><span class="o">             0          21s</span></div>
-        <p>Press <strong>Ctrl-C</strong> to stop watching once the pod is <code>Running</code>.</p></li>
-
-      <li><p><strong>Talk to the container.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec check -- cat /etc/redhat-release</span>
-<span class="o">Red Hat Enterprise Linux release 9.x (Plow)</span></div></li>
-
-      <li><p><strong>Clean up.</strong> Always. Deleting the project deletes everything inside it.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete project ${U}-check</span>
-<span class="o">project.project.openshift.io "user1-check" deleted</span></div></li>
-    </ol>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>You are ready for day 1 if, and only if, all five of these were true:</p>
-      <ul>
-        <li><code>oc version --client</code> printed a 4.18 client;</li>
-        <li><code>oc login</code> returned <em>Login successful</em>;</li>
-        <li>the web console opened in your browser with the same account;</li>
-        <li>the <code>check</code> pod reached <code>Running</code> - this proves the image pull works;</li>
-        <li><code>oc exec</code> returned the release string.</li>
-      </ul>
-      <p>If any one of them failed, tell the trainer <strong>before</strong> day 1 rather than on the morning.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Workshop 8.4 — The 06:40 incident</span></h1>
+<p><a href="lab-08-4.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>Notes contain three different commands; the words describe, --previous and port-forward each appear once.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>Create project <code>userN-incident</code>. The three pods are easier to create from the CLI. Then use Pods list: STATUS column is the first clue. Events / Logs / Previous as below.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-incident</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run board-a --image=registry.access.redhat.com/ubi9/httpd-24:99 --port=8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run board-b --image=quay.io/sclorg/postgresql-15-c9s:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run board-c --image=registry.access.redhat.com/ubi9/ubi-minimal:latest -- /bin/false</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod board-a | tail -15</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs board-b --previous</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs board-c --previous</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc patch pod/board-a --type=json -p='[{"op":"replace","path":"/spec/containers/0/image","value":"registry.access.redhat.com/ubi9/httpd-24:latest"}]'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod board-b</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run board-b --image=quay.io/sclorg/postgresql-15-c9s:latest --env POSTGRESQL_USER=fids --env POSTGRESQL_PASSWORD=fids-training --env POSTGRESQL_DATABASE=flights</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc cp ~/do108/day2/index.html board-a:/var/www/html/index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc port-forward pod/board-a 8080:8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete project ${U}-incident</span></div>
   </div>
 </div>
-
-<h3>If something failed</h3>
-
-<table>
-  <thead><tr><th style="width:52mm">Symptom</th><th style="width:44mm">Most likely cause</th><th>What to do</th></tr></thead>
-  <tbody>
-    <tr><td><code>oc: command not found</code></td><td>The install directory is not in <code>PATH</code></td><td>Open a new terminal. If it persists, check the line you added to <code>~/.bashrc</code> / <code>~/.zshrc</code>, or the user <code>PATH</code> on Windows.</td></tr>
-    <tr><td><code>oc login</code> hangs, then <code>connection timed out</code></td><td>Port 6443 filtered</td><td>Try from a mobile hotspot. If that works, the corporate network is the cause - plan to use the hotspot for the course and tell the trainer.</td></tr>
-    <tr><td><code>x509: certificate signed by unknown authority</code></td><td>Ephemeral cluster certificate</td><td>Answer <code>y</code> to the prompt, or add <code>--insecure-skip-tls-verify=true</code> - for this training cluster only.</td></tr>
-    <tr><td><code>Unauthorized</code></td><td>Wrong password, or expired token</td><td>Run <code>oc login</code> again and retype the password. If it still fails, ask the trainer to confirm your account.</td></tr>
-    <tr><td>Pod stays in <code>ContainerCreating</code> or <code>ImagePullBackOff</code></td><td>The cluster cannot reach the registry</td><td>Run <code>oc describe pod check</code> and read the events at the bottom. Report the message to the trainer - this one is a cluster-side problem, not yours.</td></tr>
-    <tr><td>Pod stays in <code>Pending</code></td><td>No room on the cluster, or a quota</td><td><code>oc describe pod check</code>, read the events. Usually resolves itself; tell the trainer if not.</td></tr>
-    <tr><td><code>Forbidden</code> on <code>oc new-project</code></td><td>Your account may not be allowed to create projects</td><td>Not something you can fix. Tell the trainer, who will create the project for you.</td></tr>
-  </tbody>
-</table>
-
-<div class="adm astuce">
-  <div class="ico">*</div>
-  <div class="bd"><span class="admlab">Tip</span>
-  <p>Create your working directory now, and keep every manifest you write in it:</p>
-  <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">mkdir -p ~/do108/{day1,day2,day3,day4} &amp;&amp; cd ~/do108 &amp;&amp; git init</span></div>
-  <p>Four days from now this directory is the deliverable you take back to work.</p></div>
-</div>
-
-</section>
+<table class='run'><thead><tr><th>Question</th><th>Console</th><th>CLI</th></tr></thead><tbody><tr><td>board-a</td><td>Failed at pull (step 3). ImagePullBackOff. Tag :99 does not exist.</td><td><code>oc describe pod board-a</code> — Failed to pull image. Patch the image in place (image is mutable).</td></tr><tr><td>board-b</td><td>Failed at start (step 5). CrashLoopBackOff. Missing POSTGRESQL_*.</td><td><code>oc logs board-b --previous</code>. Must delete/recreate: env on a live pod is immutable.</td></tr><tr><td>board-c</td><td>Failed at start. Command is /bin/false — always exits 1.</td><td>Change the command/args (or the image). A real app needs a process that stays running.</td></tr><tr><td>Serve the page</td><td>No Service/Route.</td><td><code>oc cp</code> + <code>oc port-forward</code> → curl 127.0.0.1:8080 → 200 and the departures HTML.</td></tr></tbody></table>
 
 </div>
 </body>

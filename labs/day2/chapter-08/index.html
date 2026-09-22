@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 7.1 — First contact from the command line — DO108</title>
+<title>Chapter 8 — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -460,106 +460,19 @@ h1.chap{ break-before:auto; padding-top:0; }
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Lab 7.1 — First contact from the command line</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  
+  <span class="crumb">Chapter 8</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab7-1">7.4 Lab 7.1 - First contact from the command line</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 7.1 - The essential commands, on the flight board</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Reproduce from the CLI everything you did from the console in
-    Lab 6.1, and read what the cluster tells you. <strong>Time.</strong> 20 minutes.
-    <strong>Prerequisites.</strong> The <code>${U}-fids</code> project from Lab 6.1.</div>
-
-    <ol class="steps">
-      <li><p><strong>Confirm your context.</strong> Three questions, three commands, every time you sit down:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc whoami &amp;&amp; oc whoami --show-server &amp;&amp; oc project</span></div></li>
-
-      <li><p><strong>List what exists.</strong> Compare the two views:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get all</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -o wide</span>
-<span class="o">NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE</span>
-<span class="o">fids-web-6b9c7d5f4c-2xk9p   1/1     </span><span class="ok">Running</span><span class="o">   0          22m   10.128.2.41   worker-1</span></div>
-        <p>The <code>-o wide</code> view gives you two things the default hides: the pod's own IP address on the
-        cluster network, and the node it landed on.</p></li>
-
-      <li><p><strong>Describe the deployment,</strong> and read the last section of the output.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe deployment fids-web</span>
-<span class="o">Name:                   fids-web</span>
-<span class="o">Namespace:              user1-fids</span>
-<span class="o">Selector:               app=fids-web</span>
-<span class="o">Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable</span>
-<span class="o">StrategyType:           RollingUpdate</span>
-<span class="o">RollingUpdateStrategy:  25% max unavailable, 25% max surge</span>
-<span class="o">...</span>
-<span class="o">Events:</span>
-<span class="o">  Type    Reason             Age   From                   Message</span>
-<span class="o">  Normal  ScalingReplicaSet  22m   deployment-controller  Scaled up replica set fids-web-6b9c7d5f4c to 1</span></div>
-        <p>Note <code>Selector: app=fids-web</code>. That label is the entire link between the Deployment and its
-        pods - chapter 9 makes it explicit.</p></li>
-
-      <li><p><strong>Read the logs</strong> of the container.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc logs deployment/fids-web | head -5</span></div>
-        <p>You can name a pod directly, or name a controller and let <code>oc</code> pick one of its pods -
-        which is far more convenient, because pod names change on every rollout.</p></li>
-
-      <li><p><strong>Run a command inside the container.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-web -- id</span>
-<span class="o">uid=1000750000(1000750000) gid=0(root) groups=0(root),1000750000</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-web -- hostname</span></div>
-        <div class="adm note">
-          <div class="ico">i</div>
-          <div class="bd"><span class="admlab">Note</span>
-          <p>That user ID is not one the image asked for. OpenShift assigned it from the range allocated to your
-          project. Chapter 8 explains why, and what breaks when an image assumes it is root.</p></div>
-        </div></li>
-
-      <li><p><strong>Read the events, in order.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get events --sort-by .metadata.creationTimestamp</span></div>
-        <p>This is the timeline of Lab 6.1, and it is the single most useful command in this chapter.</p></li>
-
-      <li><p><strong>Create something declaratively.</strong> Write the file, then apply it:</p>
-        <div class="file">
-          <div class="name">~/do108/day1/awos-pod.yaml</div>
-          <pre>apiVersion: v1
-kind: Pod
-metadata:
-  name: awos-probe
-  labels:
-    app.kubernetes.io/name: awos
-    app.kubernetes.io/part-of: fids
-spec:
-  containers:
-    - name: probe
-      image: registry.access.redhat.com/ubi9/ubi-minimal:latest
-      command: ["sleep", "3600"]</pre>
-        </div>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day1/awos-pod.yaml</span>
-<span class="o">pod/awos-probe created</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day1/awos-pod.yaml</span>
-<span class="o">pod/awos-probe unchanged</span></div>
-        <p>Run it a third time. Nothing happens, and no error appears. That is what &ldquo;declarative&rdquo;
-        means in practice, and it is why <code>apply</code> is the verb to prefer.</p></li>
-
-      <li><p><strong>Select by label,</strong> rather than by name:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app.kubernetes.io/part-of=fids</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods --show-labels</span></div></li>
-
-      <li><p><strong>Clean up the probe pod</strong>, and keep the rest.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod awos-probe</span></div></li>
-    </ol>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>You are done when you can, without looking: list the pods with their node, read a container's logs
-      through its deployment, run a command inside it, and apply the same file twice without an error. If you
-      had to scroll back for any of those, do them again now - every later chapter assumes them.</p></div>
-    </div>
-  </div>
+<div class="index-wrap" style="box-shadow:none;padding:0">
+  <h1>Chapter 8</h1>
+  <p>Running applications as containers and pods · Day 2</p>
+  <ul>
+    <li><a href="lab-08-1.html"><span class="n">lab-08-1</span><span>Lab 8.1 — The flight board as a bare pod</span></a> · <a href="lab-08-1-correction.html">correction</a></li><li><a href="lab-08-2.html"><span class="n">lab-08-2</span><span>Lab 8.2 — Inspect before you deploy</span></a> · <a href="lab-08-2-correction.html">correction</a></li><li><a href="lab-08-3.html"><span class="n">lab-08-3</span><span>Lab 8.3 — Diagnose three broken pods</span></a> · <a href="lab-08-3-correction.html">correction</a></li><li><a href="lab-08-4.html"><span class="n">lab-08-4</span><span>Workshop 8.4 — The 06:40 incident</span></a> · <a href="lab-08-4-correction.html">correction</a></li>
+  </ul>
 </div>
 
 </div>

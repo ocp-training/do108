@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lab 6.1 — Deploy the flight board from the console — DO108</title>
+<title>Lab 8.3 — Diagnose three broken pods — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -460,95 +460,92 @@ h1.chap{ break-before:auto; padding-top:0; }
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Lab 6.1 — Deploy the flight board from the console</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-08-3-correction.html">Correction</a>
+  <span class="crumb">Lab 8.3 — Diagnose three broken pods</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab6-1">6.6 Lab 6.1 - Deploy the flight board from the console</h2>
+<h2 id="lab8-3">8.7 Lab 8.3 - Diagnose three broken pods</h2>
 
 <div class="tp">
-  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 6.1 - First contact, from the console</div>
+  <div class="tp-hd"><span class="tag lab">Guided lab</span> Lab 8.3 - Reading failures</div>
   <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Deploy the FIDS web front end from the web console, then find
-    every object that was created for it. <strong>Time.</strong> 15 minutes.
-    <strong>Prerequisites.</strong> Lab 0 completed; you are logged in.</div>
+    <div class="tp-meta"><strong>Goal.</strong> Meet the three failure modes you will see most often, and fix
+    each with the right tool. <strong>Time.</strong> 25 minutes.</div>
 
     <ol class="steps">
-      <li><p><strong>Open the console</strong> and log in with your <code>userN</code> account.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc whoami --show-console</span></div>
-        <p>If a guided tour offers itself, dismiss it with <em>Skip tour</em>.</p></li>
-
-      <li><p><strong>Switch to the Developer perspective</strong> using the switcher at the top of the sidebar,
-        then create a project. Go to <em>+Add</em>, and use <em>Create a new project</em>. Name it
-        <code>userN-fids</code>, using your own account number.</p>
-        <div class="adm attention">
-          <div class="ico">!</div>
-          <div class="bd"><span class="admlab">Caution</span>
-          <p>Use your own prefix. Project names are unique across the whole cluster, and the person who takes
-          <code>fids</code> takes it from everybody.</p></div>
-        </div></li>
-
-      <li><p><strong>Deploy the flight board.</strong> In <em>+Add</em>, choose <em>Container images</em>. Enter
-        the image name below, leave the rest at its defaults, and click <em>Create</em>.</p>
-        <div class="file">
-          <div class="name">Image to deploy</div>
-          <pre>registry.access.redhat.com/ubi9/httpd-24:latest</pre>
-        </div>
-        <p>Set the application name to <code>fids</code> and the component name to <code>fids-web</code> if the
-        form offers those fields.</p></li>
-
-      <li><p><strong>Watch it start.</strong> The <em>Topology</em> page opens and shows one circle. It turns
-        from light to dark as the pod moves from <code>ContainerCreating</code> to <code>Running</code>. Click
-        it, and read the panel on the right: <em>Resources</em> lists the pod, the service and the route that
-        were created for you.</p></li>
-
-      <li><p><strong>Open the application.</strong> Click the small arrow at the top right of the circle, or the
-        route URL in the side panel. You should get the default page of the Apache HTTP Server container.</p>
+      <li><p><strong>Failure 1 - a tag that does not exist.</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-web --image=registry.access.redhat.com/ubi9/httpd-24:2.4-9999 --port=8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods</span>
+<span class="o">NAME       READY   STATUS             RESTARTS   AGE</span>
+<span class="o">fids-web   0/1     </span><span class="ko">ImagePullBackOff</span><span class="o">   0          30s</span></div>
+        <p>Diagnose it. Note that <code>oc logs</code> is useless here - there is no container:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-web</span>
+<span class="o">Error from server (BadRequest): container "fids-web" in pod "fids-web" is waiting to start: trying and failing to pull image</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod fids-web | tail -8</span></div>
+        <p>Fix it in place, then confirm:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc patch pod/fids-web --type='json' -p='[{"op":"replace","path":"/spec/containers/0/image","value":"registry.access.redhat.com/ubi9/httpd-24:latest"}]'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods</span></div>
         <div class="adm note">
           <div class="ico">i</div>
           <div class="bd"><span class="admlab">Note</span>
-          <p>That default page <em>is</em> the deliverable for now. In chapter 10 you will replace its contents
-          with the real flight board, without rebuilding the image.</p></div>
+          <p>Patching the image of a live pod works because the image field is one of the very few a pod allows
+          you to change. Almost everything else in a pod is immutable - which is why real applications are
+          managed by a Deployment, and why chapter 9 exists.</p></div>
         </div></li>
 
-      <li><p><strong>See the same thing as an administrator would.</strong> Switch to the Administrator
-        perspective and visit, in order:</p>
-        <ul>
-          <li><em>Workloads → Deployments</em> - one <code>fids-web</code> deployment. Open it and look at the
-          <em>YAML</em> tab: this is the object you will be writing by hand from chapter 9 onwards.</li>
-          <li><em>Workloads → Pods</em> - one pod, whose name is the deployment name plus two random suffixes.
-          Open it: <em>Logs</em>, <em>Events</em>, <em>Terminal</em>, <em>YAML</em>.</li>
-          <li><em>Networking → Services</em> - one service, with a <code>ClusterIP</code> address that no browser
-          on your laptop can reach.</li>
-          <li><em>Networking → Routes</em> - one route, with the hostname that your browser <em>can</em>
-          reach.</li>
-        </ul></li>
+      <li><p><strong>Failure 2 - the application dies at startup.</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-db --image=quay.io/sclorg/postgresql-15-c9s:latest</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods fids-db -w</span></div>
+        <p>Once it reaches <code>CrashLoopBackOff</code>, read the right log:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-db</span><span class="cm">              # may be empty: the container has just restarted</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc logs fids-db --previous</span><span class="cm">   # the one that actually failed</span></div>
+        <p>The message names the three variables it wants. Delete and recreate with them, as in Lab 8.2.</p></li>
 
-      <li><p><strong>Cross-check from the CLI.</strong> Both interfaces read the same API:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-fids</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment,pod,service,route</span>
-<span class="o">NAME                       READY   UP-TO-DATE   AVAILABLE   AGE</span>
-<span class="o">deployment.apps/fids-web   1/1     1            1           3m</span>
-<span class="o">NAME                            READY   STATUS    RESTARTS   AGE</span>
-<span class="o">pod/fids-web-6b9c7d5f4c-2xk9p   1/1     </span><span class="ok">Running</span><span class="o">   0          3m</span>
-<span class="o">NAME               TYPE        CLUSTER-IP      PORT(S)    AGE</span>
-<span class="o">service/fids-web   ClusterIP   172.30.41.207   8080/TCP   3m</span>
-<span class="o">NAME                        HOST/PORT                                        SERVICES</span>
-<span class="o">route.route.openshift.io/fids-web   fids-web-user1-fids.apps.cluster-...   fids-web</span></div></li>
+      <li><p><strong>Failure 3 - it runs, but serves the wrong thing.</strong> Your flight board is up and
+        showing the container's default page. Fix the content the wrong way, deliberately:</p>
+        <div class="file">
+          <div class="name">~/do108/day2/index.html</div>
+          <pre>&lt;!doctype html&gt;
+&lt;html&gt;&lt;head&gt;&lt;title&gt;NCE - Departures&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Nice Cote d'Azur - Departures&lt;/h1&gt;
+&lt;p&gt;AF7701 08:15 Paris CDG - Boarding&lt;/p&gt;
+&lt;p&gt;BA2633 09:40 London LGW - On time&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+        </div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc cp ~/do108/day2/index.html fids-web:/var/www/html/index.html</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec fids-web -- ls -la /var/www/html/</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc port-forward pod/fids-web 8080:8080 &amp;</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">curl -s http://127.0.0.1:8080/ | head -4</span></div>
+        <p>The board now shows real departures. Now prove that this was the wrong fix:</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">kill %1</span><span class="cm">                       # stop the tunnel</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod fids-web</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run fids-web --image=registry.access.redhat.com/ubi9/httpd-24:latest --port=8080</span></div>
+        <p>The page is gone. Nothing recorded it, nothing reapplies it. Chapter 10 puts that file in a ConfigMap,
+        where it belongs.</p></li>
 
-      <li><p><strong>Note two facts</strong> in your notebook - you will need them all week: the node your pod
-        landed on, and the route domain of this cluster.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get pod -o wide</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get route fids-web -o jsonpath='{.spec.host}{"\n"}'</span></div></li>
+      <li><p><strong>Use <code>oc debug</code> on something that cannot run.</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc debug pod/fids-web</span>
+<span class="p">sh-5.1$</span> <span class="c">id</span>
+<span class="p">sh-5.1$</span> <span class="c">ls -ld /var/www/html /etc</span>
+<span class="p">sh-5.1$</span> <span class="c">exit</span></div>
+        <p><code>oc debug</code> made a copy of the pod with the command replaced by a shell and the probes
+        removed. The original is untouched. This is how you inspect an image whose own process fails
+        immediately.</p></li>
+
+      <li><p><strong>Clean up the whole day's sandbox:</strong></p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod --all</span></div></li>
     </ol>
 
     <div class="adm verif">
       <div class="ico">?</div>
       <div class="bd"><span class="admlab">Check</span>
-      <p>The lab is complete when: the route answers in a browser; <code>oc get deployment,pod,service,route</code>
-      lists exactly four objects; and you can say, out loud, what each of the four is for. Keep the project - the
-      next lab uses it.</p></div>
+      <p>Given only a <code>STATUS</code> value, you can now name the command you would type next -
+      <code>Pending</code> and <code>ImagePullBackOff</code> to <code>describe</code>,
+      <code>CrashLoopBackOff</code> to <code>logs --previous</code>, <code>Running</code> to <code>logs</code>
+      then <code>rsh</code>. That reflex is the deliverable of this chapter.</p></div>
     </div>
   </div>
 </div>

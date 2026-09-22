@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Workshop 7.4 — The inventory — DO108</title>
+<title>Correction — Workshop 9.5 — Gate planner goes live — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,55 +455,53 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Workshop 7.4 — The inventory</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-09-5.html">Lab</a>
+  <span class="crumb">Correction · Workshop 9.5 — Gate planner goes live</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab7-4">7.11 Workshop 7.4 - The inventory</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag core">Workshop</span> Workshop 7.4 - Report on your project</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Produce a short, exact report on your project, using only the
-    command line. <strong>Time.</strong> 20 minutes. <strong>Deliverable.</strong> A file
-    <code>~/do108/day1/inventory.txt</code> that another person could read without your cluster.</div>
-
-    <p>Your report must contain, one item per line, each obtained with a single command:</p>
-
-    <ol class="steps">
-      <li>the cluster version and the Kubernetes version;</li>
-      <li>your account name and the API endpoint;</li>
-      <li>the name of every deployment in your project, with its replica count and its image;</li>
-      <li>the name, node and IP address of every pod;</li>
-      <li>the hostname of every route, and the HTTP status code each one returns;</li>
-      <li>the number of resource types this cluster knows, split between namespaced and cluster-scoped;</li>
-      <li>the <code>Available</code> condition of each deployment, with its <code>reason</code>;</li>
-      <li>the creation timestamp of your project.</li>
-    </ol>
-
-    <div class="adm astuce">
-      <div class="ico">*</div>
-      <div class="bd"><span class="admlab">Tip</span>
-      <p>Build it as a small shell script rather than by hand. A script that produces this report is worth
-      keeping: point it at any cluster and any project, and you have a two-second answer to &ldquo;what is
-      deployed there?&rdquo;.</p></div>
-    </div>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>Two criteria. Every line must come from a structured output format - no <code>grep</code>, no
-      <code>awk</code> on <code>describe</code>. And a neighbour must be able to run your script against
-      <em>their</em> project and get their own correct report.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Workshop 9.5 — Gate planner goes live</span></h1>
+<p><a href="lab-09-5.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>An empty project can be rebuilt from <code>~/do108/day2/gateplan/</code> alone. <code>oc get all -l app.kubernetes.io/part-of=gateplan</code> lists the stack.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>Create <code>userN-gateplan</code>. Import YAML for Deployment + Service + Route (httpd-24, 2 replicas, part-of=gateplan). Open the route.</p></li><li><p>Delete the project from Home → Projects. Recreate the project and Import YAML again — same URL shape, new objects.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment gateplan --image=registry.access.redhat.com/ubi9/httpd-24:latest --replicas=2 --port=8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc label deployment gateplan app.kubernetes.io/part-of=gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc expose deployment/gateplan --port=8080 --target-port=8080</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc expose service/gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,svc,route -o yaml &gt; ~/do108/day2/gateplan/all.yaml</span>
+<span class="p"># strip status/uid/resourceVersion before treating it as source</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete project ${U}-gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f ~/do108/day2/gateplan/</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get all -l app.kubernetes.io/part-of=gateplan</span></div>
   </div>
 </div>
+
 
 </div>
 </body>

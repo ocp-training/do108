@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Workshop 6.3 — Eight facts about this cluster — DO108</title>
+<title>Correction — Lab 9.3 — Connect the board to the API — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,54 +455,58 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="index.html">Labs</a>
-  <a href="day-1.html">Day</a>
-  <span class="crumb">Workshop 6.3 — Eight facts about this cluster</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <a href="lab-09-3.html">Lab</a>
+  <span class="crumb">Correction · Lab 9.3 — Connect the board to the API</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab6-3">6.9 Workshop 6.3 - Eight facts about this cluster</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag core">Workshop</span> Workshop 6.3 - The reconnaissance</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Find eight facts, using the console and the CLI, without being
-    told which page or which command. <strong>Time.</strong> 15 minutes. <strong>Rule.</strong> Write down
-    <em>where</em> you found each answer, not just the answer.</div>
-
-    <ol class="steps">
-      <li>What exact version of OpenShift is this cluster running?</li>
-      <li>What is the route domain - the suffix that every published hostname ends with?</li>
-      <li>On which node is your <code>fids-web</code> pod running?</li>
-      <li>What internal <code>ClusterIP</code> address was given to your <code>fids-web</code> service, and can
-      you reach it from your laptop? Why not?</li>
-      <li>Which container image is your pod actually running, including its tag?</li>
-      <li>How many projects can your account see, and does that mean you can modify them?</li>
-      <li>What user ID does your container run as? <span class="small">Hint: <code>oc exec</code> and the
-      <code>id</code> command. The answer will surprise you; chapter 8 explains it.</span></li>
-      <li>When was your project created, and by whom?</li>
-    </ol>
-
-    <div class="adm astuce">
-      <div class="ico">*</div>
-      <div class="bd"><span class="admlab">Tip</span>
-      <p>Several of these have both a console answer and a CLI answer. Find both for at least three of them. The
-      point of this workshop is not the facts - it is building the reflex of interrogating a cluster you do not
-      know.</p></div>
-    </div>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p>Compare your eight answers with your neighbour's. Where they differ, one of you looked at the wrong
-      object - find out which, because that conversation is worth more than the answers.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Lab 9.3 — Connect the board to the API</span></h1>
+<p><a href="lab-09-3.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>Service DNS keeps working after a pod IP change; a wrong selector empties Endpoints; restoring the selector fills them again.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>Networking → Services → Create: <code>fids-api</code>, port 8080, selector <code>app=fids-api</code>. Endpoints tab must list pod IPs.</p></li><li><p>Scale <code>fids-api</code> to 3 — Endpoints grows. Edit Service selector to <code>app=fids-apy</code> — Endpoints empty, Topology dashed. Put the selector back.</p></li><li><p>From a throwaway pod Terminal you cannot easily test cluster DNS; use the CLI <code>oc run netcheck</code> for curl/nslookup.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">APIIP=$(oc get pods -l app=fids-api -o jsonpath='{.items[0].status.podIP}')</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">echo $APIIP</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc delete pod -l app=fids-api</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -l app=fids-api -o wide</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc expose deployment/fids-api --port=8080 --target-port=8080 --name=fids-api</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get service fids-api -o wide &amp;&amp; oc get endpoints fids-api</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc run netcheck --rm -it --restart=Never --image=registry.access.redhat.com/ubi9/ubi-minimal:latest -- /bin/sh -c 'curl -s -o /dev/null -w %{http_code} fids-api:8080; echo; getent hosts fids-api'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc scale deployment/fids-api --replicas=3</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get endpoints fids-api</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc patch service fids-api -p '{"spec":{"selector":{"app":"fids-apy"}}}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get endpoints fids-api</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc patch service fids-api -p '{"spec":{"selector":{"app":"fids-api"}}}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get service fids-api -o yaml &gt; ~/do108/day2/fids-api-service.yaml</span></div>
   </div>
 </div>
+
+<p>Pod IP changes after delete. Service ClusterIP and DNS names <code>fids-api</code> / <code>fids-api.&lt;project&gt;.svc</code> do not.
+Empty Endpoints = selector matches no pods. That is the usual cause of a “Service exists but curl hangs”.</p>
+
 
 </div>
 </body>
