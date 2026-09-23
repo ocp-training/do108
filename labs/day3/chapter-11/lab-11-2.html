@@ -497,8 +497,10 @@ h1.chap{ break-before:auto; padding-top:0; }
 <span class="o">NAME                      READY   STATUS    RESTARTS   AGE</span>
 <span class="o">greedy-6f9c8d7b4-x2mnp    0/1     </span><span class="ko">Pending</span><span class="o">   0          20s</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc describe pod -l app=greedy | grep -A4 Events</span>
-<span class="o">  Warning  FailedScheduling  0/3 nodes are available: 3 Insufficient memory.</span></div>
-        <p><code>Pending</code> plus <code>FailedScheduling</code> is a request problem, always. Clean up:</p>
+<span class="o">  Warning  FailedScheduling  0/6 nodes are available: 3 Insufficient memory, 3 node(s) had untolerated taint {node-role.kubernetes.io/master: }.</span></div>
+        <p><code>Pending</code> plus <code>FailedScheduling</code> and <code>Insufficient memory</code> is a
+        request problem, always. The node count and the master taint are this cluster's; the words to find are
+        those two. Clean up:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc delete deployment greedy</span></div></li>
 
       <li><p><strong>Now break a limit on purpose.</strong> A container that allocates far more memory than it is
@@ -512,7 +514,9 @@ h1.chap{ break-before:auto; padding-top:0; }
 <span class="o">hungry-5c7d9f8b6-4nqrt    0/1     </span><span class="ko">OOMKilled</span><span class="o">   0          8s</span>
 <span class="o">hungry-5c7d9f8b6-4nqrt    0/1     </span><span class="ko">CrashLoopBackOff</span><span class="o">   1   25s</span></div>
         <p>The container asked for 600 MiB against a 128 MiB limit. The kernel killed it, the restart policy
-        restarted it, and it will do the same thing for ever.</p></li>
+        restarted it, and it will do the same thing for ever. The pod from before the limit stays
+        <code>Running</code>: a rollout does not remove the old pod until the new one is Ready, and this new one
+        never is. The pod to read is the one in <code>CrashLoopBackOff</code>.</p></li>
 
       <li><p><strong>Read the evidence properly.</strong> This is the part to remember:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=hungry -o name | head -1)</span>

@@ -480,14 +480,16 @@ h1.chap{ break-before:auto; padding-top:0; }
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc create deployment awos-feed \
   --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
   -- /bin/sh -c 'while true; do :; done'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc autoscale deployment/awos-feed --min=1 --max=4 --cpu-percent=50</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc autoscale deployment/awos-feed --min=1 --max=4 --cpu=50%</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc get hpa awos-feed</span>
 <span class="o">NAME        REFERENCE                TARGETS         MINPODS   MAXPODS   REPLICAS</span>
 <span class="o">awos-feed   Deployment/awos-feed     </span><span class="ko">&lt;unknown&gt;/50%</span><span class="o">   1         4         1</span></div>
         <p>Wait two minutes. Still <code>&lt;unknown&gt;</code>. Ask the cluster why:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe hpa awos-feed | grep -A6 Conditions</span>
-<span class="o">  ScalingActive   False   FailedGetResourceMetric   ... missing request for cpu</span></div>
-        <p>The cluster told you the answer in one line. That is the failure mode to recognise instantly.</p></li>
+<span class="o">  ScalingActive   False   FailedGetResourceMetric   ... no metrics returned from resource metrics API</span></div>
+        <p>The cluster told you the answer. A container with no CPU request has no utilization to compare with
+        50&nbsp;%, so the metrics API returns nothing for it. On some versions the same line says
+        <code>missing request for cpu</code>. Either phrase is this failure.</p></li>
 
       <li><p><strong>Add the requests and a limit,</strong> and watch the HPA come alive:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/awos-feed --requests cpu=50m --limits cpu=100m</span>
@@ -507,9 +509,10 @@ h1.chap{ break-before:auto; padding-top:0; }
 
       <li><p><strong>Read the decision log:</strong></p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc describe hpa awos-feed | tail -12</span>
-<span class="o">  Normal  SuccessfulRescale  2m    horizontal-pod-autoscaler  New size: 2; reason: cpu ...</span>
-<span class="o">  Normal  SuccessfulRescale  1m    horizontal-pod-autoscaler  New size: 4; reason: cpu ...</span></div>
-        <p>Every scaling decision, with its reason and its timestamp. This is what you read after an incident to
+<span class="o">  Normal  SuccessfulRescale  27s   horizontal-pod-autoscaler  New size: 4; reason: cpu ...</span></div>
+        <p>One pod at about 200&nbsp;% of a 50&nbsp;% target is already four times the target, so the controller
+        can jump straight to <code>maxReplicas</code>. A slower climb, 2 then 4, is the same decision spread over
+        two events. Every line carries a reason and a timestamp. This is what you read after an incident to
         find out whether the autoscaler helped or made things worse.</p></li>
 
       <li><p><strong>Remove the load and watch it scale back:</strong></p>

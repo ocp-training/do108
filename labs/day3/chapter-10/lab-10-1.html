@@ -490,14 +490,14 @@ h1.chap{ break-before:auto; padding-top:0; }
 <span class="p">[you@laptop ~]$</span> <span class="c">oc create configmap fids-page --from-file=index.html=./index.html</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc get configmap fids-page -o yaml | head -20</span></div></li>
 
-      <li><p><strong>Mount it over the web root.</strong> The Apache HTTP Server 2.4 (RHEL 8) image
-        serves pages from <code>/opt/app-root/src</code>. That path is <code>DocumentRoot</code> in
-        <code>/etc/httpd/conf/httpd.conf</code>. Confirm it, then mount the config map there:</p>
+      <li><p><strong>Mount it over the web root.</strong> Confirm <code>DocumentRoot</code> first.
+        On <code>ubi9/httpd-24</code> (the day 2 image) it is <code>/var/www/html</code>. Mount the
+        config map on the path that <code>grep</code> prints:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc exec deployment/fids-web -- grep DocumentRoot /etc/httpd/conf/httpd.conf</span>
-<span class="o">DocumentRoot "/opt/app-root/src"</span>
+<span class="o">DocumentRoot "/var/www/html"</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc set volume deployment/fids-web --add \
   --type configmap --configmap-name fids-page \
-  --mount-path /opt/app-root/src --name page</span>
+  --mount-path /var/www/html --name page</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">FIDS=$(oc get route fids-web -o jsonpath='{.spec.host}')</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">curl -s http://$FIDS/ | head -3</span></div>

@@ -480,14 +480,7 @@ h1.chap{ break-before:auto; padding-top:0; }
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-platform</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc scale deployment/fids-web --replicas=3</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">POD=$(oc get pods -l app=fids-web -o name | head -1)</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'rm -f /var/www/html/index.html'</span></div>
-        <div class="adm note">
-          <div class="ico">i</div>
-          <div class="bd"><span class="admlab">Note</span>
-          <p>If the web root is mounted from the config map of chapter 10, it is read-only. Remove the volume for
-          this lab &mdash; <code>oc set volume deployment/fids-web --remove --name page</code> &mdash; and put it
-          back at the end.</p></div>
-        </div>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec $POD -- sh -c 'rm -f/opt/app-root/src/index.html'</span></div>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">FIDS=$(oc get route fids-web -o jsonpath='{.spec.host}')</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">for i in $(seq 1 9); do curl -s -o /dev/null -w '%{http_code} ' http://$FIDS/; done; echo</span>
 <span class="o">200 403 200 200 403 200 403 200 200</span></div>
