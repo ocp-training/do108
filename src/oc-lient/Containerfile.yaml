@@ -1,0 +1,7 @@
+FROM image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+USER 0
+RUN dnf install -y git jq && dnf clean all \
+ && curl -fsSL -o /usr/local/bin/yq \
+      https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+ && chmod 0755 /usr/local/bin/yq
+USER 1001
