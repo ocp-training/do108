@@ -492,16 +492,16 @@ h1.chap{ break-before:auto; padding-top:0; }
 
       <li><p><strong>Pin the deployment to it:</strong></p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi9/httpd-24@$DIGEST</span>
+  fids-web=registry.access.redhat.com/ubi9/httpd-24@$DIGEST</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o jsonpath=\
 '{.spec.template.spec.containers[0].image}{"\n"}'</span></div>
         <div class="adm note">
           <div class="ico">i</div>
           <div class="bd"><span class="admlab">Note</span>
-          <p><code>oc set image</code> takes <code>&lt;container-name&gt;=&lt;image&gt;</code>. Find the
-          container name with <code>oc get deployment fids-web -o wide</code> - the <code>CONTAINERS</code>
-          column. It is not always the deployment name.</p></div>
+          <p><code>oc set image</code> takes <code>&lt;container-name&gt;=&lt;image&gt;</code>. On this
+          deployment the container is named <code>fids-web</code>. The <code>CONTAINERS</code> column of
+          <code>oc get deployment fids-web -o wide</code> is the name to use.</p></div>
         </div></li>
 
       <li><p><strong>Prove that scaling is now safe:</strong></p>

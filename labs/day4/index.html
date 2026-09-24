@@ -644,7 +644,7 @@ anything:</p>
 
       <li><p><strong>Pin the deployment to it:</strong></p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi9/httpd-24@$DIGEST</span>
+  fids-web=registry.access.redhat.com/ubi9/httpd-24@$DIGEST</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc get deployment fids-web -o jsonpath=\
 '{.spec.template.spec.containers[0].image}{"\n"}'</span></div>
@@ -730,7 +730,7 @@ spec:
         app: fids-web
     spec:
       containers:
-        - name: httpd-24
+        - name: fids-web
           image: registry.access.redhat.com/ubi9/httpd-24:latest</pre>
 </div>
 
@@ -758,7 +758,7 @@ spec:
 
 <span class="cm"># Group several changes into ONE rollout instead of three</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout pause deployment/fids-web</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web httpd-24=&lt;new-image&gt;</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web fids-web=&lt;new-image&gt;</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc set env deployment/fids-web TERMINAL=T2</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc set resources deployment/fids-web --limits memory=512Mi</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout resume deployment/fids-web</span></div>
@@ -826,7 +826,7 @@ old definition still exists, and returning to it is a scale operation, not a red
 
       <li><p><strong>Roll out a new version</strong> in the first terminal:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi8/httpd-24:latest</span>
+  fids-web=registry.access.redhat.com/ubi8/httpd-24:latest</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc annotate deployment/fids-web \
   kubernetes.io/change-cause="Upgrade to httpd on UBI 8" --overwrite</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
@@ -846,7 +846,7 @@ old definition still exists, and returning to it is a scale operation, not a red
 
       <li><p><strong>Now break a rollout on purpose:</strong></p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi9/httpd-24:does-not-exist</span>
+  fids-web=registry.access.redhat.com/ubi9/httpd-24:does-not-exist</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web --timeout=60s</span>
 <span class="o">Waiting for deployment "fids-web" rollout to finish: 1 out of 4 new replicas have been updated...</span>
 <span class="o">error: timed out waiting for the condition</span>

@@ -490,7 +490,7 @@ h1.chap{ break-before:auto; padding-top:0; }
 
       <li><p><strong>Roll out a new version</strong> in the first terminal:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi8/httpd-24:latest</span>
+  fids-web=registry.access.redhat.com/ubi8/httpd-24:latest</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc annotate deployment/fids-web \
   kubernetes.io/change-cause="Upgrade to httpd on UBI 8" --overwrite</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web</span>
@@ -510,7 +510,7 @@ h1.chap{ break-before:auto; padding-top:0; }
 
       <li><p><strong>Now break a rollout on purpose:</strong></p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/fids-web \
-  httpd-24=registry.access.redhat.com/ubi9/httpd-24:does-not-exist</span>
+  fids-web=registry.access.redhat.com/ubi9/httpd-24:does-not-exist</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web --timeout=60s</span>
 <span class="o">Waiting for deployment "fids-web" rollout to finish: 1 out of 4 new replicas have been updated...</span>
 <span class="o">error: timed out waiting for the condition</span>
