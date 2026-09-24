@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 3 assessment — DO108</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rh-red:#ee0000; --rh-red-dark:#a30000; --rh-red-soft:#fdeaea;
+  --rh-black:#151515; --rh-gray-90:#1f1f1f; --rh-gray-70:#383838;
+  --rh-gray-60:#4d4d4d; --rh-gray-50:#707070; --rh-gray-40:#a3a3a3;
+  --rh-gray-20:#e0e0e0; --rh-gray-10:#f2f2f2;
+  --rh-teal:#37a3a3; --rh-teal-soft:#e8f5f5;
+  --rh-blue:#0066cc; --rh-blue-soft:#e7f1fa;
+  --rh-purple:#5e40be; --ok:#2e7d52; --ok-bg:#e7f1ec; --bad-bg:#fdeaea;
+  --font-display:"Red Hat Display","Liberation Sans",Arial,sans-serif;
+  --font-text:"Red Hat Text","Liberation Sans",Arial,sans-serif;
+  --font-mono:"Red Hat Mono","Liberation Mono",Consolas,monospace;
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:#f2f2f2; color:var(--rh-gray-90);
+  font-family:var(--font-text); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{ color:var(--rh-blue); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+code{ font-family:var(--font-mono); font-size:.9em; background:var(--rh-gray-10);
+  border:1px solid var(--rh-gray-20); padding:.05em .3em; }
+.lab-nav{
+  position:sticky; top:0; z-index:30;
+  background:#151515; color:#fff;
+  font-family:var(--font-display); font-size:14px; letter-spacing:.04em;
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  padding:10px 16px;
+}
+.lab-nav a{ color:#fff; }
+.lab-nav a:hover{ color:#ffcc17; text-decoration:none; }
+.lab-nav .kicker{ font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#ee0000; }
+.lab-nav .crumb{ color:#c7c7c7; }
+.page-wrap{ max-width:920px; margin:0 auto; background:#fff; padding:36px 40px 56px; box-shadow:0 0 0 1px #e0e0e0; }
+h1.chap{ font-family:var(--font-display); font-weight:900; font-size:28px; margin:0 0 8px; letter-spacing:-.015em; }
+.chap-num{ display:block; font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--rh-red); margin-bottom:6px; }
+h1.chap::after{ content:""; display:block; width:88px; height:3px; background:var(--rh-red); margin-top:12px; }
+.lead{ font-family:var(--font-display); font-size:16px; color:var(--rh-gray-60); margin:0 0 18px; }
+h2{ font-family:var(--font-display); font-weight:700; font-size:18px; margin:32px 0 10px; padding-top:8px; border-top:1px solid var(--rh-gray-20); }
+h2 .n{ color:var(--rh-red); font-family:var(--font-mono); margin-right:8px; }
+.objectifs{ background:var(--rh-gray-10); border-left:4px solid var(--rh-black); padding:14px 16px; margin:0 0 22px; }
+.objectifs h4{ margin:0 0 6px; font-family:var(--font-display); font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+.objectifs p{ margin:0; }
+.scorebar{
+  position:sticky; top:44px; z-index:20;
+  display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--rh-gray-20); padding:10px 14px; margin:0 0 22px;
+}
+.scorebar .meta{ font-size:13px; color:var(--rh-gray-50); }
+.scorebar button, .actions button{
+  font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:.04em;
+  border:0; cursor:pointer; padding:8px 14px; background:var(--rh-red); color:#fff;
+}
+.scorebar button.ghost, .actions button.ghost{ background:#fff; color:var(--rh-black); border:1px solid var(--rh-gray-20); }
+.scorebar button:focus, .actions button:focus, .choice:focus-visible, .chip:focus-visible, .drop:focus-visible{
+  outline:2px solid var(--rh-red); outline-offset:2px;
+}
+.q{ border:1px solid var(--rh-gray-20); padding:14px 16px; margin:0 0 12px; }
+.q.ok{ background:var(--ok-bg); border-color:var(--ok); }
+.q.bad{ background:var(--bad-bg); border-color:var(--rh-red); }
+.q h3{ font-family:var(--font-display); font-size:15px; font-weight:700; margin:0 0 10px; }
+.q h3 .tag{ display:inline-block; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  background:var(--rh-black); color:#fff; padding:2px 6px; margin-right:8px; vertical-align:middle; }
+.choices{ display:flex; flex-direction:column; gap:6px; }
+.choice{
+  display:flex; gap:10px; align-items:flex-start; text-align:left;
+  width:100%; background:#fff; border:1px solid var(--rh-gray-20); padding:8px 10px;
+  font:inherit; cursor:pointer;
+}
+.choice:hover{ border-color:var(--rh-black); }
+.choice.on{ border-color:var(--rh-red); background:var(--rh-red-soft); }
+.choice .mark{ flex:0 0 22px; font-family:var(--font-display); font-weight:700; color:var(--rh-red); }
+.why{ display:none; margin:10px 0 0; font-size:13.5px; color:var(--rh-gray-60); }
+.q.ok .why, .q.bad .why{ display:block; }
+.dnd{ border:1px solid var(--rh-gray-20); padding:14px 16px; margin:0 0 16px; }
+.dnd h3{ font-family:var(--font-display); font-size:15px; margin:0 0 8px; }
+.dnd p.hint{ margin:0 0 12px; font-size:13.5px; color:var(--rh-gray-50); }
+.pool, .slots{ display:flex; flex-wrap:wrap; gap:8px; min-height:44px; }
+.pool{ background:var(--rh-gray-10); padding:10px; margin-bottom:12px; }
+.chip{
+  font-family:var(--font-mono); font-size:12.5px; background:#fff; border:1px solid var(--rh-gray-40);
+  padding:6px 10px; cursor:grab; user-select:none;
+}
+.chip.held{ outline:2px solid var(--rh-red); }
+.drop{
+  min-height:38px; min-width:120px; flex:1 1 160px;
+  border:1px dashed var(--rh-gray-40); background:#fafafa; padding:6px;
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+.drop.over{ border-color:var(--rh-red); background:var(--rh-red-soft); }
+.drop .lab{ font-family:var(--font-display); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--rh-gray-50); width:100%; margin-bottom:2px; }
+.slots.stack{ flex-direction:column; }
+.slots.stack .drop{ flex:none; width:100%; }
+.yaml{
+  font-family:var(--font-mono); font-size:12.5px; background:var(--rh-gray-10);
+  border-left:4px solid var(--rh-gray-70); padding:12px 14px; line-height:1.7;
+}
+.yaml .drop{ display:inline-flex; min-width:140px; min-height:28px; vertical-align:middle; flex:none; margin:0 4px; }
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
+#result{ display:none; border-left:4px solid var(--rh-black); background:var(--rh-gray-10); padding:14px 16px; margin-top:18px; }
+#result.show{ display:block; }
+#result h2{ border:0; margin:0 0 8px; padding:0; }
+#result .big{ font-family:var(--font-display); font-weight:900; font-size:32px; }
+@media (max-width:720px){
+  .page-wrap{ padding:20px 16px 40px; }
+}
+</style>
+</head>
+<body>
+<nav class="lab-nav">
+  <span class="kicker">DO108</span>
+  <a href="../../index.html">Labs</a>
+  <a href="../index.html">Day</a>
+  <span class="crumb">Assessment — Day 3</span>
+</nav>
+<div class="page-wrap">
+
+<h1 class="chap"><span class="chap-num">Assessment</span>Day 3 — check yourself</h1>
+<p class="lead">Configuration, secrets, persistent storage, StatefulSets, probes, requests and limits, and the horizontal pod autoscaler. Day 3 only. No cluster required. Drag a chip onto a slot, or click the chip then the slot.</p>
+
+<div class="objectifs">
+  <h4>How this works</h4>
+  <p>Fourteen multiple-choice questions, then four drag-and-drop boards. Submit when you are done. Each correct QCM and each correctly placed chip is one point.</p>
+</div>
+
+<div class="scorebar">
+  <div class="meta">Answered <span id="progress">0</span> · Submit to score</div>
+  <div>
+    <button type="button" class="ghost" id="btn-reset">Reset</button>
+    <button type="button" id="btn-score">Submit answers</button>
+  </div>
+</div>
+
+<h2><span class="n">A</span> Multiple choice</h2>
+
+<div class="q" data-q="q1" data-answer="c">
+  <h3><span class="tag">Config</span> You change a ConfigMap that the API reads as environment variables. What happens?</h3>
+  <div class="choices"></div>
+  <p class="why">Environment variables are fixed at container start. The new values appear after <code>oc rollout restart</code>. A mounted file can refresh without that restart; an environment variable cannot.</p>
+</div>
+<div class="q" data-q="q2" data-answer="b">
+  <h3><span class="tag">Config</span> A Secret protects a database password because</h3>
+  <div class="choices"></div>
+  <p class="why"><code>oc get secret -o jsonpath</code> and <code>base64 --decode</code> print the password. Encoding is not encryption. Anyone who can read the project can read the Secret.</p>
+</div>
+<div class="q" data-q="q3" data-answer="b">
+  <h3><span class="tag">Config</span> Mounting a ConfigMap on a directory</h3>
+  <div class="choices"></div>
+  <p class="why">Kubernetes creates one file per key and that directory becomes those files. That is what you want for a web root. It is what you must not do to <code>/etc</code>.</p>
+</div>
+<div class="q" data-q="q4" data-answer="b">
+  <h3><span class="tag">Config</span> On <code>ubi9/httpd-24</code>, the board page is served from</h3>
+  <div class="choices"></div>
+  <p class="why"><code>grep '^DocumentRoot'</code> prints <code>/var/www/html</code>. A ConfigMap mounted anywhere else leaves the route unchanged.</p>
+</div>
+<div class="q" data-q="q5" data-answer="b">
+  <h3><span class="tag">Storage</span> The database is a Deployment with no volume. You insert a row, then delete the pod.</h3>
+  <div class="choices"></div>
+  <p class="why">The new container starts from the image. The credentials in the Secret are still there. The table lived on the container filesystem, so it is gone.</p>
+</div>
+<div class="q" data-q="q6" data-answer="b">
+  <h3><span class="tag">Storage</span> A new claim stays <code>Pending</code> with “waiting for first consumer”.</h3>
+  <div class="choices"></div>
+  <p class="why">The default class on this cluster uses <code>WaitForFirstConsumer</code>. The volume is created when a pod mounts the claim. The claim becomes <code>Bound</code> at that moment.</p>
+</div>
+<div class="q" data-q="q7" data-answer="b">
+  <h3><span class="tag">Storage</span> <code>oc delete pvc</code> on a claim a pod still has mounted</h3>
+  <div class="choices"></div>
+  <p class="why">In-use protection holds the claim. It shows <code>Terminating</code> until the last pod releases it. Scaling the database to zero lets that deletion finish, and the reclaim policy <code>Delete</code> then removes the data.</p>
+</div>
+<div class="q" data-q="q8" data-answer="b">
+  <h3><span class="tag">StatefulSet</span> <code>fids-db-0</code> has a table. You query <code>fids-db-1</code>.</h3>
+  <div class="choices"></div>
+  <p class="why">A StatefulSet gives each pod its own claim. It does not replicate PostgreSQL. Two replicas are two databases.</p>
+</div>
+<div class="q" data-q="q9" data-answer="a">
+  <h3><span class="tag">StatefulSet</span> The headless Service in front of <code>fids-db</code></h3>
+  <div class="choices"></div>
+  <p class="why"><code>clusterIP: None</code> is the headless marker. <code>fids-db</code> lists every pod. <code>fids-db-0.fids-db</code> is exactly one pod. The Service must exist before the StatefulSet.</p>
+</div>
+<div class="q" data-q="q10" data-answer="b">
+  <h3><span class="tag">Probes</span> A readiness probe is on <code>/</code>. You delete <code>index.html</code> in one pod.</h3>
+  <div class="choices"></div>
+  <p class="why">The process is still running, so this is not a restart. Ready becomes <code>0/1</code>, the pod leaves the endpoints, and the route keeps returning 200 from the other pods.</p>
+</div>
+<div class="q" data-q="q11" data-answer="b">
+  <h3><span class="tag">Probes</span> A liveness probe points at port 9999, where nothing listens.</h3>
+  <div class="choices"></div>
+  <p class="why">Liveness failure kills the container. The restart policy starts it again, the probe fails again, and <code>RESTARTS</code> climbs on every pod. Put liveness back on port 8080.</p>
+</div>
+<div class="q" data-q="q12" data-answer="b">
+  <h3><span class="tag">Resources</span> A pod requests <code>900Gi</code> of memory. You see</h3>
+  <div class="choices"></div>
+  <p class="why"><code>Pending</code> plus <code>FailedScheduling</code> and <code>Insufficient memory</code> is a request problem. The scheduler refused the pod. The container never started, so this is not an OOM kill.</p>
+</div>
+<div class="q" data-q="q13" data-answer="b">
+  <h3><span class="tag">Resources</span> A container hits its memory limit, and another hits its CPU limit.</h3>
+  <div class="choices"></div>
+  <p class="why">The memory case is <code>OOMKilled</code> and exit code 137, with empty logs, because the kernel killed the process. A CPU limit throttles. The pod stays <code>Running</code> with zero restarts, only slower.</p>
+</div>
+<div class="q" data-q="q14" data-answer="b">
+  <h3><span class="tag">Autoscaling</span> An HPA shows <code>&lt;unknown&gt;</code> and “no metrics returned”.</h3>
+  <div class="choices"></div>
+  <p class="why">Utilization is current use divided by the request. With no CPU request there is nothing to divide by. <code>oc set resources --requests cpu=…</code> is the fix. <code>maxReplicas</code> is the ceiling once metrics exist.</p>
+</div>
+
+<h2><span class="n">B</span> Drag and drop</h2>
+
+<div class="dnd" id="dd-life" data-kind="order">
+  <h3>B1 — Give the database a home</h3>
+  <p class="hint">Order the six steps, first to last. Click a chip, then a slot — or drag.</p>
+  <div class="pool" id="pool-life"></div>
+  <div class="slots stack" id="slots-life"></div>
+</div>
+
+<div class="dnd" id="dd-roles" data-kind="match">
+  <h3>B2 — Which object holds it?</h3>
+  <p class="hint">Drop one object onto each job.</p>
+  <div class="pool" id="pool-roles"></div>
+  <div class="slots stack" id="slots-roles"></div>
+</div>
+
+<div class="dnd" id="dd-yaml" data-kind="match">
+  <h3>B3 — Complete the headless Service and the StatefulSet</h3>
+  <p class="hint">Drop each value into the skeleton. The Service exists first. Each pod gets its own claim from the template.</p>
+  <div class="pool" id="pool-yaml"></div>
+  <div class="yaml" id="yaml-skel"></div>
+</div>
+
+<div class="dnd" id="dd-path" data-kind="match">
+  <h3>B4 — Name the failure</h3>
+  <p class="hint">Drop each cause onto what you see.</p>
+  <div class="pool" id="pool-path"></div>
+  <div class="slots stack" id="slots-path"></div>
+</div>
+
+<div class="actions">
+  <button type="button" id="btn-score-2">Submit answers</button>
+  <button type="button" class="ghost" id="btn-reset-2">Reset</button>
+</div>
+<div id="result">
+  <h2>Result</h2>
+  <p class="big"><span id="score-n">0</span> / <span id="score-d">0</span></p>
+  <p id="score-msg"></p>
+</div>
+
+</div>
+<script>
+const QCM = {
+  q1: [
+    ["a", "Every pod reads the new value within about a minute"],
+    ["b", "The Deployment rolls out a new ReplicaSet on its own"],
+    ["c", "Running pods keep the old value until you restart them"],
+  ],
+  q2: [
+    ["a", "The value is encrypted, so a project reader cannot recover it"],
+    ["b", "The value is base64; anyone who can get the Secret can decode it"],
+    ["c", "Only a cluster-admin can read secret data"],
+  ],
+  q3: [
+    ["a", "Adds the keys beside the files that were already in the image"],
+    ["b", "Replaces that directory with one file per key"],
+    ["c", "Works only when the key is named index.html"],
+  ],
+  q4: [
+    ["a", "/opt/app-root/src"],
+    ["b", "/var/www/html"],
+    ["c", "/usr/share/httpd/noindex"],
+  ],
+  q5: [
+    ["a", "The row is still there; the Deployment remembered it"],
+    ["b", "The new pod has an empty database; the row is gone"],
+    ["c", "The pod stays Pending until you create the table again"],
+  ],
+  q6: [
+    ["a", "The StorageClass is missing and the claim will never bind"],
+    ["b", "The class waits for a pod; the volume is created when the claim is mounted"],
+    ["c", "The claim name does not match the Deployment"],
+  ],
+  q7: [
+    ["a", "The claim and its data disappear at once"],
+    ["b", "The claim stays Terminating until the pod releases it"],
+    ["c", "The API rejects the delete while a pod exists"],
+  ],
+  q8: [
+    ["a", "The same table, because the two pods replicate"],
+    ["b", "relation flight does not exist — each pod has its own volume"],
+    ["c", "A permission error, because only fids-db-0 may write"],
+  ],
+  q9: [
+    ["a", "Has clusterIP None, so fids-db-0.fids-db names exactly one pod"],
+    ["b", "Has one ClusterIP and hides the individual pod names"],
+    ["c", "Is an ExternalName that points at the PostgreSQL image"],
+  ],
+  q10: [
+    ["a", "The kubelet OOMKills that container"],
+    ["b", "The pod stays Running at 0/1, with no restart, and drops out of the endpoints"],
+    ["c", "The ReplicaSet deletes the pod immediately"],
+  ],
+  q11: [
+    ["a", "The pods stay Ready, because the process itself is alive"],
+    ["b", "Every pod restarts continuously"],
+    ["c", "One pod restarts once, then the probe is ignored"],
+  ],
+  q12: [
+    ["a", "The container starts, then the kernel OOMKills it"],
+    ["b", "Pending, FailedScheduling, Insufficient memory"],
+    ["c", "The kubelet shrinks the request so the pod can be placed"],
+  ],
+  q13: [
+    ["a", "Both die with OOMKilled and exit 137"],
+    ["b", "Memory: OOMKilled, exit 137, empty logs. CPU: stays Running and is throttled"],
+    ["c", "CPU kills the process; memory only slows it down"],
+  ],
+  q14: [
+    ["a", "The metrics API is down, so every HPA on the cluster looks like this"],
+    ["b", "The container has no CPU request, so utilization cannot be computed"],
+    ["c", "maxReplicas is lower than the current replica count"],
+  ],
+};
+
+const LIFE = [
+  ["life-1", "Read the default StorageClass", "1"],
+  ["life-2", "Apply the PersistentVolumeClaim", "2"],
+  ["life-3", "The claim stays Pending until a pod uses it", "3"],
+  ["life-4", "Mount the claim at /var/lib/pgsql/data", "4"],
+  ["life-5", "Insert a row with psql", "5"],
+  ["life-6", "Delete the pod — the row is still there", "6"],
+];
+
+const ROLES = [
+  ["role-cm", "ConfigMap", "Board page and settings such as SENSOR_ID. Safe to mount as files or inject as variables."],
+  ["role-sec", "Secret", "Database password. Base64 in etcd. Inject with oc set env --from, and keep it out of the shell history."],
+  ["role-pvc", "PersistentVolumeClaim", "Your request: 2Gi, ReadWriteOnce. Stays Terminating while a pod still mounts it."],
+  ["role-pv", "PersistentVolume", "The volume the provisioner created and bound to the claim."],
+  ["role-sc", "StorageClass", "Who creates the volume, when it binds, and that reclaim policy Delete removes data with the claim."],
+  ["role-sts", "StatefulSet", "Stable names fids-db-0, fids-db-1, and one claim per pod from volumeClaimTemplates."],
+];
+
+const YAML = [
+  ["y-cip", "None", "cip"],
+  ["y-sel", "app.kubernetes.io/name: fids-db", "sel"],
+  ["y-sname", "fids-db", "sname"],
+  ["y-rep", "2", "rep"],
+  ["y-mode", "ReadWriteOnce", "mode"],
+  ["y-size", "2Gi", "size"],
+  ["y-mount", "/var/lib/pgsql/data", "mount"],
+];
+
+const PATH = [
+  ["sym-ready", "Readiness probe", "0/1 Running"],
+  ["sym-live", "Liveness probe", "RESTARTS going up"],
+  ["sym-sched", "Memory request too big", "Pod Pending"],
+  ["sym-oom", "Memory limit hit", "OOMKilled"],
+  ["sym-cpu", "CPU limit", "Running, but slow"],
+  ["sym-hpa", "No CPU request", "HPA shows unknown"],
+];
+
+let held = null;
+
+function el(html) {
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+}
+
+function renderQcm() {
+  document.querySelectorAll(".q[data-q]").forEach((box) => {
+    const id = box.dataset.q;
+    const host = box.querySelector(".choices");
+    host.innerHTML = "";
+    QCM[id].forEach(([key, text]) => {
+      const b = el(`<button type="button" class="choice" data-key="${key}"><span class="mark">${key.toUpperCase()}</span><span>${text}</span></button>`);
+      b.addEventListener("click", () => {
+        host.querySelectorAll(".choice").forEach((c) => c.classList.remove("on"));
+        b.classList.add("on");
+        box.dataset.picked = key;
+        updateProgress();
+      });
+      host.appendChild(b);
+    });
+  });
+}
+
+function chip(id, text) {
+  const c = el(`<span class="chip" draggable="true" data-id="${id}">${text}</span>`);
+  c.addEventListener("dragstart", (e) => {
+    held = c;
+    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.effectAllowed = "move";
+  });
+  c.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelectorAll(".chip.held").forEach((x) => x.classList.remove("held"));
+    if (held === c) { held = null; return; }
+    held = c;
+    c.classList.add("held");
+  });
+  return c;
+}
+
+function bindDrop(zone) {
+  zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("over");
+    const id = e.dataTransfer.getData("text/plain");
+    const c = document.querySelector(`.chip[data-id="${id}"]`);
+    if (c) place(c, zone);
+  });
+  zone.addEventListener("click", () => {
+    if (held) place(held, zone);
+  });
+}
+
+function place(c, zone) {
+  const single = zone.dataset.multi !== "1";
+  if (single) {
+    zone.querySelectorAll(".chip").forEach((old) => {
+      const home = document.getElementById(old.dataset.home);
+      if (home) home.appendChild(old);
+    });
+  }
+  zone.appendChild(c);
+  c.classList.remove("held");
+  held = null;
+  updateProgress();
+}
+
+function fillOrder(poolId, slotsId, items, labelPrefix) {
+  const pool = document.getElementById(poolId);
+  const slots = document.getElementById(slotsId);
+  pool.innerHTML = "";
+  slots.innerHTML = "";
+  const shuffled = items.slice().sort(() => Math.random() - 0.5);
+  shuffled.forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = poolId;
+    pool.appendChild(c);
+  });
+  items.forEach((_, i) => {
+    const z = el(`<div class="drop" data-expect="${items[i][0]}"><span class="lab">${labelPrefix} ${i + 1}</span></div>`);
+    bindDrop(z);
+    slots.appendChild(z);
+  });
+}
+
+function fillMatch(poolId, slotsId, items) {
+  const pool = document.getElementById(poolId);
+  const slots = document.getElementById(slotsId);
+  pool.innerHTML = "";
+  slots.innerHTML = "";
+  const shuffled = items.slice().sort(() => Math.random() - 0.5);
+  shuffled.forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = poolId;
+    pool.appendChild(c);
+  });
+  items.forEach(([id, , desc]) => {
+    const z = el(`<div class="drop" data-expect="${id}"><span class="lab">${desc}</span></div>`);
+    bindDrop(z);
+    slots.appendChild(z);
+  });
+}
+
+function fillYaml() {
+  const pool = document.getElementById("pool-yaml");
+  pool.innerHTML = "";
+  YAML.slice().sort(() => Math.random() - 0.5).forEach(([id, text]) => {
+    const c = chip(id, text);
+    c.dataset.home = "pool-yaml";
+    pool.appendChild(c);
+  });
+  const slot = (expect) => `<span class="drop" data-expect="${expect}"></span>`;
+  document.getElementById("yaml-skel").innerHTML =
+    `kind: Service<br>` +
+    `metadata:<br>` +
+    `&nbsp;&nbsp;name: fids-db<br>` +
+    `spec:<br>` +
+    `&nbsp;&nbsp;clusterIP: ${slot("y-cip")}<br>` +
+    `&nbsp;&nbsp;selector:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;${slot("y-sel")}<br>` +
+    `---<br>` +
+    `kind: StatefulSet<br>` +
+    `metadata:<br>` +
+    `&nbsp;&nbsp;name: fids-db<br>` +
+    `spec:<br>` +
+    `&nbsp;&nbsp;serviceName: ${slot("y-sname")}<br>` +
+    `&nbsp;&nbsp;replicas: ${slot("y-rep")}<br>` +
+    `&nbsp;&nbsp;volumeClaimTemplates:<br>` +
+    `&nbsp;&nbsp;- metadata:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: data<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;spec:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accessModes: [${slot("y-mode")}]<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resources.requests.storage: ${slot("y-size")}<br>` +
+    `&nbsp;&nbsp;template.spec.containers:<br>` +
+    `&nbsp;&nbsp;- volumeMounts:<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;- name: data<br>` +
+    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mountPath: ${slot("y-mount")}`;
+  document.querySelectorAll("#yaml-skel .drop").forEach(bindDrop);
+}
+
+function qcmAnswered() {
+  return [...document.querySelectorAll(".q[data-q]")].filter((q) => q.dataset.picked).length;
+}
+
+function dndPlaced() {
+  return document.querySelectorAll(".drop .chip").length;
+}
+
+function updateProgress() {
+  document.getElementById("progress").textContent = qcmAnswered() + " QCM · " + dndPlaced() + " chips placed";
+}
+
+function scoreQcm() {
+  let n = 0, d = 0;
+  document.querySelectorAll(".q[data-q]").forEach((box) => {
+    d += 1;
+    const ok = box.dataset.picked === box.dataset.answer;
+    box.classList.toggle("ok", ok);
+    box.classList.toggle("bad", !ok);
+    if (ok) n += 1;
+  });
+  return [n, d];
+}
+
+function scoreDnd() {
+  let n = 0, d = 0;
+  document.querySelectorAll(".drop[data-expect]").forEach((z) => {
+    d += 1;
+    const c = z.querySelector(".chip");
+    const ok = c && c.dataset.id === z.dataset.expect;
+    z.style.borderColor = ok ? "var(--ok)" : "var(--rh-red)";
+    z.style.background = ok ? "var(--ok-bg)" : (c ? "var(--bad-bg)" : "#fafafa");
+    if (ok) n += 1;
+  });
+  return [n, d];
+}
+
+function submit() {
+  const [a, b] = scoreQcm();
+  const [c, d] = scoreDnd();
+  const n = a + c, tot = b + d;
+  document.getElementById("score-n").textContent = n;
+  document.getElementById("score-d").textContent = tot;
+  const pct = tot ? Math.round((n / tot) * 100) : 0;
+  let msg = "Review the red items and the explanations under each QCM.";
+  if (pct === 100) msg = "All correct. You can say what survives a restart, which probe removes a pod from the route, and why an HPA needs a CPU request.";
+  else if (pct >= 75) msg = "Solid. Re-read the misses — especially Secret versus encryption, and readiness versus liveness.";
+  else if (pct >= 50) msg = "The ideas are landing. Revisit chapter 10 for where data lives, and chapter 11 for probes and limits.";
+  else msg = "Start again from chapter 10: ConfigMap, Secret, claim, then the StatefulSet. Chapter 11 is probes, then requests, limits and the HPA.";
+  document.getElementById("score-msg").textContent = pct + "% — " + msg;
+  document.getElementById("result").classList.add("show");
+  document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function reset() {
+  document.querySelectorAll(".q").forEach((q) => {
+    delete q.dataset.picked;
+    q.classList.remove("ok", "bad");
+    q.querySelectorAll(".choice").forEach((c) => c.classList.remove("on"));
+  });
+  document.getElementById("result").classList.remove("show");
+  held = null;
+  fillOrder("pool-life", "slots-life", LIFE, "Step");
+  fillMatch("pool-roles", "slots-roles", ROLES);
+  fillYaml();
+  fillMatch("pool-path", "slots-path", PATH);
+  updateProgress();
+}
+
+renderQcm();
+reset();
+document.getElementById("btn-score").addEventListener("click", submit);
+document.getElementById("btn-score-2").addEventListener("click", submit);
+document.getElementById("btn-reset").addEventListener("click", reset);
+document.getElementById("btn-reset-2").addEventListener("click", reset);
+</script>
+</body>
+</html>
