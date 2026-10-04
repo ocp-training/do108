@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fids-web
+  labels:
+    app.kubernetes.io/name: fids-web
+    app.kubernetes.io/part-of: fids
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fids-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fids-web
+        app.kubernetes.io/part-of: fids
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/ocp-training/fids-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: FIDS_API_BASE
+              value: /api
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fids-web
+  labels:
+    app.kubernetes.io/name: fids-web
+    app.kubernetes.io/part-of: fids
+spec:
+  selector:
+    app.kubernetes.io/name: fids-web
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: fids-web
+  labels:
+    app.kubernetes.io/name: fids-web
+    app.kubernetes.io/part-of: fids
+spec:
+  to:
+    kind: Service
+    name: fids-web
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCE — Departures — Terminal 2</title>
+<style>
+  :root{
+    --board:#0b0d10;
+    --panel:#12151b;
+    --line:#2a2f38;
+    --amber:#e8c36a;
+    --amber-dim:#9a7d35;
+    --ink:#e8e4d8;
+    --mute:#8b9080;
+    --ok:#3dba7a;
+    --warn:#e8c36a;
+    --hot:#e24b4b;
+    --gone:#6b7180;
+    --banner:#ee0000;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background:var(--board);
+    color:var(--ink);
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .banner{
+    background:var(--banner);
+    color:#fff;
+    font-weight:700;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:13px;
+    padding:8px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .banner b{ letter-spacing:.08em; }
+  header{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:16px;
+    align-items:end;
+  }
+  .mark{
+    font-size:11px;
+    letter-spacing:.28em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    margin:0;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:.04em;
+    line-height:1;
+    text-transform:uppercase;
+  }
+  h1 span{ color:var(--amber); }
+  .clock{ text-align:right; font-variant-numeric:tabular-nums; }
+  .clock .t{
+    font-size:42px;
+    font-weight:700;
+    letter-spacing:.06em;
+    color:var(--amber);
+    line-height:1;
+  }
+  .clock .d{
+    margin-top:6px;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--mute);
+  }
+  .ident{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .ident dl{
+    margin:0;
+    padding:10px 28px;
+    background:var(--panel);
+    display:flex;
+    gap:16px;
+    align-items:baseline;
+  }
+  .ident dt{
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+  }
+  .ident dd{
+    margin:0;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--amber);
+    font-variant-numeric:tabular-nums;
+  }
+  .cols{
+    display:grid;
+    grid-template-columns:140px 110px 1fr 90px 180px;
+    gap:12px;
+    padding:10px 28px;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .row{
+    display:grid;
+    grid-template-columns:140px 110px 1fr 90px 180px;
+    gap:12px;
+    padding:14px 28px;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    font-size:22px;
+    letter-spacing:.02em;
+  }
+  .row:nth-child(odd){ background:var(--panel); }
+  .fn{ font-weight:700; color:var(--amber); letter-spacing:.08em; }
+  .tm{ font-variant-numeric:tabular-nums; font-weight:700; }
+  .dest{ font-weight:700; text-transform:uppercase; }
+  .dest small{
+    display:block;
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--mute);
+    font-weight:400;
+    margin-top:2px;
+  }
+  .gate{ font-weight:700; font-variant-numeric:tabular-nums; }
+  .st{
+    justify-self:start;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border:1px solid currentColor;
+  }
+  .on{ color:var(--ok); }
+  .board{ color:var(--warn); }
+  .final{ color:#ff8a3d; }
+  .delay{ color:var(--hot); }
+  .gone{ color:var(--gone); }
+  main{ flex:1; }
+  .msg{
+    padding:28px;
+    color:var(--mute);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    font-size:14px;
+  }
+  .msg.err{ color:var(--hot); }
+  footer{
+    padding:12px 28px;
+    border-top:1px solid var(--line);
+    color:var(--mute);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+  }
+</style>
+</head>
+<body>
+  <div class="banner">
+    <span>Nice Côte d'Azur · Flight Information Display</span>
+    <b>Board software  live</b>
+  </div>
+  <header>
+    <div>
+      <div class="mark">NCE · Terminal 2</div>
+      <h1>Departures <span>T2</span></h1>
+    </div>
+    <div class="clock">
+      <div class="t" id="clock">08:12</div>
+      <div class="d" id="date">Tuesday 8 September</div>
+    </div>
+  </header>
+  <div class="ident">
+    <dl>
+      <dt>Pod</dt>
+      <dd id="pod">__POD_NAME__</dd>
+    </dl>
+    <dl>
+      <dt>Hostname</dt>
+      <dd id="host">__HOSTNAME__</dd>
+    </dl>
+  </div>
+  <div class="cols">
+    <div>Flight</div><div>Time</div><div>Destination</div><div>Gate</div><div>Status</div>
+  </div>
+  <main id="flights">
+    <div class="msg">Loading flights from fids-api…</div>
+  </main>
+  <footer>
+    <span>Nice Côte d'Azur Airport · Terminal 2 departure board</span>
+    <span>Live data · fids-api · PostgreSQL</span>
+  </footer>
+  <script>
+    (function(){
+      var API = "__API_BASE__";
+      function pad(n){ return n<10 ? "0"+n : ""+n; }
+      var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+      var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      function tick(){
+        var d=new Date();
+        var el=document.getElementById("clock");
+        var dt=document.getElementById("date");
+        if(el) el.textContent=pad(d.getHours())+":"+pad(d.getMinutes());
+        if(dt) dt.textContent=days[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()];
+      }
+      function klass(status){
+        var s=(status||"").toLowerCase();
+        if(s.indexOf("final")>=0) return "final";
+        if(s.indexOf("board")>=0) return "board";
+        if(s.indexOf("delay")>=0) return "delay";
+        if(s.indexOf("closed")>=0 || s.indexOf("depart")>=0) return "gone";
+        return "on";
+      }
+      function esc(s){
+        return String(s||"").replace(/[&<>"]/g, function(c){
+          return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[c];
+        });
+      }
+      function render(rows){
+        var box=document.getElementById("flights");
+        if(!rows || !rows.length){
+          box.innerHTML='<div class="msg">No flights in the database</div>';
+          return;
+        }
+        box.innerHTML=rows.map(function(r){
+          return '<div class="row">'
+            +'<div class="fn">'+esc(r.flight)+'</div>'
+            +'<div class="tm">'+esc(r.time)+'</div>'
+            +'<div class="dest">'+esc(r.destination)+'<small>'+esc(r.airline)+'</small></div>'
+            +'<div class="gate">'+esc(r.gate)+'</div>'
+            +'<div class="st '+klass(r.status)+'">'+esc(r.status)+'</div>'
+            +'</div>';
+        }).join("");
+      }
+      function load(){
+        fetch(API+"/flights").then(function(r){
+          if(!r.ok) throw new Error("HTTP "+r.status);
+          return r.json();
+        }).then(render).catch(function(err){
+          document.getElementById("flights").innerHTML=
+            '<div class="msg err">Cannot reach fids-api — '+esc(err.message)+'</div>';
+        });
+      }
+      tick();
+      setInterval(tick, 1000);
+      load();
+      setInterval(load, 15000);
+    })();
+  </script>
+</body>
+</html>

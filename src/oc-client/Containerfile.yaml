@@ -1,0 +1,12 @@
+FROM image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+USER 0
+RUN dnf install -y git jq && dnf clean all \
+ && curl -fsSL -o /usr/local/bin/yq \
+      https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+ && chmod 0755 /usr/local/bin/yq \
+ && curl -fsSL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz -o helm.tar.gz \
+ && tar -zxvf helm.tar.gz linux-amd64/helm \
+ && mv linux-amd64/helm /usr/local/bin/helm \
+ && chmod +x /usr/local/bin/helm \
+ && rm -rf helm.tar.gz linux-amd64
+USER 1001

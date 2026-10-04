@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCE — Flight desk — Terminal 2</title>
+<style>
+  :root{
+    --board:#0b0d10;
+    --panel:#12151b;
+    --line:#2a2f38;
+    --amber:#e8c36a;
+    --amber-dim:#9a7d35;
+    --ink:#e8e4d8;
+    --mute:#8b9080;
+    --ok:#3dba7a;
+    --hot:#e24b4b;
+    --banner:#ee0000;
+    --field:#0e1116;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:var(--board);
+    color:var(--ink);
+    font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+    min-height:100vh;
+  }
+  .banner{
+    background:var(--banner);
+    color:#fff;
+    font-weight:700;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:13px;
+    padding:8px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  header{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:16px;
+    align-items:end;
+  }
+  .mark{
+    font-size:11px;
+    letter-spacing:.28em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    margin:0;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+  }
+  h1 span{ color:var(--amber); }
+  .clock{ text-align:right; font-variant-numeric:tabular-nums; }
+  .clock .t{ font-size:42px; font-weight:700; letter-spacing:.06em; color:var(--amber); line-height:1; }
+  .clock .d{ margin-top:6px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); }
+  .wrap{ padding:20px 28px 28px; display:grid; grid-template-columns:1.4fr .9fr; gap:22px; align-items:start; }
+  @media (max-width:980px){ .wrap{ grid-template-columns:1fr; } }
+  h2{
+    margin:0 0 12px;
+    font-size:14px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    border-bottom:1px solid var(--line);
+    padding-bottom:8px;
+  }
+  table{ width:100%; border-collapse:collapse; }
+  th{
+    text-align:left;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    padding:8px 8px 8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  td{
+    padding:10px 8px 10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:18px;
+    vertical-align:middle;
+  }
+  tr:nth-child(odd) td{ background:var(--panel); }
+  .fn{ font-weight:700; color:var(--amber); letter-spacing:.08em; }
+  .dest small{ display:block; font-size:12px; color:var(--mute); letter-spacing:.08em; }
+  .st{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    padding:4px 8px;
+    border:1px solid currentColor;
+    display:inline-block;
+  }
+  .on{ color:var(--ok); }
+  .board{ color:var(--amber); }
+  .final{ color:#ff8a3d; }
+  .delay,.gone{ color:var(--hot); }
+  .actions{ display:flex; gap:8px; }
+  .btn{
+    appearance:none;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font:inherit;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .btn.primary{ background:var(--banner); border-color:var(--banner); color:#fff; font-weight:700; }
+  .btn.danger{ color:var(--hot); border-color:var(--hot); }
+  .btn.ghost{ color:var(--mute); }
+  form.inline{ display:inline; }
+  .card{ background:var(--panel); border:1px solid var(--line); padding:16px; }
+  label{
+    display:block;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    margin:10px 0 4px;
+  }
+  input, select{
+    width:100%;
+    background:var(--field);
+    color:var(--ink);
+    border:1px solid var(--line);
+    font:inherit;
+    font-size:18px;
+    padding:8px 10px;
+  }
+  input:focus, select:focus{ outline:2px solid var(--amber); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .flash{ padding:10px 28px; letter-spacing:.06em; text-transform:uppercase; font-size:13px; }
+  .flash.ok{ background:#123322; color:var(--ok); }
+  .flash.err{ background:#3a1414; color:var(--hot); }
+  .empty{ color:var(--mute); letter-spacing:.08em; text-transform:uppercase; padding:18px 0; }
+  footer{
+    padding:12px 28px;
+    border-top:1px solid var(--line);
+    color:var(--mute);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+  <div class="banner">
+    <span>Nice Côte d'Azur · Operations desk</span>
+    <b>fids-admin · PostgreSQL</b>
+  </div>
+  <header>
+    <div>
+      <div class="mark">NCE · Terminal 2</div>
+      <h1>Flight <span>desk</span></h1>
+    </div>
+    <div class="clock">
+      <div class="t" id="clock">--:--</div>
+      <div class="d" id="date"></div>
+    </div>
+  </header>
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}
+  <div class="flash {{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% if error %}
+  <div class="flash err">Database unavailable — {{ error }}</div>
+  {% endif %}
+  <div class="wrap">
+    <section>
+      <h2>Published flights ({{ flights|length }})</h2>
+      {% if not flights %}
+      <div class="empty">No flights in the database</div>
+      {% else %}
+      <table>
+        <thead>
+          <tr>
+            <th>Flight</th><th>Time</th><th>Destination</th><th>Gate</th><th>Status</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in flights %}
+          <tr>
+            <td class="fn">{{ f.flight }}</td>
+            <td>{{ f.sched_time }}</td>
+            <td class="dest">{{ f.destination }}<small>{{ f.airline }} · {{ f.airport }}</small></td>
+            <td>{{ f.gate }}</td>
+            <td><span class="st {{ klass(f.status) }}">{{ f.status }}</span></td>
+            <td>
+              <div class="actions">
+                <a class="btn" href="{{ url_for('index', edit=f.id) }}">Edit</a>
+                <form class="inline" method="post" action="{{ url_for('delete_flight', flight_id=f.id) }}" onsubmit="return confirm('Remove {{ f.flight }} from the board?');">
+                  <button class="btn danger" type="submit">Remove</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </section>
+    <section class="card">
+      {% if editing %}
+      <h2>Update {{ editing.flight }}</h2>
+      <form method="post" action="{{ url_for('update_flight', flight_id=editing.id) }}">
+      {% else %}
+      <h2>Add a flight</h2>
+      <form method="post" action="{{ url_for('create_flight') }}">
+      {% endif %}
+        <div class="row2">
+          <div>
+            <label for="flight">Flight</label>
+            <input id="flight" name="flight" required maxlength="8" value="{{ editing.flight if editing else '' }}" placeholder="AF7701">
+          </div>
+          <div>
+            <label for="sched_time">Time</label>
+            <input id="sched_time" name="sched_time" required pattern="([01][0-9]|2[0-3]):[0-5][0-9]" value="{{ editing.sched_time if editing else '' }}" placeholder="08:15">
+          </div>
+        </div>
+        <label for="destination">Destination</label>
+        <input id="destination" name="destination" required value="{{ editing.destination if editing else '' }}" placeholder="Paris CDG">
+        <div class="row2">
+          <div>
+            <label for="airport">Airport</label>
+            <input id="airport" name="airport" required maxlength="4" value="{{ editing.airport if editing else '' }}" placeholder="CDG">
+          </div>
+          <div>
+            <label for="gate">Gate</label>
+            <input id="gate" name="gate" required maxlength="6" value="{{ editing.gate if editing else '' }}" placeholder="A12">
+          </div>
+        </div>
+        <label for="airline">Airline</label>
+        <input id="airline" name="airline" required value="{{ editing.airline if editing else '' }}" placeholder="Air France">
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+          {% for s in statuses %}
+          <option value="{{ s }}" {% if editing and editing.status == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <div class="actions" style="margin-top:16px">
+          <button class="btn primary" type="submit">{{ 'Save changes' if editing else 'Add flight' }}</button>
+          {% if editing %}
+          <a class="btn ghost" href="{{ url_for('index') }}">Cancel</a>
+          {% endif %}
+        </div>
+      </form>
+    </section>
+  </div>
+  <footer>Changes written with fids-db-credentials · the Terminal 2 board reads the same table through fids-api</footer>
+  <script>
+    function pad(n){ return n<10 ? "0"+n : ""+n; }
+    var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    function tick(){
+      var d=new Date();
+      document.getElementById("clock").textContent=pad(d.getHours())+":"+pad(d.getMinutes());
+      document.getElementById("date").textContent=days[d.getDay()]+" "+d.getDate()+" "+months[d.getMonth()];
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
