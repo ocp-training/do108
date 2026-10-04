@@ -1,0 +1,69 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: do108
+  displayName: DO108
+
+variables:
+  helmVersion: v3.19.0   # pin the Helm release you want (check https://github.com/helm/helm/releases)
+
+projects:
+  - name: do108
+    git:
+      remotes:
+        origin: https://github.com/ocp-training/do108.git
+      checkoutFrom:
+        remote: origin
+        revision: main
+
+components:
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel9
+      memoryRequest: 512Mi
+      memoryLimit: 2Gi
+      cpuRequest: 250m
+      cpuLimit: '1'
+      mountSources: true
+      env:
+        - name: HELM_VERSION
+          value: '{{helmVersion}}'
+
+commands:
+  - id: install-helm
+    exec:
+      label: "Install Helm"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}
+      commandLine: |
+        set -e
+        if command -v helm >/dev/null 2>&1; then
+          echo "Helm already available: $(helm version --short)"
+          exit 0
+        fi
+        case "$(uname -m)" in
+          x86_64)  ARCH=amd64 ;;
+          aarch64) ARCH=arm64 ;;
+          *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;;
+        esac
+        BIN_DIR="${HOME}/.local/bin"
+        mkdir -p "${BIN_DIR}"
+        TMP=$(mktemp -d)
+        curl -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${ARCH}.tar.gz" -o "${TMP}/helm.tgz"
+        tar -xzf "${TMP}/helm.tgz" -C "${TMP}"
+        install -m 0755 "${TMP}/linux-${ARCH}/helm" "${BIN_DIR}/helm"
+        rm -rf "${TMP}"
+        grep -q '.local/bin' "${HOME}/.bashrc" 2>/dev/null || \
+          echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"
+        echo "Helm installed: $("${BIN_DIR}/helm" version --short)"
+
+  - id: helm-version
+    exec:
+      label: "Helm: show version"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/do108
+      commandLine: helm version
+
+events:
+  postStart:
+    - install-helm
