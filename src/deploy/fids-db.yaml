@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: fids-db-data
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-db
     app.kubernetes.io/part-of: fids
@@ -16,6 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fids-db
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-db
     app.kubernetes.io/part-of: fids
@@ -70,6 +72,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: fids-db
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-db
     app.kubernetes.io/part-of: fids

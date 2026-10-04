@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fids-admin
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-admin
     app.kubernetes.io/part-of: fids
@@ -54,6 +55,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: fids-admin
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-admin
     app.kubernetes.io/part-of: fids
@@ -69,6 +71,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: fids-admin
+  namespace: fids-app
   labels:
     app.kubernetes.io/name: fids-admin
     app.kubernetes.io/part-of: fids

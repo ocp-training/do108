@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: fids-web
+  labels:
+    app.kubernetes.io/name: fids-web
+    app.kubernetes.io/part-of: fids
+spec:
+  to:
+    kind: Service
+    name: fids-web
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
