@@ -451,10 +451,20 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap h1{ font-family:var(--font-display); font-weight:900; font-size:26pt; margin:0 0 4mm; }
 .index-wrap h2{ font-family:var(--font-display); font-weight:700; font-size:14pt; color:#ee0000; margin:10mm 0 3mm; }
 .index-wrap ul{ list-style:none; padding:0; margin:0 0 4mm; }
-.index-wrap li{ border-bottom:1px solid #e0e0e0; }
-.index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
+.index-wrap li{ display:flex; align-items:stretch; gap:12px; border-bottom:1px solid #e0e0e0; }
+.index-wrap li a{ display:flex; gap:12px; align-items:center; flex:1; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+.index-wrap a.corr{
+  flex:0 0 auto;
+  font-family:var(--font-mono);
+  font-size:8pt;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#ee0000;
+}
+.index-wrap a.corr:hover{ color:#a30000; }
 .lab-access{
   border:1.5px solid #e0e0e0;
   border-top:4px solid #ee0000;
@@ -495,6 +505,7 @@ h1.chap{ break-before:auto; padding-top:0; }
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
   <a href="index.html">Labs</a>
+  <a href="#assessments">Assessments</a>
   <a href="index.html">Index</a>
   
   <span class="crumb">Index</span>
@@ -535,82 +546,93 @@ h1.chap{ break-before:auto; padding-top:0; }
   </section>
   <p class="small" style="letter-spacing:.16em;text-transform:uppercase;color:#ee0000;font-weight:700;margin:0 0 2mm">Phoenix Formations · OpenShift 4.18</p>
   <h1>DO108 labs</h1>
-  <p>Organised by day and chapter. Instructor corrections are in the corrections folder.</p>
+  <p>Organised by day and chapter. Each lab links to its instructor correction.</p>
   <h2>Days</h2>
   <ul>
-    <li><a href="../assessments/day1/index.html"><span class="n">Day 1</span><span>Day 1 — The platform and the command line</span></a></li><li><a href="day2/index.html"><span class="n">Day 2</span><span>Day 2 — Containers, pods and managed workloads</span></a></li><li><a href="day3/index.html"><span class="n">Day 3</span><span>Day 3 — Configuration, storage and reliability</span></a></li><li><a href="day4/index.html"><span class="n">Day 4</span><span>Day 4 — Updates and comprehensive review</span></a></li>
+    <li><a href="assessments/day1/index.html"><span class="n">Day 1</span><span>Day 1 — The platform and the command line</span></a></li>
+    <li><a href="day2/index.html"><span class="n">Day 2</span><span>Day 2 — Containers, pods and managed workloads</span></a></li>
+    <li><a href="day3/index.html"><span class="n">Day 3</span><span>Day 3 — Configuration, storage and reliability</span></a></li>
+    <li><a href="day4/index.html"><span class="n">Day 4</span><span>Day 4 — Updates and comprehensive review</span></a></li>
+  </ul>
+  <h2 id="assessments">Assessments</h2>
+  <ul>
+    <li><a href="assessments/day1/index.html"><span class="n">Day 1</span><span>Day 1 — The platform and the command line</span></a></li>
+    <li><a href="assessments/day2/warmup/lab-warmup.html"><span class="n">Warm-up</span><span>Warm-up — Deploy the flight API</span></a>
+      <a class="corr" href="assessments/day2/warmup/lab-warmup-correction.html">Correction</a></li>
+    <li><a href="day2/assessment/index.html"><span class="n">Days 1–2</span><span>Assessment — Days 1 and 2</span></a></li>
+    <li><a href="day3/assessment/index.html"><span class="n">Day 3</span><span>Assessment — Day 3</span></a></li>
   </ul>
   <h2>Day 1 · Chapter 3 — Prepare your workstation</h2>
 <p class="small"><a href="day1/chapter-03/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day1/chapter-03/lab-00.html"><span class="n">lab-00</span><span>Lab 0 — Prove your workstation works</span></a></li>
+<li><a href="day1/chapter-03/lab-00.html"><span class="n">lab-00</span><span>Lab 0 — Prove your workstation works</span></a><a class="corr" href="corrections/lab-00-correction.html">Correction</a></li>
 </ul><h2>Day 1 · Chapter 6 — Kubernetes and OpenShift architecture</h2>
 <p class="small"><a href="day1/chapter-06/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day1/chapter-06/lab-06-1.html"><span class="n">lab-06-1</span><span>Lab 6.1 — Deploy the flight board from the console</span></a></li>
-<li><a href="day1/chapter-06/lab-06-2.html"><span class="n">lab-06-2</span><span>Lab 6.2 — Assess the cluster</span></a></li>
-<li><a href="day1/chapter-06/lab-06-3.html"><span class="n">lab-06-3</span><span>Workshop 6.3 — Eight facts about this cluster</span></a></li>
+<li><a href="day1/chapter-06/lab-06-1.html"><span class="n">lab-06-1</span><span>Lab 6.1 — Deploy the flight board from the console</span></a><a class="corr" href="corrections/lab-06-1-correction.html">Correction</a></li>
+<li><a href="day1/chapter-06/lab-06-2.html"><span class="n">lab-06-2</span><span>Lab 6.2 — Assess the cluster</span></a><a class="corr" href="corrections/lab-06-2-correction.html">Correction</a></li>
+<li><a href="day1/chapter-06/lab-06-3.html"><span class="n">lab-06-3</span><span>Workshop 6.3 — Eight facts about this cluster</span></a><a class="corr" href="corrections/lab-06-3-correction.html">Correction</a></li>
 </ul><h2>Day 1 · Chapter 7 — The command line and the Kubernetes API</h2>
 <p class="small"><a href="day1/chapter-07/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day1/chapter-07/lab-07-1.html"><span class="n">lab-07-1</span><span>Lab 7.1 — First contact from the command line</span></a></li>
-<li><a href="day1/chapter-07/lab-07-2.html"><span class="n">lab-07-2</span><span>Lab 7.2 — Explore the API without documentation</span></a></li>
-<li><a href="day1/chapter-07/lab-07-3.html"><span class="n">lab-07-3</span><span>Lab 7.3 — Extract precise answers</span></a></li>
-<li><a href="day1/chapter-07/lab-07-4.html"><span class="n">lab-07-4</span><span>Workshop 7.4 — The inventory</span></a></li>
+<li><a href="day1/chapter-07/lab-07-1.html"><span class="n">lab-07-1</span><span>Lab 7.1 — First contact from the command line</span></a><a class="corr" href="corrections/lab-07-1-correction.html">Correction</a></li>
+<li><a href="day1/chapter-07/lab-07-2.html"><span class="n">lab-07-2</span><span>Lab 7.2 — Explore the API without documentation</span></a><a class="corr" href="corrections/lab-07-2-correction.html">Correction</a></li>
+<li><a href="day1/chapter-07/lab-07-3.html"><span class="n">lab-07-3</span><span>Lab 7.3 — Extract precise answers</span></a><a class="corr" href="corrections/lab-07-3-correction.html">Correction</a></li>
+<li><a href="day1/chapter-07/lab-07-4.html"><span class="n">lab-07-4</span><span>Workshop 7.4 — The inventory</span></a><a class="corr" href="corrections/lab-07-4-correction.html">Correction</a></li>
 </ul><h2>Day 2 · Warm-up</h2>
 <p class="small"><a href="day2/index.html">Day folder</a></p>
 <ul>
-<li><a href="../assessments/day2/warmup/lab-warmup.html"><span class="n">warmup</span><span>Warm-up — Deploy the flight API</span></a></li>
+<li><a href="assessments/day2/warmup/lab-warmup.html"><span class="n">warmup</span><span>Warm-up — Deploy the flight API</span></a><a class="corr" href="assessments/day2/warmup/lab-warmup-correction.html">Correction</a></li>
 <li><a href="day2/assessment/index.html"><span class="n">assess</span><span>Assessment — Days 1 and 2</span></a></li>
 </ul><h2>Day 2 · Chapter 8 — Running applications as containers and pods</h2>
 <p class="small"><a href="day2/chapter-08/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day2/chapter-08/lab-08-1.html"><span class="n">lab-08-1</span><span>Lab 8.1 — The flight board as a bare pod</span></a></li>
+<li><a href="day2/chapter-08/lab-08-1.html"><span class="n">lab-08-1</span><span>Lab 8.1 — The flight board as a bare pod</span></a><a class="corr" href="corrections/lab-08-1-correction.html">Correction</a></li>
 <li><a href="day2/chapter-08/lab-08-2.html"><span class="n">lab-08-2</span><span>Lab 8.2 — Inspect before you deploy</span></a></li>
-<li><a href="day2/chapter-08/lab-08-3.html"><span class="n">lab-08-3</span><span>Lab 8.3 — Diagnose three broken pods</span></a></li>
-<li><a href="day2/chapter-08/lab-08-4.html"><span class="n">lab-08-4</span><span>Workshop 8.4 — The 06:40 incident</span></a></li>
+<li><a href="day2/chapter-08/lab-08-3.html"><span class="n">lab-08-3</span><span>Lab 8.3 — Diagnose three broken pods</span></a><a class="corr" href="corrections/lab-08-3-correction.html">Correction</a></li>
+<li><a href="day2/chapter-08/lab-08-4.html"><span class="n">lab-08-4</span><span>Workshop 8.4 — The 06:40 incident</span></a><a class="corr" href="corrections/lab-08-4-correction.html">Correction</a></li>
 </ul><h2>Day 2 · Chapter 9 — Deploying managed and networked applications</h2>
 <p class="small"><a href="day2/chapter-09/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day2/chapter-09/lab-09-1.html"><span class="n">lab-09-1</span><span>Lab 9.1 — Promote the flight board</span></a></li>
-<li><a href="day2/chapter-09/lab-09-2.html"><span class="n">lab-09-2</span><span>Lab 9.2 — The nightly baggage reconciliation</span></a></li>
-<li><a href="day2/chapter-09/lab-09-3.html"><span class="n">lab-09-3</span><span>Lab 9.3 — Connect the board to the API</span></a></li>
-<li><a href="day2/chapter-09/lab-09-4.html"><span class="n">lab-09-4</span><span>Lab 9.4 — Publish the board</span></a></li>
-<li><a href="day2/chapter-09/lab-09-5.html"><span class="n">lab-09-5</span><span>Workshop 9.5 — Gate planner goes live</span></a></li>
+<li><a href="day2/chapter-09/lab-09-1.html"><span class="n">lab-09-1</span><span>Lab 9.1 — Promote the flight board</span></a><a class="corr" href="corrections/lab-09-1-correction.html">Correction</a></li>
+<li><a href="day2/chapter-09/lab-09-2.html"><span class="n">lab-09-2</span><span>Lab 9.2 — The nightly baggage reconciliation</span></a><a class="corr" href="corrections/lab-09-2-correction.html">Correction</a></li>
+<li><a href="day2/chapter-09/lab-09-3.html"><span class="n">lab-09-3</span><span>Lab 9.3 — Connect the board to the API</span></a><a class="corr" href="corrections/lab-09-3-correction.html">Correction</a></li>
+<li><a href="day2/chapter-09/lab-09-4.html"><span class="n">lab-09-4</span><span>Lab 9.4 — Publish the board</span></a><a class="corr" href="corrections/lab-09-4-correction.html">Correction</a></li>
+<li><a href="day2/chapter-09/lab-09-5.html"><span class="n">lab-09-5</span><span>Workshop 9.5 — Gate planner goes live</span></a><a class="corr" href="corrections/lab-09-5-correction.html">Correction</a></li>
 </ul><h2>Day 3 · Chapter 10 — Configuration and persistent storage</h2>
 <p class="small"><a href="day3/chapter-10/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day3/chapter-10/lab-10-1.html"><span class="n">lab-10-1</span><span>Lab 10.1 — Real flight data on the board</span></a></li>
-<li><a href="day3/chapter-10/lab-10-2.html"><span class="n">lab-10-2</span><span>Lab 10.2 — Give the database a home</span></a></li>
-<li><a href="day3/chapter-10/lab-10-3.html"><span class="n">lab-10-3</span><span>Lab 10.3 — The database as a StatefulSet</span></a></li>
-<li><a href="day3/chapter-10/lab-10-4.html"><span class="n">lab-10-4</span><span>Workshop 10.4 — Externalise everything</span></a></li>
+<li><a href="day3/chapter-10/lab-10-1.html"><span class="n">lab-10-1</span><span>Lab 10.1 — Real flight data on the board</span></a><a class="corr" href="corrections/lab-10-1-correction.html">Correction</a></li>
+<li><a href="day3/chapter-10/lab-10-2.html"><span class="n">lab-10-2</span><span>Lab 10.2 — Give the database a home</span></a><a class="corr" href="corrections/lab-10-2-correction.html">Correction</a></li>
+<li><a href="day3/chapter-10/lab-10-3.html"><span class="n">lab-10-3</span><span>Lab 10.3 — The database as a StatefulSet</span></a><a class="corr" href="corrections/lab-10-3-correction.html">Correction</a></li>
+<li><a href="day3/chapter-10/lab-10-4.html"><span class="n">lab-10-4</span><span>Workshop 10.4 — Externalise everything</span></a><a class="corr" href="corrections/lab-10-4-correction.html">Correction</a></li>
 </ul><h2>Day 3 · Chapter 11 — Configuring applications for reliability</h2>
 <p class="small"><a href="day3/chapter-11/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day3/chapter-11/lab-11-1.html"><span class="n">lab-11-1</span><span>Lab 11.1 — Probes on the flight board</span></a></li>
-<li><a href="day3/chapter-11/lab-11-2.html"><span class="n">lab-11-2</span><span>Lab 11.2 — Requests, limits and an OOM kill</span></a></li>
-<li><a href="day3/chapter-11/lab-11-3.html"><span class="n">lab-11-3</span><span>Lab 11.3 — An autoscaler that actually scales</span></a></li>
-<li><a href="day3/chapter-11/lab-11-4.html"><span class="n">lab-11-4</span><span>Workshop 11.4 — Make the platform trustworthy</span></a></li>
+<li><a href="day3/chapter-11/lab-11-1.html"><span class="n">lab-11-1</span><span>Lab 11.1 — Probes on the flight board</span></a><a class="corr" href="corrections/lab-11-1-correction.html">Correction</a></li>
+<li><a href="day3/chapter-11/lab-11-2.html"><span class="n">lab-11-2</span><span>Lab 11.2 — Requests, limits and an OOM kill</span></a><a class="corr" href="corrections/lab-11-2-correction.html">Correction</a></li>
+<li><a href="day3/chapter-11/lab-11-3.html"><span class="n">lab-11-3</span><span>Lab 11.3 — An autoscaler that actually scales</span></a><a class="corr" href="corrections/lab-11-3-correction.html">Correction</a></li>
+<li><a href="day3/chapter-11/lab-11-4.html"><span class="n">lab-11-4</span><span>Workshop 11.4 — Make the platform trustworthy</span></a><a class="corr" href="corrections/lab-11-4-correction.html">Correction</a></li>
 <li><a href="day3/assessment/index.html"><span class="n">assess</span><span>Assessment — Day 3</span></a></li>
 </ul><h2>Day 4 · Chapter 12 — Managing application updates</h2>
 <p class="small"><a href="day4/chapter-12/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day4/chapter-12/lab-12-1.html"><span class="n">lab-12-1</span><span>Lab 12.1 — Pin the flight board</span></a></li>
-<li><a href="day4/chapter-12/lab-12-2.html"><span class="n">lab-12-2</span><span>Lab 12.2 — Roll out, fail, roll back</span></a></li>
-<li><a href="day4/chapter-12/lab-12-3.html"><span class="n">lab-12-3</span><span>Lab 12.3 — A stream, a trigger, and a one-word rollback</span></a></li>
-<li><a href="day4/chapter-12/lab-12-4.html"><span class="n">lab-12-4</span><span>Workshop 12.4 — Update the gate planner</span></a></li>
+<li><a href="day4/chapter-12/lab-12-1.html"><span class="n">lab-12-1</span><span>Lab 12.1 — Pin the flight board</span></a><a class="corr" href="corrections/lab-12-1-correction.html">Correction</a></li>
+<li><a href="day4/chapter-12/lab-12-2.html"><span class="n">lab-12-2</span><span>Lab 12.2 — Roll out, fail, roll back</span></a><a class="corr" href="corrections/lab-12-2-correction.html">Correction</a></li>
+<li><a href="day4/chapter-12/lab-12-3.html"><span class="n">lab-12-3</span><span>Lab 12.3 — A stream, a trigger, and a one-word rollback</span></a><a class="corr" href="corrections/lab-12-3-correction.html">Correction</a></li>
+<li><a href="day4/chapter-12/lab-12-4.html"><span class="n">lab-12-4</span><span>Workshop 12.4 — Update the gate planner</span></a><a class="corr" href="corrections/lab-12-4-correction.html">Correction</a></li>
 </ul><h2>Day 4 · Chapter 13 — Comprehensive review and final workshop</h2>
 <p class="small"><a href="day4/chapter-13/index.html">Chapter folder</a></p>
 <ul>
-<li><a href="day4/chapter-13/lab-13-1.html"><span class="n">lab-13-1</span><span>Final workshop — Build the FIDS application</span></a></li>
+<li><a href="day4/chapter-13/lab-13-1.html"><span class="n">lab-13-1</span><span>Final workshop — Build the FIDS application</span></a><a class="corr" href="corrections/lab-13-1-correction.html">Correction</a></li>
 </ul><h2>Extended labs</h2>
 <p class="small"><a href="extended-labs/index.html">Extended folder</a></p>
 <ul>
-<li><a href="extended-labs/helm-charts/lab-helm.html"><span class="n">Helm</span><span>Package the flight board with Helm</span></a></li>
-<li><a href="extended-labs/helmchart-deploy/lab-helmchart-deploy.html"><span class="n">Registry</span><span>Install a Helm repository and a chart</span></a></li>
-<li><a href="extended-labs/kustomize/lab-kustomize.html"><span class="n">Kustomize</span><span>Customize the flight board with Kustomize</span></a></li>
-<li><a href="extended-labs/openshift-pipeline/lab-openshift-pipeline.html"><span class="n">Pipeline</span><span>Deploy FIDS with an OpenShift Pipeline</span></a></li>
-<li><a href="extended-labs/gitops/lab-gitops.html"><span class="n">GitOps</span><span>Deploy FIDS with the OpenShift GitOps UI</span></a></li>
+<li><a href="extended-labs/helm-charts/lab-helm.html"><span class="n">Helm</span><span>Package the flight board with Helm</span></a><a class="corr" href="corrections/lab-helm-correction.html">Correction</a></li>
+<li><a href="extended-labs/helmchart-deploy/lab-helmchart-deploy.html"><span class="n">Registry</span><span>Install a Helm repository and a chart</span></a><a class="corr" href="extended-labs/helmchart-deploy/lab-helmchart-deploy-correction.html">Correction</a></li>
+<li><a href="extended-labs/kustomize/lab-kustomize.html"><span class="n">Kustomize</span><span>Customize the flight board with Kustomize</span></a><a class="corr" href="corrections/lab-kustomize-correction.html">Correction</a></li>
+<li><a href="extended-labs/openshift-pipeline/lab-openshift-pipeline.html"><span class="n">Pipeline</span><span>Deploy FIDS with an OpenShift Pipeline</span></a><a class="corr" href="corrections/lab-openshift-pipeline-correction.html">Correction</a></li>
+<li><a href="extended-labs/gitops/lab-gitops.html"><span class="n">GitOps</span><span>Deploy FIDS with the OpenShift GitOps UI</span></a><a class="corr" href="corrections/lab-gitops-correction.html">Correction</a></li>
 </ul>
 </div>
 
