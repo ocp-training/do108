@@ -489,8 +489,7 @@ h1.chap{ break-before:auto; padding-top:0; }
   <div class="corr-col">
     <h3>Using the CLI</h3>
     <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-fids-warmup</span>
-<span class="cm"># edit fids-api.yaml: replicas 3, image, containerPort 8080</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">cd …/labs/day2/warmup</span>
+<span class="cm"># complete the Deployment on the lab page, save it as fids-api.yaml</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc apply -f fids-api.yaml</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-api</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc logs deploy/fids-api --tail=10</span>
