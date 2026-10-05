@@ -1,6 +1,0 @@
-apiVersion: v2
-name: fids-board
-description: Flight information board (web tier) for the DO108 Helm lab
-type: application
-version: 0.1.0
-appVersion: "1.0.0"

@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - ../../base
-# TODO: set namespace to fids-kustomize
-# TODO: set replicas of Deployment fids-web to 3
-# TODO: add label environment=classroom without changing selectors
-# TODO: patch Deployment fids-web with annotation training.example/managed-by=kustomize

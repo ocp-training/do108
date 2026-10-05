@@ -1,4 +1,0 @@
-Flight board release {{ .Release.Name }} is in namespace {{ .Release.Namespace }}.
-
-  oc get deploy {{ .Release.Name }} -n {{ .Release.Namespace }}
-  oc get route {{ .Release.Name }} -n {{ .Release.Namespace }}
