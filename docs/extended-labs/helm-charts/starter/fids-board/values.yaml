@@ -1,0 +1,12 @@
+# TODO: set replicaCount to 2 before you install.
+replicaCount: 0
+image:
+  repository: ghcr.io/ocp-training/fids-web
+  tag: latest
+  pullPolicy: Always
+apiBase: /api
+service:
+  port: 8080
+# TODO: set route.enabled to true so the board is published.
+route:
+  enabled: false

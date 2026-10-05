@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Correction — Lab 0 — Workstation validation — DO108</title>
+<title>Correction — Workshop 6.3 — Eight facts — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -468,44 +468,37 @@ h1.chap{ break-before:auto; padding-top:0; }
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="../../index.html">Labs</a>
-  <a href="../../../assessments/day1/index.html">Day</a>
-  <a href="lab-00.html">Lab</a>
-  <span class="crumb">Correction · Lab 0 — Workstation validation</span>
+  <a href="../index.html">Labs</a>
+  <a href="../../assessments/day1/index.html">Day</a>
+  <a href="../day1/chapter-06/lab-06-3.html">Lab</a>
+  <span class="crumb">Correction · Workshop 6.3 — Eight facts</span>
 </nav>
 <div class="page-wrap">
 
-<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Lab 0 — Workstation validation</span></h1>
-<p><a href="lab-00.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Workshop 6.3 — Eight facts</span></h1>
+<p><a href="../day1/chapter-06/lab-06-3.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p>Client 4.18, successful login, console opens, <code>check</code> pod Running, <code>oc exec</code> prints the RHEL release, project deleted.</p>
+  <p>Eight facts written down, each with <em>where</em> you found it. At least three have both a console and a CLI source.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Using the console</h3>
-    <ol class='steps'><li><p>Open the URL from <code>oc whoami --show-console</code> and log in as <code>userN</code>.</p></li><li><p>Administrator or Developer → <em>Home → Projects</em> → <em>Create Project</em> named <code>userN-check</code>.</p></li><li><p>Developer → <em>+Add → Container images</em>. Image <code>registry.access.redhat.com/ubi9/ubi-minimal:latest</code>. After it is Running, open the pod → <em>Terminal</em> and run <code>cat /etc/redhat-release</code>.</p></li><li><p>Administrator → <em>Home → Projects</em> → delete <code>userN-check</code>.</p></li></ol>
+    <ol class='steps'><li><p>Home → Overview (or Administration → Cluster Settings) for the OpenShift version.</p></li><li><p>Networking → Routes: hostname after the first dot is the apps domain.</p></li><li><p>Workloads → Pods → <code>fids-web</code> → Details: Node.</p></li><li><p>Networking → Services → <code>fids-web</code>: ClusterIP. You cannot curl it from the laptop (different network).</p></li><li><p>Pod → YAML or Details: <code>image:</code>.</p></li><li><p>Home → Projects: count. Seeing a project is not the same as being allowed to change it.</p></li><li><p>Pod → Terminal → <code>id</code>.</p></li><li><p>Home → Projects → your project → YAML: <code>creationTimestamp</code> and <code>openshift.io/requester</code>.</p></li></ol>
   </div>
   <div class="corr-col">
     <h3>Using the CLI</h3>
-    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc version --client</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">export U=userN</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc login -u $U https://api.cluster-&lt;id&gt;.dynamic.redhatworkshops.io:6443</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc whoami &amp;&amp; oc whoami --show-console</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-check</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc run check --image=registry.access.redhat.com/ubi9/ubi-minimal:latest --restart=Never --command -- sleep 300</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get pods -w</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc exec check -- cat /etc/redhat-release</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc delete project ${U}-check</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">mkdir -p ~/do108/{day1,day2,day3,day4} &amp;&amp; cd ~/do108 &amp;&amp; git init</span></div>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get clusterversion</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pod -l app=fids-web -o jsonpath='{.items[0].spec.nodeName}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get svc fids-web -o jsonpath='{.spec.clusterIP}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get pod -l app=fids-web -o jsonpath='{.items[0].spec.containers[0].image}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get projects</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc exec deploy/fids-web -- id</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get project ${U}-fids -o jsonpath='{.metadata.creationTimestamp} {.metadata.annotations.openshift\.io/requester}{"\n"}'</span></div>
   </div>
 </div>
-
-<div class="adm verif"><div class="ico">?</div><div class="bd"><span class="admlab">Expected</span>
-<p><code>oc version --client</code> starts with 4.18. Login prints <em>Login successful</em>.
-<code>oc exec</code> returns <code>Red Hat Enterprise Linux release 9.x</code>.
-If login hangs, 6443 is filtered; if you see x509, answer <code>y</code> or use <code>--insecure-skip-tls-verify=true</code> on this training cluster only.</p></div></div>
-
+<table class='run'><thead><tr><th>Question</th><th>Console</th><th>CLI</th></tr></thead><tbody><tr><td>OpenShift version</td><td>Cluster Settings / Overview</td><td><code>oc get clusterversion</code> → 4.18.z</td></tr><tr><td>Route domain</td><td>any Route hostname after the first dot</td><td><code>oc get ingresses.config.openshift.io cluster</code> → <code>apps.cluster-…</code></td></tr><tr><td>Node of fids-web</td><td>Pod Details → Node</td><td><code>oc get pod -o wide</code></td></tr><tr><td>Service ClusterIP</td><td>Networking → Services</td><td>A 172.30.x.x (or similar). Not reachable from the laptop.</td></tr><tr><td>Image</td><td>Pod YAML <code>image</code></td><td><code>…/ubi9/httpd-24:latest</code></td></tr><tr><td>Visible projects</td><td>Home → Projects</td><td><code>oc get projects</code> — list ≠ edit rights</td></tr><tr><td>Container UID</td><td>Pod Terminal → <code>id</code></td><td>A 1000xxxxxxx UID from the project SCC range, not root</td></tr><tr><td>Project created</td><td>Project YAML annotations</td><td>timestamp + requester = your user</td></tr></tbody></table>
 
 </div>
 </body>
