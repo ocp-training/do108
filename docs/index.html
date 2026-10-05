@@ -455,6 +455,40 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+.lab-access{
+  border:1.5px solid #e0e0e0;
+  border-top:4px solid #ee0000;
+  background:#fafafa;
+  padding:5mm 5.5mm 4mm;
+  margin:0 0 10mm;
+}
+.lab-access h2{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:13pt;
+  color:#151515;
+  margin:0 0 1.5mm;
+}
+.lab-access .hint{
+  margin:0 0 3.5mm;
+  font-size:9pt;
+  color:#4d4d4d;
+}
+.lab-access table{ margin:0; table-layout:auto; }
+.lab-access td:first-child{
+  width:62mm;
+  font-family:var(--font-mono);
+  font-size:8pt;
+  font-weight:700;
+  color:#4d4d4d;
+  letter-spacing:0;
+  text-transform:none;
+  word-break:normal;
+}
+.lab-access td{ font-size:8.6pt; word-break:normal; overflow-wrap:anywhere; }
+.lab-access code{ font-size:.92em; background:#fff; }
+.lab-access .term{ margin:4mm 0 1mm; }
+.lab-access .term .url{ white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -468,6 +502,37 @@ h1.chap{ break-before:auto; padding-top:0; }
 <div class="page-wrap">
 
 <div class="index-wrap" style="box-shadow:none;padding:0">
+  <section class="lab-access">
+    <p class="small" style="letter-spacing:.16em;text-transform:uppercase;color:#ee0000;font-weight:700;margin:0 0 2mm">Lab access</p>
+    <h2>OpenShift cluster</h2>
+    <p class="hint">Use these values to reach the console, the API, and the <code>oc</code> client. The cluster password is written on the board.</p>
+    <table class="kv">
+      <tbody>
+        <tr>
+          <td>openshift_console_url</td>
+          <td><a href="https://console-openshift-console.apps.cluster-d528d.dyn.redhatworkshops.io">https://console-openshift-console.apps.<wbr>cluster-d528d.dyn.redhatworkshops.io</a></td>
+        </tr>
+        <tr>
+          <td>openshift_api_url</td>
+          <td><code>https://api.cluster-d528d.dyn.redhatworkshops.io:6443</code></td>
+        </tr>
+        <tr>
+          <td>openshift_api_server_url</td>
+          <td><code>https://api.cluster-d528d.dyn.redhatworkshops.io:6443</code></td>
+        </tr>
+        <tr>
+          <td>openshift_client_download_url</td>
+          <td><a href="http://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-4.20/openshift-client-linux.tar.gz">http://mirror.openshift.com/pub/openshift-v4/<wbr>clients/ocp/stable-4.20/<wbr>openshift-client-linux.tar.gz</a></td>
+        </tr>
+        <tr>
+          <td>openshift_cluster_user_password</td>
+          <td><code>{written on the board}</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="hint" style="margin:4mm 0 0">Connect with your assigned user. Replace <code>userX</code> and <code>PASSWORD</code> with your login and the password written on the board.</p>
+    <div class="term"><span class="p">$</span> <span class="c">oc login -u userX -p PASSWORD --server <span class="url">https://api.cluster-d528d.dyn.redhatworkshops.io:6443</span></span></div>
+  </section>
   <p class="small" style="letter-spacing:.16em;text-transform:uppercase;color:#ee0000;font-weight:700;margin:0 0 2mm">Phoenix Formations · OpenShift 4.18</p>
   <h1>DO108 labs</h1>
   <p>Organised by day and chapter. Instructor corrections are in the corrections folder.</p>
