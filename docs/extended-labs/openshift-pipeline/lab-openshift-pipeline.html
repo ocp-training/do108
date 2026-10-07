@@ -488,7 +488,7 @@ h1.chap{ break-before:auto; padding-top:0; }
     </table>
     <p>Two files go with this lab. You import both from the console:</p>
     <ul>
-      <li><a href="pipeline/fids-pipeline-edit-binding.yaml"><code>pipeline/fids-pipeline-edit-binding.yaml</code></a> — lets the pipeline change project <code>fids-app</code>.</li>
+      <li><a href="pipeline/fids-pipeline-edit-binding.yaml"><code>pipeline/fids-pipeline-edit-binding.yaml</code></a> — lets the pipeline change project <code>${U}-fids-app</code>.</li>
       <li><a href="pipeline/fids-deploy-pipeline.yaml"><code>pipeline/fids-deploy-pipeline.yaml</code></a> — the pipeline itself.</li>
     </ul>
     <p>The manifests it applies are the application files in <code>images/NCA-APP/do108/src/deploy</code>: <code>fids-db-secret.yaml</code>, <code>fids-db.yaml</code>, <code>fids-api.yaml</code>, <code>fids-web.yaml</code>, and <code>fids-admin.yaml</code>. <code>fids-oc.yaml</code> is not applied. That file is a cluster-admin toolbox, not part of the application.</p>
@@ -512,19 +512,19 @@ h1.chap{ break-before:auto; padding-top:0; }
           <caption>Pipeline project</caption>
           <thead><tr><th>Field</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Name</td><td><code>fids-pipelines</code></td></tr>
+            <tr><td>Name</td><td><code>${U}-fids-pipelines</code></td></tr>
           </tbody>
         </table>
-        <p>Click <strong>Create</strong>. The operator adds a ServiceAccount named <code>pipeline</code> in this project. The pipeline runs as that account. If the project already exists, open it and continue.</p></li>
+        <p>Click <strong>Create</strong>. The operator adds a ServiceAccount named <code>pipeline</code> in this project. The pipeline runs as that account. If the project already exists, open it and continue. Set <code>export U=user1</code> to your account. Replace <code>${U}</code> in both YAML files before you import them.</p></li>
 
-      <li><p><strong>Allow that account to deploy the application.</strong> On its own, <code>pipeline</code> in <code>fids-pipelines</code> cannot create Deployments in <code>fids-app</code>. The binding file grants it the <code>edit</code> role there.</p>
+      <li><p><strong>Allow that account to deploy the application.</strong> On its own, <code>pipeline</code> in <code>${U}-fids-pipelines</code> cannot create Deployments in <code>${U}-fids-app</code>. The binding file grants it the <code>edit</code> role there.</p>
         <p>In the masthead, <strong>+</strong> → <strong>Import YAML</strong>. Drag in <a href="pipeline/fids-pipeline-edit-binding.yaml"><code>fids-pipeline-edit-binding.yaml</code></a>, or paste its contents. Click <strong>Create</strong>.</p>
-        <p>The binding’s namespace is <code>fids-app</code>, which is also the default of the pipeline parameter <code>target-namespace</code>. If the demonstration uses another project, edit the <code>namespace</code> in that file to the same name before you import it, and create that project first (Home → Projects → Create Project).</p></li>
+        <p>The binding’s namespace is <code>${U}-fids-app</code>, which is also the default of the pipeline parameter <code>target-namespace</code>. If the demonstration uses another project, edit the <code>namespace</code> in that file to the same name before you import it, and create that project first (Home → Projects → Create Project).</p></li>
 
-      <li><p><strong>Import the pipeline.</strong> <strong>+</strong> → <strong>Import YAML</strong> again. Set the project in the dialog to <code>fids-pipelines</code>. Drag in <a href="pipeline/fids-deploy-pipeline.yaml"><code>fids-deploy-pipeline.yaml</code></a>. Click <strong>Create</strong>.</p>
+      <li><p><strong>Import the pipeline.</strong> <strong>+</strong> → <strong>Import YAML</strong> again. Set the project in the dialog to <code>${U}-fids-pipelines</code>. Drag in <a href="pipeline/fids-deploy-pipeline.yaml"><code>fids-deploy-pipeline.yaml</code></a>. Click <strong>Create</strong>.</p>
         <p>Open Pipelines → Pipelines (Administrator) or, after you switch perspective, the <strong>Pipelines</strong> page. <code>fids-deploy</code> is listed, with the display name “Deploy the FIDS application”.</p></li>
 
-      <li><p><strong>Start the pipeline and fill the form.</strong> Switch to the <strong>Developer</strong> perspective. Set the project to <code>fids-pipelines</code>. Open <strong>Pipelines</strong>, select <code>fids-deploy</code>, and click <strong>Start</strong>.</p>
+      <li><p><strong>Start the pipeline and fill the form.</strong> Switch to the <strong>Developer</strong> perspective. Set the project to <code>${U}-fids-pipelines</code>. Open <strong>Pipelines</strong>, select <code>fids-deploy</code>, and click <strong>Start</strong>.</p>
         <p>The form is the whole point of the demo. Nothing in the pipeline file hard-codes the Git remote. Type the values for this run:</p>
         <table>
           <caption>Start form</caption>
@@ -534,10 +534,11 @@ h1.chap{ break-before:auto; padding-top:0; }
             <tr><td><code>git-revision</code></td><td><code>main</code>, or whichever branch contains <code>src/deploy</code>. A tag or a commit also works.</td></tr>
             <tr><td><code>manifest-path</code></td><td><code>images/NCA-APP/do108/src/deploy</code>. This is the folder inside the clone. If the repository root is already <code>do108</code>, use <code>src/deploy</code> instead.</td></tr>
             <tr><td><code>deployment-name</code></td><td><code>fids-web</code>. This is the Deployment the health task waits for. <code>fids-db</code>, <code>fids-api</code>, and <code>fids-admin</code> are the other names the apply task creates.</td></tr>
-            <tr><td><code>target-namespace</code></td><td><code>fids-app</code>. Must be the same project as the RoleBinding. The files in Git say <code>fids-app</code>; the deploy task rewrites that to whatever you type here.</td></tr>
+            <tr><td><code>target-namespace</code></td><td><code>${U}-fids-app</code>. Must be the same project as the RoleBinding. The files in Git say <code>fids-app</code>; the deploy task rewrites that to whatever you type here.</td></tr>
           </tbody>
         </table>
-        <p>Lower on the same form, the workspace <code>shared-workspace</code> needs a volume. Choose <strong>Volume Claim Template</strong>, access mode <strong>ReadWriteOnce</strong>, size <code>1Gi</code>, and leave the storage class on the default. <code>fetch-repository</code> and <code>deploy-manifests</code> run in different pods. An empty directory exists only inside one pod, so the apply task would start with an empty disk and fail with <code>the path .../fids-db-secret.yaml does not exist</code>. The claim is the disk both pods mount.</p>
+        <p>Lower on the same form, the workspace <code>shared-workspace</code> needs a volume. Choose <strong>Volume Claim Template</strong>, access mode <strong>ReadWriteOnce</strong>, size <code>1Gi</code>. <code>fetch-repository</code> and <code>deploy-manifests</code> run in different pods. An empty directory exists only inside one pod, so the apply task would start with an empty disk and fail with <code>the path .../fids-db-secret.yaml does not exist</code>. The claim is the disk both pods mount. Pipelines pins both pods to the same node, so ReadWriteOnce is enough.</p>
+        <p>Leave the storage class on the default when that class can mount a volume. If the PipelineRun stays on <code>FailedMount</code> and the event says <code>no mds</code>, the default CephFS class is not usable. Pick the RBD class from <code>oc get sc</code> (on this cluster, <code>ocs-external-storagecluster-ceph-rbd</code>).</p>
         <p>Click <strong>Start</strong>. A public HTTPS URL is enough. This pipeline does not ask for a Git user or token.</p></li>
 
       <li><p><strong>Watch the three tasks.</strong> The PipelineRun page opens on its own. The graph shows <code>fetch-repository</code>, then <code>deploy-manifests</code>, then <code>check-health</code>. Click a task name, then <strong>Logs</strong>.</p>
@@ -547,10 +548,10 @@ h1.chap{ break-before:auto; padding-top:0; }
           <li><code>check-health</code> waits up to five minutes. The log ends with the Deployment line. For <code>fids-web</code> that line shows <code>2/2</code> ready. The task turns green when the rollout finishes.</li>
         </ul>
         <p>A second <strong>Start</strong> creates another PipelineRun. Change <code>deployment-name</code> or <code>git-revision</code> on that form; you do not edit the pipeline.</p>
-        <div class="adm note"><div class="ico">i</div><div class="bd"><span class="admlab">If the application is already in fids-app</span>
+        <div class="adm note"><div class="ico">i</div><div class="bd"><span class="admlab">If the application is already in ${U}-fids-app</span>
         <p>Apply updates the objects that are already there. The health task still passes as soon as the named Deployment is available. That is a normal result for this demonstration.</p></div></div></li>
 
-      <li><p><strong>Check the same fact in the console.</strong> Stay in the Developer perspective and switch the project to the target namespace (<code>fids-app</code>).</p>
+      <li><p><strong>Check the same fact in the console.</strong> Stay in the Developer perspective and switch the project to the target namespace (<code>${U}-fids-app</code>).</p>
         <p><strong>Topology</strong> shows <code>fids-db</code>, <code>fids-api</code>, <code>fids-web</code>, and <code>fids-admin</code>. <strong>Workloads → Deployments</strong> shows the same four. The one you named on the form is the one the pipeline waited for; the others were applied in the same task.</p>
         <p><strong>Observe → Routes</strong> (or Networking → Routes in the Administrator perspective). Open the <code>fids-web</code> location. The departure board loads. That is the health check a person can see, next to the green <code>check-health</code> task.</p></li>
     </ol>

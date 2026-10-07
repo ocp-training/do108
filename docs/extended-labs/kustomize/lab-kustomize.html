@@ -500,7 +500,7 @@ h1.chap{ break-before:auto; padding-top:0; }
           <caption>What the overlay must add</caption>
           <thead><tr><th>Field</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td><code>namespace</code></td><td><code>fids-kustomize</code></td></tr>
+            <tr><td><code>namespace</code></td><td><code>${U}-fids-kustomize</code></td></tr>
             <tr><td><code>replicas</code></td><td>Deployment <code>fids-web</code>, count <code>3</code></td></tr>
             <tr><td><code>labels</code></td><td>pair <code>environment: classroom</code>, with <code>includeSelectors: false</code></td></tr>
             <tr><td><code>patches</code></td><td>On Deployment <code>fids-web</code>, annotation <code>training.example/managed-by: kustomize</code></td></tr>
@@ -512,23 +512,24 @@ h1.chap{ break-before:auto; padding-top:0; }
 
       <li><p><strong>Preview the result</strong> without applying it. From the <code>kustomize</code> folder:</p>
         <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc kustomize overlays/starter</span></div>
-        <p>In that output, confirm all three objects have <code>namespace: fids-kustomize</code>, the Deployment has <code>replicas: 3</code>, the annotation is present, and <code>environment: classroom</code> is a label but not inside <code>spec.selector</code>.</p></li>
+        <p>In that output, confirm all three objects have <code>namespace: ${U}-fids-kustomize</code>, the Deployment has <code>replicas: 3</code>, the annotation is present, and <code>environment: classroom</code> is a label but not inside <code>spec.selector</code>.</p></li>
 
       <li><p><strong>Create the project and apply the overlay.</strong></p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project fids-kustomize</span>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">export U=user1</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-fids-kustomize</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc apply -k overlays/starter</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n fids-kustomize</span></div>
-        <p>On a shared cluster, use <code>${U}-fids-kustomize</code> as the namespace in the overlay and in <code>oc new-project</code>.</p></li>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-kustomize</span></div>
+        <p>The <code>namespace</code> in the overlay is the same <code>${U}-fids-kustomize</code>. Use your own account in <code>U</code>.</p></li>
 
       <li><p><strong>Collect these answers.</strong></p>
         <table>
           <caption>What to report</caption>
           <thead><tr><th>Question</th><th>CLI</th></tr></thead>
           <tbody>
-            <tr><td>Ready replicas</td><td><code>oc get deploy fids-web -n fids-kustomize</code></td></tr>
-            <tr><td>Annotation</td><td><code>oc get deploy fids-web -n fids-kustomize -o jsonpath='{.metadata.annotations.training\.example/managed-by}{"\n"}'</code></td></tr>
-            <tr><td>Classroom label</td><td><code>oc get deploy fids-web -n fids-kustomize -o jsonpath='{.metadata.labels.environment}{"\n"}'</code></td></tr>
-            <tr><td>Route hostname</td><td><code>oc get route fids-web -n fids-kustomize</code></td></tr>
+            <tr><td>Ready replicas</td><td><code>oc get deploy fids-web -n ${U}-fids-kustomize</code></td></tr>
+            <tr><td>Annotation</td><td><code>oc get deploy fids-web -n ${U}-fids-kustomize -o jsonpath='{.metadata.annotations.training\.example/managed-by}{"\n"}'</code></td></tr>
+            <tr><td>Classroom label</td><td><code>oc get deploy fids-web -n ${U}-fids-kustomize -o jsonpath='{.metadata.labels.environment}{"\n"}'</code></td></tr>
+            <tr><td>Route hostname</td><td><code>oc get route fids-web -n ${U}-fids-kustomize</code></td></tr>
           </tbody>
         </table>
         <p>The base files must still say <code>replicas: 1</code> and must still have no <code>namespace</code>. The overlay is what changed the cluster.</p></li>
@@ -537,7 +538,7 @@ h1.chap{ break-before:auto; padding-top:0; }
     <div class="adm verif">
       <div class="ico">?</div>
       <div class="bd"><span class="admlab">Check</span>
-      <p><code>oc get deploy fids-web -n fids-kustomize</code> shows <code>3/3</code> ready.
+      <p><code>oc get deploy fids-web -n ${U}-fids-kustomize</code> shows <code>3/3</code> ready.
       The annotation is <code>kustomize</code> and the label is <code>classroom</code>.
       <code>base/deployment.yaml</code> is still one replica. The <code>fids-app</code> project is unchanged.</p></div>
     </div>

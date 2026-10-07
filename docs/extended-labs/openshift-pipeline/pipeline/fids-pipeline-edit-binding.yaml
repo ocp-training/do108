@@ -1,17 +1,17 @@
-# Lets the pipeline ServiceAccount in fids-pipelines create and update
-# the FIDS application in fids-app. Import this in the console after the
-# OpenShift Pipelines operator is installed and the fids-pipelines project exists.
+# Lets the pipeline ServiceAccount in ${U}-fids-pipelines create and update
+# the FIDS application in ${U}-fids-app. Import this in the console after the
+# OpenShift Pipelines operator is installed and the ${U}-fids-pipelines project exists.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: fids-pipeline-edit
-  namespace: fids-app
+  namespace: ${U}-fids-app
   labels:
     app.kubernetes.io/part-of: fids
 subjects:
   - kind: ServiceAccount
     name: pipeline
-    namespace: fids-pipelines
+    namespace: ${U}-fids-pipelines
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

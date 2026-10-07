@@ -479,13 +479,13 @@ h1.chap{ break-before:auto; padding-top:0; }
 <p><a href="lab-helmchart-deploy.html">Open the student lab</a>. The lab already contains every command. This page is the same sequence, for marking.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p>Repository <code>aca-apps</code> is listed. Release <code>example-deployment</code> in <code>fids-helm</code> is revision 2, chart <code>example-deployment</code>, user value <code>context.environment=prod</code>. The Deployment is 1/1 and the pod label <code>app.startx.fr/environment</code> is <code>prod</code>.</p>
+  <p>Repository <code>aca-apps</code> is listed. Release <code>example-deployment</code> in <code>${U}-fids-helm</code> is revision 2, chart <code>example-deployment</code>, user value <code>context.environment=prod</code>. The Deployment is 1/1 and the pod label <code>app.startx.fr/environment</code> is <code>prod</code>.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Using the console</h3>
     <ol class="steps">
-      <li><p>The repository is added on the laptop, not in the console. After <code>helm install</code>, open project <code>fids-helm</code> → Workloads → Deployments → <code>example-deployment</code>. One pod, image <code>quay.io/startx/apache</code>.</p></li>
+      <li><p>The repository is added on the laptop, not in the console. After <code>helm install</code>, open project <code>${U}-fids-helm</code> → Workloads → Deployments → <code>example-deployment</code>. One pod, image <code>quay.io/startx/apache</code>.</p></li>
       <li><p>After <code>helm upgrade --set context.environment=prod</code>, the pod template label <code>app.startx.fr/environment</code> is <code>prod</code> and <code>app.kubernetes.io/instance</code> contains <code>myscope-prod-</code>. The replica count stays 1. A new pod replaces the old one.</p></li>
     </ol>
   </div>
@@ -496,15 +496,15 @@ h1.chap{ break-before:auto; padding-top:0; }
 <span class="p">[you@laptop ~]$</span> <span class="c">helm search repo aca-apps/example-deployment</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">helm show chart aca-apps/example-deployment</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">helm show values aca-apps/example-deployment</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n fids-helm --set context.environment=prod</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get ns fids-helm || oc new-project fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm install example-deployment aca-apps/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade example-deployment aca-apps/example-deployment -n fids-helm --set context.environment=prod</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n fids-helm</span></div>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n ${U}-fids-helm --set context.environment=prod</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get ns ${U}-fids-helm || oc new-project ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm install example-deployment aca-apps/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade example-deployment aca-apps/example-deployment -n ${U}-fids-helm --set context.environment=prod</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n ${U}-fids-helm</span></div>
   </div>
 </div>
 

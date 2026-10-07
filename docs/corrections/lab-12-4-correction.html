@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Helm — Package the flight board — DO108</title>
+<title>Correction — Workshop 12.4 — Update the gate planner — DO108</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -455,104 +455,50 @@ h1.chap{ break-before:auto; padding-top:0; }
 .index-wrap li a{ display:flex; gap:12px; padding:3.2mm 0; color:#151515; }
 .index-wrap li a:hover{ color:#ee0000; }
 .index-wrap .n{ flex:0 0 28mm; font-family:var(--font-mono); font-weight:700; color:#ee0000; }
+
+.corr-stack{ display:flex; flex-direction:column; gap:8mm; }
+.corr-col h3{
+  font-family:var(--font-display); font-size:11pt; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--rh-red); margin:0 0 3mm;
+}
+.corr-col{ background:var(--rh-gray-10); padding:4mm; border:1px solid var(--rh-gray-20); }
+.answers td:first-child{ font-weight:700; width:38%; }
 </style>
 </head>
 <body>
 <nav class="lab-nav">
   <span class="kicker">DO108</span>
-  <a href="../../index.html">Labs</a>
-  <a href="../index.html">Extended</a>
-  <a href="../../corrections/lab-helm-correction.html">Correction</a>
-  <span class="crumb">Helm — Package the flight board</span>
+  <a href="../index.html">Labs</a>
+  <a href="../day4/index.html">Day</a>
+  <a href="../day4/chapter-12/lab-12-4.html">Lab</a>
+  <span class="crumb">Correction · Workshop 12.4 — Update the gate planner</span>
 </nav>
 <div class="page-wrap">
-<h2 id="lab-helm">Extended lab — Package the flight board with Helm</h2>
 
-<div class="tp">
-  <div class="tp-hd"><span class="tag lab">Helm</span> Install the board from a chart, then change the replica count</div>
-  <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Finish a Helm chart for the flight board, install it in the
-    <code>${U}-fids-helm</code> project, and raise the replica count with <code>helm upgrade</code>
-    without editing the Deployment by hand.
-    <strong>Time.</strong> 30 minutes.
-    Leave the <code>solution/</code> folder closed until you have tried the starter.</div>
-
-    <p>The chart lives in <a href="starter/fids-board/Chart.yaml"><code>starter/fids-board</code></a>.
-    A chart is a set of templates plus a values file. Helm fills the templates, then sends the result to the cluster.
-    The release name you choose becomes the Deployment, Service, and Route name.</p>
-
-    <table>
-      <caption>What each file is for</caption>
-      <thead><tr><th>File</th><th>Role</th></tr></thead>
-      <tbody>
-        <tr><td><code>Chart.yaml</code></td><td>Chart name and version. Already complete.</td></tr>
-        <tr><td><code>values.yaml</code></td><td>The settings you are allowed to change: replicas, image, route.</td></tr>
-        <tr><td><code>templates/deployment.yaml</code></td><td>Deployment. <code>{{ .Values… }}</code> and <code>{{ .Release.Name }}</code> are filled in at install time.</td></tr>
-        <tr><td><code>templates/service.yaml</code></td><td>Service that selects the board pods. Already complete.</td></tr>
-        <tr><td><code>templates/route.yaml</code></td><td>OpenShift Route. Rendered only when <code>route.enabled</code> is true.</td></tr>
-      </tbody>
-    </table>
-
-    <ol class="steps">
-      <li><p><strong>Create the project</strong> for this lab. It is separate from any project that already runs <code>fids-web</code>.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">export U=user1</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-fids-helm</span></div>
-        <p>Use your own account in <code>U</code>. Every project in the extended labs is <code>${U}-…</code>.</p></li>
-
-      <li><p><strong>Finish three fields</strong> in the starter chart. Keep everything else.</p>
-        <table>
-          <caption>Edits</caption>
-          <thead><tr><th>Where</th><th>Set it to</th></tr></thead>
-          <tbody>
-            <tr><td><code>values.yaml</code> → <code>replicaCount</code></td><td><code>2</code></td></tr>
-            <tr><td><code>values.yaml</code> → <code>route.enabled</code></td><td><code>true</code></td></tr>
-            <tr><td><code>templates/deployment.yaml</code> → <code>image</code></td>
-                <td><code>"{{ .Values.image.repository }}:{{ .Values.image.tag }}"</code></td></tr>
-          </tbody>
-        </table>
-        <p>The image line is still the word <code>TODO</code>. A values file cannot fix that until the template reads <code>.Values</code>.</p></li>
-
-      <li><p><strong>Render the chart on your laptop</strong> before you send it to the cluster.
-        From the <code>helm-charts</code> folder:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm lint starter/fids-board</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm template fids-web starter/fids-board</span></div>
-        <p>The rendered Deployment must show <code>replicas: 2</code> and
-        <code>image: ghcr.io/ocp-training/fids-web:latest</code>.
-        The output must also contain <code>kind: Route</code>. If the Route is missing, <code>route.enabled</code> is still false.</p></li>
-
-      <li><p><strong>Install the release</strong> named <code>fids-web</code> into the project:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm install fids-web starter/fids-board -n ${U}-fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-helm</span></div></li>
-
-      <li><p><strong>Change only the replica count</strong> and upgrade the same release.
-        Do not run <code>oc edit</code> and do not <code>helm uninstall</code>.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade fids-web starter/fids-board -n ${U}-fids-helm --set replicaCount=3</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm history fids-web -n ${U}-fids-helm</span></div>
-        <p><code>--set</code> overrides <code>values.yaml</code> for this upgrade. History must show revision 1 (install) and revision 2 (upgrade).</p></li>
-
-      <li><p><strong>Collect these answers.</strong></p>
-        <table>
-          <caption>What to report</caption>
-          <thead><tr><th>Question</th><th>CLI</th></tr></thead>
-          <tbody>
-            <tr><td>Release status and chart version</td><td><code>helm list -n ${U}-fids-helm</code></td></tr>
-            <tr><td>Desired replicas after the upgrade</td><td><code>oc get deploy fids-web -n ${U}-fids-helm</code></td></tr>
-            <tr><td>Who manages the Deployment</td><td><code>oc get deploy fids-web -n ${U}-fids-helm -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}'</code></td></tr>
-            <tr><td>Route hostname</td><td><code>oc get route fids-web -n ${U}-fids-helm</code></td></tr>
-          </tbody>
-        </table></li>
-    </ol>
-
-    <div class="adm verif">
-      <div class="ico">?</div>
-      <div class="bd"><span class="admlab">Check</span>
-      <p><code>helm list -n ${U}-fids-helm</code> shows release <code>fids-web</code> as <code>deployed</code>.
-      <code>oc get deploy fids-web -n ${U}-fids-helm</code> shows <code>3/3</code> ready.
-      The Route answers on HTTPS. The <code>fids-app</code> project is unchanged.</p></div>
-    </div>
+<h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">Workshop 12.4 — Update the gate planner</span></h1>
+<p><a href="../day4/chapter-12/lab-12-4.html">Open the student lab</a>. Replace <code>userN</code> / <code>${U}</code> with your account. Values such as node names and ClusterIPs differ on every cluster.</p>
+<div class="objectifs">
+  <h4>Done when</h4>
+  <p>Gate planner is pinned or streamed, a failed rollout was undone, and you can name the revision you rolled back to.</p>
+</div>
+<div class="corr-stack">
+  <div class="corr-col">
+    <h3>Using the console</h3>
+    <ol class='steps'><li><p>Open <code>userN-gateplan</code>. Deployment YAML: replace <code>:latest</code> with a digest, or attach an ImageStream as in 12.3.</p></li><li><p>Set a bad image, watch pods fail, then Deployment → YAML previous image or CLI undo.</p></li></ol>
+  </div>
+  <div class="corr-col">
+    <h3>Using the CLI</h3>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc project ${U}-gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">DIGEST=$(oc get pod -l app=gateplan -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">echo $DIGEST</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/gateplan gateplan=$DIGEST</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc set image deployment/gateplan gateplan=registry.access.redhat.com/ubi9/httpd-24:no-such-tag</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout undo deployment/gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout history deployment/gateplan</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/gateplan</span></div>
   </div>
 </div>
+
 
 </div>
 </body>

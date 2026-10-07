@@ -469,25 +469,24 @@ h1.chap{ break-before:auto; padding-top:0; }
 <h2 id="lab-gitops">Extended lab — Deploy FIDS with the OpenShift GitOps UI</h2>
 
 <div class="tp">
-  <div class="tp-hd"><span class="tag lab">GitOps</span> Open Argo CD, then let it install <code>src/deploy</code> into <code>fids-gitops</code></div>
+  <div class="tp-hd"><span class="tag lab">GitOps</span> Open Argo CD, then let it install <code>src/deploy</code> into <code>${U}-fids-gitops</code></div>
   <div class="tp-bd">
     <div class="tp-meta"><strong>Goal.</strong> Sign in to the OpenShift GitOps interface and create an Argo CD application that installs the FIDS manifests from Git into one project.
     <strong>Time.</strong> 20 minutes.
     Every field is written down. The two YAML files are the same objects, if you prefer <strong>Import YAML</strong> to the form.</div>
 
-    <p>The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy">github.com/ocp-training/do108, branch <code>main</code>, path <code>src/deploy</code></a>. It contains a Kustomize layout: the database secret, the database, the API, the web board, and the admin page. Those files do not name a namespace. Argo CD puts them in the destination project you type, which in this lab is <code>fids-gitops</code>. Do not use <code>fids-app</code>. That project already runs the same Deployment names.</p>
+    <p>The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy">github.com/ocp-training/do108, branch <code>main</code>, path <code>src/deploy</code></a>. It contains a Kustomize layout: the database secret, the database, the API, the web board, and the admin page. <code>kustomization.yaml</code> names the project <code>fids-app</code>. Do not sync into <code>fids-app</code>. Set <code>export U=user1</code> to your account. The destination project is <code>${U}-fids-gitops</code>, and the Argo CD application name is <code>${U}-fids</code> so two students do not share one application. In both YAML files, replace <code>${U}</code> with your account before you import them. The shell does not expand a file you paste into the console.</p>
 
     <ol class="steps">
       <li><p><strong>Confirm OpenShift GitOps is installed.</strong> Administrator perspective → Operators → Installed Operators. <strong>Red Hat OpenShift GitOps</strong> should be <strong>Succeeded</strong>. On this cluster it already is (version 1.22).</p>
         <p>If it is missing: OperatorHub → <strong>Red Hat OpenShift GitOps</strong> → Install, all namespaces, installed namespace <code>openshift-gitops</code>, approval Automatic. Wait until Succeeded. The operator creates project <code>openshift-gitops</code> and an Argo CD instance of the same name.</p></li>
 
       <li><p><strong>Create the destination project and let Argo CD manage it.</strong> The application controller is not allowed to create Deployments in a project until that project carries one label.</p>
-        <p><strong>+</strong> → <strong>Import YAML</strong>. Drag in <a href="fids-gitops-namespace.yaml"><code>fids-gitops-namespace.yaml</code></a> and click <strong>Create</strong>. The file is the project <code>fids-gitops</code> with the label <code>argocd.argoproj.io/managed-by=openshift-gitops</code>. The operator then grants the Argo CD controller permission in that project.</p>
-        <p>You can do the same by hand: Home → Projects → <strong>Create Project</strong>, name <code>fids-gitops</code>. Open the project, <strong>Details</strong> → <strong>Labels</strong> → edit, add key <code>argocd.argoproj.io/managed-by</code> and value <code>openshift-gitops</code>.</p></li>
+        <p><strong>+</strong> → <strong>Import YAML</strong>. Drag in <a href="fids-gitops-namespace.yaml"><code>fids-gitops-namespace.yaml</code></a> and click <strong>Create</strong>. After you replace <code>${U}</code>, the file is the project <code>${U}-fids-gitops</code> with the label <code>argocd.argoproj.io/managed-by=openshift-gitops</code>. The operator then grants the Argo CD controller permission in that project.</p>
+        <p>You can do the same by hand: Home → Projects → <strong>Create Project</strong>, name <code>${U}-fids-gitops</code>. Open the project, <strong>Details</strong> → <strong>Labels</strong> → edit, add key <code>argocd.argoproj.io/managed-by</code> and value <code>openshift-gitops</code>.</p></li>
 
       <li><p><strong>Open the GitOps interface.</strong> Stay in the Administrator perspective. Set the project to <code>openshift-gitops</code> (type it in the project list; it is a cluster project).</p>
-        <p>Networking → <strong>Routes</strong>. The route is <code>openshift-gitops-server</code>. Click its location. On this cluster that host is:</p>
-        <p><a href="https://openshift-gitops-server-openshift-gitops.apps.cluster-snfc4.dyn.redhatworkshops.io" rel="noopener" target="_blank"><code>openshift-gitops-server-openshift-gitops.apps.cluster-snfc4.dyn.redhatworkshops.io</code></a></p>
+        <p>Networking → <strong>Routes</strong>. The route is <code>openshift-gitops-server</code>. Click its location.</p>
         <p>A second way to the same page: the left menu <strong>OpenShift GitOps</strong> (or Ecosystem, depending on the console) → Cluster → Argo CD → the instance <code>openshift-gitops</code> → the Argo CD link. That link is this route.</p>
         <p>The page that opens is Argo CD. The user is <code>admin</code>. The password is not a fixed word. It is the key <code>admin.password</code> in a Secret:</p>
         <p>Back in the OpenShift console, project <code>openshift-gitops</code> → Workloads → <strong>Secrets</strong> → <code>openshift-gitops-cluster</code>. Open it, find <code>admin.password</code>, and choose <strong>Reveal values</strong>. Copy that string into the Argo CD password field. Click <strong>Sign in</strong>.</p>
@@ -498,31 +497,32 @@ h1.chap{ break-before:auto; padding-top:0; }
           <caption>New App</caption>
           <thead><tr><th>Section</th><th>Field</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>General</td><td>Application Name</td><td><code>fids</code></td></tr>
+            <tr><td>General</td><td>Application Name</td><td><code>${U}-fids</code></td></tr>
             <tr><td>General</td><td>Project</td><td><code>default</code></td></tr>
             <tr><td>General</td><td>Sync Policy</td><td>Automatic. Check <strong>Prune</strong> and <strong>Self Heal</strong>.</td></tr>
             <tr><td>Source</td><td>Repository URL</td><td><code>https://github.com/ocp-training/do108</code></td></tr>
             <tr><td>Source</td><td>Revision</td><td><code>main</code></td></tr>
             <tr><td>Source</td><td>Path</td><td><code>src/deploy</code></td></tr>
             <tr><td>Destination</td><td>Cluster URL</td><td><code>https://kubernetes.default.svc</code></td></tr>
-            <tr><td>Destination</td><td>Namespace</td><td><code>fids-gitops</code></td></tr>
+            <tr><td>Destination</td><td>Namespace</td><td><code>${U}-fids-gitops</code></td></tr>
+            <tr><td>Kustomize</td><td>Namespace</td><td><code>${U}-fids-gitops</code></td></tr>
           </tbody>
         </table>
-        <p>Leave the rest of the panel as it is. Argo CD sees <code>kustomization.yaml</code> in that path and treats the folder as Kustomize. Click <strong>Create</strong>.</p>
+        <p>The Kustomize namespace overrides <code>fids-app</code> inside <code>src/deploy</code>. Without it, the sync targets <code>fids-app</code> and the application does not become Healthy in your project. Click <strong>Create</strong>.</p>
         <p>Automatic sync starts at once. If the tile stays <strong>OutOfSync</strong>, open it and click <strong>Sync</strong>, then <strong>Synchronize</strong>.</p></li>
 
-      <li><p><strong>Read the application tile.</strong> Click the <code>fids</code> card. The top of the page shows two words you want: <strong>Synced</strong> and <strong>Healthy</strong>.</p>
-        <p>The tree underneath is the content of <code>src/deploy</code>: Deployments <code>fids-db</code>, <code>fids-api</code>, <code>fids-web</code> (two pods), and <code>fids-admin</code>, plus the Services, the Routes, the Secret, and the database volume. A green heart on a node is the health of that object. Click a Deployment node to see its name and namespace <code>fids-gitops</code> in the side panel.</p></li>
+      <li><p><strong>Read the application tile.</strong> Click the <code>${U}-fids</code> card. The top of the page shows two words you want: <strong>Synced</strong> and <strong>Healthy</strong>.</p>
+        <p>The tree underneath is the content of <code>src/deploy</code>: Deployments <code>fids-db</code>, <code>fids-api</code>, <code>fids-web</code> (two pods), and <code>fids-admin</code>, plus the Services, the Routes, the Secret, and the database volume. A green heart on a node is the health of that object. Click a Deployment node to see its name and namespace <code>${U}-fids-gitops</code> in the side panel.</p></li>
 
-      <li><p><strong>See the same objects in the OpenShift console.</strong> Developer perspective, project <code>fids-gitops</code>. <strong>Topology</strong> shows the four workloads. <strong>Observe → Routes</strong> (Administrator: Networking → Routes) lists <code>fids-web</code> and <code>fids-admin</code>. Open the <code>fids-web</code> location. The departure board loads. The hostname contains <code>fids-gitops</code>, which is how you know this board is the GitOps copy and not the one in <code>fids-app</code>.</p></li>
+      <li><p><strong>See the same objects in the OpenShift console.</strong> Developer perspective, project <code>${U}-fids-gitops</code>. <strong>Topology</strong> shows the four workloads. <strong>Observe → Routes</strong> (Administrator: Networking → Routes) lists <code>fids-web</code> and <code>fids-admin</code>. Open the <code>fids-web</code> location. The departure board loads. The hostname contains <code>${U}-fids-gitops</code>, which is how you know this board is the GitOps copy and not the one in <code>fids-app</code>.</p></li>
     </ol>
 
     <div class="adm verif">
       <div class="ico">?</div>
       <div class="bd"><span class="admlab">Check</span>
       <p>You are signed in to the Argo CD page served by route <code>openshift-gitops-server</code>.
-      Application <code>fids</code> is <strong>Synced</strong> and <strong>Healthy</strong>.
-      Its destination namespace is <code>fids-gitops</code>.
+      Application <code>${U}-fids</code> is <strong>Synced</strong> and <strong>Healthy</strong>.
+      Its destination namespace is <code>${U}-fids-gitops</code>.
       In that project, <code>fids-web</code> is 2/2 and its Route opens the board.</p></div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fids
+  name: ${U}-fids
   namespace: openshift-gitops
   labels:
     app.kubernetes.io/part-of: fids
@@ -11,9 +11,21 @@ spec:
     repoURL: https://github.com/ocp-training/do108.git
     targetRevision: main
     path: src/deploy
+    kustomize:
+      namespace: ${U}-fids-gitops
+      patches:
+        - target:
+            kind: Namespace
+            name: fids-app
+          patch: |-
+            $patch: delete
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: fids-app
   destination:
     server: https://kubernetes.default.svc
-    namespace: fids-gitops
+    namespace: ${U}-fids-gitops
   syncPolicy:
     automated:
       prune: true

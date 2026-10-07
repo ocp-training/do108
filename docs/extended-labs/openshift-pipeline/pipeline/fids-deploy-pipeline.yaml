@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: fids-pipelines
+  name: ${U}-fids-pipelines
 
 ---
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: fids-deploy
-  namespace: fids-pipelines
+  namespace: ${U}-fids-pipelines
   labels:
     app.kubernetes.io/part-of: fids
   annotations:
@@ -38,8 +38,8 @@ spec:
       default: fids-web
     - name: target-namespace
       type: string
-      description: Project that receives the application. The manifests in Git say fids-app; this value replaces that namespace.
-      default: fids-app
+      description: Project that receives the application. The manifests in Git say fids-app; the deploy task rewrites that to this value.
+      default: ${U}-fids-app
   workspaces:
     - name: shared-workspace
       description: >-
@@ -91,14 +91,9 @@ spec:
             SRC="$(params.manifest-path)"
             DEST="$(params.target-namespace)"
 
-            # Apply each manifest directly, replacing the namespace if needed
-            # (Assumes yq is installed in the task image; if not, edit as needed or assume manifests have correct namespace)
-
             for file in fids-db-secret.yaml fids-db.yaml fids-api.yaml fids-web.yaml fids-admin.yaml; do
               manifest="${ROOT}/${SRC}/${file}"
-              # If the manifests do not already use the target namespace, you may need to patch them:
-              # Here we patch the namespace only if it exists at the correct path for typical Kubernetes manifests
-              oc apply -n "${DEST}" -f "${manifest}"
+              sed "s/namespace: fids-app/namespace: ${DEST}/g" "${manifest}" | oc apply -f -
             done
 
             oc get deploy,svc,route -n "${DEST}"

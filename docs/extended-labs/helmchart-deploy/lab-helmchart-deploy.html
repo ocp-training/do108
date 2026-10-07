@@ -471,7 +471,7 @@ h1.chap{ break-before:auto; padding-top:0; }
 <div class="tp">
   <div class="tp-hd"><span class="tag lab">Helm</span> Register aca-apps, read example-deployment, install it, then move the environment to prod</div>
   <div class="tp-bd">
-    <div class="tp-meta"><strong>Goal.</strong> Add a Helm chart repository, read the chart before you install it, install the first revision into <code>fids-helm</code>, then publish a second revision with <code>context.environment</code> set to <code>prod</code>.
+    <div class="tp-meta"><strong>Goal.</strong> Add a Helm chart repository, read the chart before you install it, install the first revision into <code>${U}-fids-helm</code>, then publish a second revision with <code>context.environment</code> set to <code>prod</code>.
     <strong>Time.</strong> 25 minutes.
     Every command is below. Run them in order and read the output before you continue.</div>
 
@@ -506,34 +506,35 @@ h1.chap{ break-before:auto; padding-top:0; }
         <p>Look inside <code>example-deployment/values.yaml</code> if you want the same defaults as a file. You can delete <code>$HOME/aca-apps</code> when you are finished. The install below uses the repository, not this copy.</p></div></div></li>
 
       <li><p><strong>Render the manifests on your laptop</strong> before you send them. <code>helm template</code> fills the templates with the values and prints YAML. It does not apply anything.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n fids-helm</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n ${U}-fids-helm</span></div>
         <p>The release name is the first argument, <code>example-deployment</code>. That becomes the Deployment name and the Service name. In the output, find the label <code>app.startx.fr/environment: "myenv"</code> and the instance label <code>myscope-myenv-example-deployment-0.0.1</code>. The environment is part of the instance name because the chart builds it from <code>context.scope</code>, <code>context.environment</code>, <code>context.app</code>, and <code>context.version</code>.</p>
         <p>Preview the change you will make later. Still nothing is applied:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n fids-helm --set context.environment=prod</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm template example-deployment aca-apps/example-deployment -n ${U}-fids-helm --set context.environment=prod</span></div>
         <p><code>--set</code> overrides one value for this render. The environment label is now <code>"prod"</code> and the instance label is <code>myscope-prod-example-deployment-0.0.1</code>. Compare the two renders. The image and the replica count did not change.</p></li>
 
-      <li><p><strong>Create the project only if it is missing.</strong> This chart goes into <code>fids-helm</code>, the same project as the flight-board chart. A second release in that project is expected.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get ns fids-helm || oc new-project fids-helm</span></div>
-        <p><code>oc get</code> prints the namespace when it already exists, and the <code>oc new-project</code> part is skipped. When the namespace is absent, <code>oc get</code> fails and <code>oc new-project</code> creates it. If you run <code>oc new-project fids-helm</code> on a project that already exists, OpenShift refuses and leaves the project as it is. Continue either way.</p></li>
+      <li><p><strong>Create the project only if it is missing.</strong> This chart goes into <code>${U}-fids-helm</code>, the same project as the flight-board chart. A second release in that project is expected.</p>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">export U=user1</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get ns ${U}-fids-helm || oc new-project ${U}-fids-helm</span></div>
+        <p><code>oc get</code> prints the namespace when it already exists, and the <code>oc new-project</code> part is skipped. When the namespace is absent, <code>oc get</code> fails and <code>oc new-project</code> creates it. If you run <code>oc new-project ${U}-fids-helm</code> on a project that already exists, OpenShift refuses and leaves the project as it is. Continue either way.</p></li>
 
       <li><p><strong>Install the first revision</strong> with the chart defaults. Do not pass <code>--set</code> yet.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm install example-deployment aca-apps/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,pods -n fids-helm -l app=example-deployment</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm install example-deployment aca-apps/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,pods -n ${U}-fids-helm -l app=example-deployment</span></div>
         <p>Helm prints a NOTES block. Under <code>Context</code>, <code>environment</code> is <code>myenv</code>. That text is rendered from the values you just read. The Deployment should become <code>1/1</code> ready. Read the label Helm actually stored:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.startx\.fr/environment}{"\n"}'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n fids-helm</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n ${U}-fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.startx\.fr/environment}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n ${U}-fids-helm</span></div>
         <p>The label is <code>myenv</code>. History has one line: revision 1, status <code>deployed</code>, description <code>Install complete</code>.</p></li>
 
       <li><p><strong>Publish a second revision</strong> with <code>context.environment</code> set to <code>prod</code>. Do not run <code>helm install</code> again. The release name already exists, so a second install stops with “cannot re-use a name”. A new revision of the same release is <code>helm upgrade</code>.</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade example-deployment aca-apps/example-deployment -n fids-helm --set context.environment=prod</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n fids-helm</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade example-deployment aca-apps/example-deployment -n ${U}-fids-helm --set context.environment=prod</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/example-deployment -n ${U}-fids-helm</span></div>
         <p>The NOTES block now prints <code>environment : prod</code>. The chart version did not change. What changed is the release revision, because you overrode one value. Confirm that:</p>
-        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n fids-helm --all</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.startx\.fr/environment}{"\n"}'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.kubernetes\.io/instance}{"\n"}'</span></div>
+        <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">helm history example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm get values example-deployment -n ${U}-fids-helm --all</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n ${U}-fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.startx\.fr/environment}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy example-deployment -n ${U}-fids-helm -o jsonpath='{.spec.template.metadata.labels.app\.kubernetes\.io/instance}{"\n"}'</span></div>
         <p>History shows revision 1 as <code>superseded</code> and revision 2 as <code>deployed</code>. Both lines name the same chart version. <code>helm get values</code> without <code>--all</code> prints only what you supplied:</p>
         <div class="term"><span class="cm">USER-SUPPLIED VALUES:</span>
 <span class="cm">context:</span>
@@ -544,9 +545,9 @@ h1.chap{ break-before:auto; padding-top:0; }
     <div class="adm verif">
       <div class="ico">?</div>
       <div class="bd"><span class="admlab">Check</span>
-      <p><code>helm list -n fids-helm</code> shows release <code>example-deployment</code> as <code>deployed</code>.
+      <p><code>helm list -n ${U}-fids-helm</code> shows release <code>example-deployment</code> as <code>deployed</code>.
       <code>helm history</code> shows revision 2 deployed and revision 1 superseded, on the same chart version.
-      The environment label is <code>prod</code>. <code>oc get deploy example-deployment -n fids-helm</code> shows <code>1/1</code> ready.</p></div>
+      The environment label is <code>prod</code>. <code>oc get deploy example-deployment -n ${U}-fids-helm</code> shows <code>1/1</code> ready.</p></div>
     </div>
   </div>
 </div>
