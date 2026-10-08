@@ -488,7 +488,7 @@ h1.chap{ break-before:auto; padding-top:0; }
       <li><p>Installed Operators: <strong>Red Hat OpenShift GitOps</strong> is Succeeded.</p></li>
       <li><p><strong>+</strong> → Import YAML → <code>fids-gitops-namespace.yaml</code>, after <code>${U}</code> is replaced with the student account. Project <code>${U}-fids-gitops</code> exists and is labeled <code>argocd.argoproj.io/managed-by=openshift-gitops</code>.</p></li>
       <li><p>Project <code>openshift-gitops</code> → Networking → Routes → open <code>openshift-gitops-server</code>. User <code>admin</code>. Password: Secrets → <code>openshift-gitops-cluster</code> → Reveal <code>admin.password</code>.</p></li>
-      <li><p>In Argo CD, <strong>+ New App</strong>. Name <code>${U}-fids</code>, project <code>default</code>, sync Automatic with Prune and Self Heal. Repository <code>https://github.com/ocp-training/do108</code>, revision <code>main</code>, path <code>src/deploy</code>. Kustomize namespace <code>${U}-fids-gitops</code>. Cluster <code>https://kubernetes.default.svc</code>, namespace <code>${U}-fids-gitops</code>. Create.</p></li>
+      <li><p>In Argo CD, <strong>+ New App</strong>. Name <code>${U}-fids</code>, project <code>default</code>, sync Automatic with Prune and Self Heal. Repository <code>https://github.com/ocp-training/do108</code>, revision <code>main</code>, path <code>src/deploy</code>. Cluster <code>https://kubernetes.default.svc</code>, namespace <code>${U}-fids-gitops</code>. Create.</p></li>
       <li><p>The <code>${U}-fids</code> application shows Synced and Healthy. OpenShift project <code>${U}-fids-gitops</code> → the <code>fids-web</code> Route opens the board.</p></li>
     </ol>
   </div>

@@ -11,18 +11,8 @@ spec:
     repoURL: https://github.com/ocp-training/do108.git
     targetRevision: main
     path: src/deploy
-    kustomize:
-      namespace: ${U}-fids-gitops
-      patches:
-        - target:
-            kind: Namespace
-            name: fids-app
-          patch: |-
-            $patch: delete
-            apiVersion: v1
-            kind: Namespace
-            metadata:
-              name: fids-app
+    directory:
+      exclude: fids-namespace.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: ${U}-fids-gitops

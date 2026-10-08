@@ -475,7 +475,7 @@ h1.chap{ break-before:auto; padding-top:0; }
     <strong>Time.</strong> 20 minutes.
     Every field is written down. The two YAML files are the same objects, if you prefer <strong>Import YAML</strong> to the form.</div>
 
-    <p>The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy">github.com/ocp-training/do108, branch <code>main</code>, path <code>src/deploy</code></a>. It contains a Kustomize layout: the database secret, the database, the API, the web board, and the admin page. <code>kustomization.yaml</code> names the project <code>fids-app</code>. Do not sync into <code>fids-app</code>. Set <code>export U=user1</code> to your account. The destination project is <code>${U}-fids-gitops</code>, and the Argo CD application name is <code>${U}-fids</code> so two students do not share one application. In both YAML files, replace <code>${U}</code> with your account before you import them. The shell does not expand a file you paste into the console.</p>
+    <p>The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy">github.com/ocp-training/do108, branch <code>main</code>, path <code>src/deploy</code></a>. It contains the database secret, the database, the API, the web board, and the admin page. Those manifests do not set a namespace, so Argo CD creates them in the destination project. Do not sync into <code>fids-app</code>. Set <code>export U=user1</code> to your account. The destination project is <code>${U}-fids-gitops</code>, and the Argo CD application name is <code>${U}-fids</code> so two students do not share one application. In both YAML files, replace <code>${U}</code> with your account before you import them. The shell does not expand a file you paste into the console.</p>
 
     <ol class="steps">
       <li><p><strong>Confirm OpenShift GitOps is installed.</strong> Administrator perspective → Operators → Installed Operators. <strong>Red Hat OpenShift GitOps</strong> should be <strong>Succeeded</strong>. On this cluster it already is (version 1.22).</p>
@@ -505,10 +505,9 @@ h1.chap{ break-before:auto; padding-top:0; }
             <tr><td>Source</td><td>Path</td><td><code>src/deploy</code></td></tr>
             <tr><td>Destination</td><td>Cluster URL</td><td><code>https://kubernetes.default.svc</code></td></tr>
             <tr><td>Destination</td><td>Namespace</td><td><code>${U}-fids-gitops</code></td></tr>
-            <tr><td>Kustomize</td><td>Namespace</td><td><code>${U}-fids-gitops</code></td></tr>
           </tbody>
         </table>
-        <p>The Kustomize namespace overrides <code>fids-app</code> inside <code>src/deploy</code>. Without it, the sync targets <code>fids-app</code> and the application does not become Healthy in your project. Click <strong>Create</strong>.</p>
+        <p>The destination namespace is the project that receives the manifests. Click <strong>Create</strong>.</p>
         <p>Automatic sync starts at once. If the tile stays <strong>OutOfSync</strong>, open it and click <strong>Sync</strong>, then <strong>Synchronize</strong>.</p></li>
 
       <li><p><strong>Read the application tile.</strong> Click the <code>${U}-fids</code> card. The top of the page shows two words you want: <strong>Synced</strong> and <strong>Healthy</strong>.</p>
