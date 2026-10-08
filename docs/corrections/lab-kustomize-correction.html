@@ -479,13 +479,13 @@ h1.chap{ break-before:auto; padding-top:0; }
 <p><a href="../extended-labs/kustomize/lab-kustomize.html">Open the student lab</a>. Students finish <code>overlays/starter/kustomization.yaml</code>. The same overlay, already finished, is <code>overlays/board</code>. Apply that path to mark the lab.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p><code>oc get deploy fids-web -n fids-kustomize</code> shows 3/3 ready, annotation <code>training.example/managed-by=kustomize</code>, label <code>environment=classroom</code>, and a Route that responds. <code>base/deployment.yaml</code> still has <code>replicas: 1</code>.</p>
+  <p><code>oc get deploy fids-web -n ${U}-fids-kustomize</code> shows 3/3 ready, annotation <code>training.example/managed-by=kustomize</code>, label <code>environment=classroom</code>, and a Route that responds. <code>base/deployment.yaml</code> still has <code>replicas: 1</code>.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Using the console</h3>
     <ol class="steps">
-      <li><p>Home → Projects → Create <code>fids-kustomize</code>.</p></li>
+      <li><p>Home → Projects → Create <code>${U}-fids-kustomize</code>.</p></li>
       <li><p>After <code>oc apply -k</code>, Workloads → Deployments → <code>fids-web</code> shows 3 pods. The YAML view shows the annotation and the <code>environment</code> label. The selector does not include <code>environment</code>.</p></li>
       <li><p>Networking → Routes → <code>fids-web</code>. Open the hostname. The departure board loads.</p></li>
     </ol>
@@ -494,13 +494,13 @@ h1.chap{ break-before:auto; padding-top:0; }
     <h3>Using the CLI</h3>
     <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">cd …/labs/extended-labs/kustomize</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc kustomize overlays/board</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project fids-kustomize</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-fids-kustomize</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">oc apply -k overlays/board</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n fids-kustomize</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n fids-kustomize</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n fids-kustomize -o jsonpath='{.metadata.annotations.training\.example/managed-by}{"\n"}'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n fids-kustomize -o jsonpath='{.metadata.labels.environment}{"\n"}'</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get route fids-web -n fids-kustomize</span></div>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-kustomize</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n ${U}-fids-kustomize</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n ${U}-fids-kustomize -o jsonpath='{.metadata.annotations.training\.example/managed-by}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy fids-web -n ${U}-fids-kustomize -o jsonpath='{.metadata.labels.environment}{"\n"}'</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get route fids-web -n ${U}-fids-kustomize</span></div>
   </div>
 </div>
 
@@ -508,7 +508,7 @@ h1.chap{ break-before:auto; padding-top:0; }
   <div class="name">overlays/board/kustomization.yaml</div>
   <pre>apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: fids-kustomize
+namespace: ${U}-fids-kustomize
 resources:
   - ../../base
 replicas:

@@ -479,30 +479,30 @@ h1.chap{ break-before:auto; padding-top:0; }
 <p><a href="../extended-labs/helm-charts/lab-helm.html">Open the student lab</a>. The finished chart is <code>solution/fids-board</code>. Students edit <code>starter/fids-board</code> until it matches.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p><code>helm list -n fids-helm</code> shows <code>fids-web</code> deployed, revision 2. <code>oc get deploy fids-web -n fids-helm</code> shows 3/3 ready, and the Route responds.</p>
+  <p><code>helm list -n ${U}-fids-helm</code> shows <code>fids-web</code> deployed, revision 2. <code>oc get deploy fids-web -n ${U}-fids-helm</code> shows 3/3 ready, and the Route responds.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Using the console</h3>
     <ol class="steps">
-      <li><p>Home → Projects → Create <code>fids-helm</code>. Do not install this chart into <code>fids-app</code>.</p></li>
+      <li><p>Home → Projects → Create <code>${U}-fids-helm</code>. Do not install this chart into <code>fids-app</code>.</p></li>
       <li><p>The chart is installed from the laptop, not from the developer catalog. After <code>helm install</code>, open Workloads → Deployments → <code>fids-web</code>. Replicas start at 2, then move to 3 after <code>helm upgrade</code>.</p></li>
       <li><p>Networking → Routes → <code>fids-web</code>. Open the hostname. The departure board loads.</p></li>
     </ol>
   </div>
   <div class="corr-col">
     <h3>Using the CLI</h3>
-    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project fids-helm</span>
+    <div class="term"><span class="p">[you@laptop ~]$</span> <span class="c">oc new-project ${U}-fids-helm</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">cd …/labs/extended-labs/helm-charts</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">helm lint solution/fids-board</span>
 <span class="p">[you@laptop ~]$</span> <span class="c">helm template fids-web solution/fids-board</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm install fids-web solution/fids-board -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade fids-web solution/fids-board -n fids-helm --set replicaCount=3</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm history fids-web -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">helm list -n fids-helm</span>
-<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,route -n fids-helm</span></div>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm install fids-web solution/fids-board -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm upgrade fids-web solution/fids-board -n ${U}-fids-helm --set replicaCount=3</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc rollout status deployment/fids-web -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm history fids-web -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">helm list -n ${U}-fids-helm</span>
+<span class="p">[you@laptop ~]$</span> <span class="c">oc get deploy,route -n ${U}-fids-helm</span></div>
   </div>
 </div>
 
@@ -526,7 +526,7 @@ route:
 </div>
 
 <div class="adm note"><div class="ico">i</div><div class="bd"><span class="admlab">What “good” looks like</span>
-<p>Revision 1 is the install (2 replicas). Revision 2 is the upgrade (3 replicas). The label <code>app.kubernetes.io/managed-by</code> is <code>Helm</code>. Uninstall with <code>helm uninstall fids-web -n fids-helm</code> only after the check. That removes the Deployment, Service, and Route. It does not delete the project.</p></div></div>
+<p>Revision 1 is the install (2 replicas). Revision 2 is the upgrade (3 replicas). The label <code>app.kubernetes.io/managed-by</code> is <code>Helm</code>. Uninstall with <code>helm uninstall fids-web -n ${U}-fids-helm</code> only after the check. That removes the Deployment, Service, and Route. It does not delete the project.</p></div></div>
 
 </div>
 </body>

@@ -476,20 +476,20 @@ h1.chap{ break-before:auto; padding-top:0; }
 <div class="page-wrap">
 
 <h1 class="chap"><span class="chap-num">Correction</span><span class="chap-title">GitOps — Deploy FIDS with Argo CD</span></h1>
-<p><a href="../extended-labs/gitops/lab-gitops.html">Open the student lab</a>. The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy"><code>ocp-training/do108</code> <code>src/deploy</code></a>. The destination project is <code>fids-gitops</code>.</p>
+<p><a href="../extended-labs/gitops/lab-gitops.html">Open the student lab</a>. The Git folder is <a href="https://github.com/ocp-training/do108/tree/main/src/deploy"><code>ocp-training/do108</code> <code>src/deploy</code></a>. The destination project is <code>${U}-fids-gitops</code>.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p>Signed in to the Argo CD UI. Application <code>fids</code> in <code>openshift-gitops</code> is Synced and Healthy. Project <code>fids-gitops</code> has <code>fids-web</code> 2/2 and a Route that opens the board.</p>
+  <p>Signed in to the Argo CD UI. Application <code>${U}-fids</code> in <code>openshift-gitops</code> is Synced and Healthy. Project <code>${U}-fids-gitops</code> has <code>fids-web</code> 2/2 and a Route that opens the board.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Console and Argo CD UI</h3>
     <ol class="steps">
       <li><p>Installed Operators: <strong>Red Hat OpenShift GitOps</strong> is Succeeded.</p></li>
-      <li><p><strong>+</strong> → Import YAML → <code>fids-gitops-namespace.yaml</code>. Project <code>fids-gitops</code> exists and is labeled <code>argocd.argoproj.io/managed-by=openshift-gitops</code>.</p></li>
+      <li><p><strong>+</strong> → Import YAML → <code>fids-gitops-namespace.yaml</code>, after <code>${U}</code> is replaced with the student account. Project <code>${U}-fids-gitops</code> exists and is labeled <code>argocd.argoproj.io/managed-by=openshift-gitops</code>.</p></li>
       <li><p>Project <code>openshift-gitops</code> → Networking → Routes → open <code>openshift-gitops-server</code>. User <code>admin</code>. Password: Secrets → <code>openshift-gitops-cluster</code> → Reveal <code>admin.password</code>.</p></li>
-      <li><p>In Argo CD, <strong>+ New App</strong>. Name <code>fids</code>, project <code>default</code>, sync Automatic with Prune and Self Heal. Repository <code>https://github.com/ocp-training/do108</code>, revision <code>main</code>, path <code>src/deploy</code>. Cluster <code>https://kubernetes.default.svc</code>, namespace <code>fids-gitops</code>. Create.</p></li>
-      <li><p>The <code>fids</code> application shows Synced and Healthy. OpenShift project <code>fids-gitops</code> → the <code>fids-web</code> Route opens the board.</p></li>
+      <li><p>In Argo CD, <strong>+ New App</strong>. Name <code>${U}-fids</code>, project <code>default</code>, sync Automatic with Prune and Self Heal. Repository <code>https://github.com/ocp-training/do108</code>, revision <code>main</code>, path <code>src/deploy</code>. Kustomize namespace <code>${U}-fids-gitops</code>. Cluster <code>https://kubernetes.default.svc</code>, namespace <code>${U}-fids-gitops</code>. Create.</p></li>
+      <li><p>The <code>${U}-fids</code> application shows Synced and Healthy. OpenShift project <code>${U}-fids-gitops</code> → the <code>fids-web</code> Route opens the board.</p></li>
     </ol>
   </div>
 </div>

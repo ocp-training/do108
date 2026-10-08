@@ -479,25 +479,25 @@ h1.chap{ break-before:auto; padding-top:0; }
 <p><a href="../extended-labs/openshift-pipeline/lab-openshift-pipeline.html">Open the student lab</a>. The demonstration is entirely in the console. The two files to import are in <code>pipeline/</code>.</p>
 <div class="objectifs">
   <h4>Done when</h4>
-  <p>PipelineRun <code>fids-deploy</code> in project <code>fids-pipelines</code> is Succeeded. Task <code>check-health</code> is green. In <code>fids-app</code>, Deployment <code>fids-web</code> is ready and its Route opens the board.</p>
+  <p>PipelineRun <code>fids-deploy</code> in project <code>${U}-fids-pipelines</code> is Succeeded. Task <code>check-health</code> is green. In <code>${U}-fids-app</code>, Deployment <code>fids-web</code> is ready and its Route opens the board.</p>
 </div>
 <div class="corr-stack">
   <div class="corr-col">
     <h3>Console sequence</h3>
     <ol class="steps">
       <li><p>Administrator → Operators → OperatorHub → <strong>Red Hat OpenShift Pipelines</strong> → Install. All namespaces, <code>openshift-operators</code>, Automatic. Wait until Installed Operators shows Succeeded.</p></li>
-      <li><p>Home → Projects → Create Project → name <code>fids-pipelines</code>.</p></li>
-      <li><p><strong>+</strong> → Import YAML → <code>pipeline/fids-pipeline-edit-binding.yaml</code> → Create. This grants ServiceAccount <code>pipeline</code> in <code>fids-pipelines</code> the <code>edit</code> role in <code>fids-app</code>.</p></li>
-      <li><p><strong>+</strong> → Import YAML → project <code>fids-pipelines</code> → <code>pipeline/fids-deploy-pipeline.yaml</code> → Create.</p></li>
-      <li><p>Developer perspective, project <code>fids-pipelines</code> → Pipelines → <code>fids-deploy</code> → <strong>Start</strong>.</p>
-        <p><code>git-url</code>: <code>https://github.com/ocp-training/do108.git</code>. <code>git-revision</code>: <code>main</code>. <code>manifest-path</code>: <code>src/deploy</code>. <code>deployment-name</code>: <code>fids-web</code>. <code>target-namespace</code>: <code>fids-app</code>. Workspace <code>shared-workspace</code>: <strong>Volume Claim Template</strong>, ReadWriteOnce, <code>1Gi</code>. Start.</p></li>
-      <li><p>On the PipelineRun, open Logs for <code>fetch-repository</code>, <code>deploy-manifests</code>, and <code>check-health</code>. Then switch the project to <code>fids-app</code> and open the <code>fids-web</code> Route.</p></li>
+      <li><p>Home → Projects → Create Project → name <code>${U}-fids-pipelines</code>.</p></li>
+      <li><p><strong>+</strong> → Import YAML → <code>pipeline/fids-pipeline-edit-binding.yaml</code> → Create. This grants ServiceAccount <code>pipeline</code> in <code>${U}-fids-pipelines</code> the <code>edit</code> role in <code>${U}-fids-app</code>.</p></li>
+      <li><p><strong>+</strong> → Import YAML → project <code>${U}-fids-pipelines</code> → <code>pipeline/fids-deploy-pipeline.yaml</code> → Create.</p></li>
+      <li><p>Developer perspective, project <code>${U}-fids-pipelines</code> → Pipelines → <code>fids-deploy</code> → <strong>Start</strong>.</p>
+        <p><code>git-url</code>: <code>https://github.com/ocp-training/do108.git</code>. <code>git-revision</code>: <code>main</code>. <code>manifest-path</code>: <code>src/deploy</code>. <code>deployment-name</code>: <code>fids-web</code>. <code>target-namespace</code>: <code>${U}-fids-app</code>. Workspace <code>shared-workspace</code>: <strong>Volume Claim Template</strong>, ReadWriteOnce, <code>1Gi</code>. Start.</p></li>
+      <li><p>On the PipelineRun, open Logs for <code>fetch-repository</code>, <code>deploy-manifests</code>, and <code>check-health</code>. Then switch the project to <code>${U}-fids-app</code> and open the <code>fids-web</code> Route.</p></li>
     </ol>
   </div>
 </div>
 
 <div class="adm note"><div class="ico">i</div><div class="bd"><span class="admlab">What the run applies</span>
-<p>Database secret, database, API, web board, and admin. Not <code>fids-oc</code>. The namespace typed in the form replaces <code>fids-app</code> inside those files for this run. If the application is already deployed, a green health task is still the expected result.</p></div></div>
+<p>Database secret, database, API, web board, and admin. Not <code>fids-oc</code>. The namespace typed in the form replaces <code>${U}-fids-app</code> inside those files for this run. If the application is already deployed, a green health task is still the expected result.</p></div></div>
 
 </div>
 </body>

@@ -491,7 +491,7 @@ h1.chap{ break-before:auto; padding-top:0; }
       <li><a href="pipeline/fids-pipeline-edit-binding.yaml"><code>pipeline/fids-pipeline-edit-binding.yaml</code></a> — lets the pipeline change project <code>${U}-fids-app</code>.</li>
       <li><a href="pipeline/fids-deploy-pipeline.yaml"><code>pipeline/fids-deploy-pipeline.yaml</code></a> — the pipeline itself.</li>
     </ul>
-    <p>The manifests it applies are the application files in <code>images/NCA-APP/do108/src/deploy</code>: <code>fids-db-secret.yaml</code>, <code>fids-db.yaml</code>, <code>fids-api.yaml</code>, <code>fids-web.yaml</code>, and <code>fids-admin.yaml</code>. <code>fids-oc.yaml</code> is not applied. That file is a cluster-admin toolbox, not part of the application.</p>
+    <p>The manifests it applies are the application files in <code>src/deploy</code>: <code>fids-db-secret.yaml</code>, <code>fids-db.yaml</code>, <code>fids-api.yaml</code>, <code>fids-web.yaml</code>, and <code>fids-admin.yaml</code>. <code>fids-oc.yaml</code> is not applied. That file is a cluster-admin toolbox, not part of the application.</p>
 
     <ol class="steps">
       <li><p><strong>Install Red Hat OpenShift Pipelines</strong> if the left menu has no <strong>Pipelines</strong> entry. Use the <strong>Administrator</strong> perspective.</p>
@@ -532,7 +532,7 @@ h1.chap{ break-before:auto; padding-top:0; }
           <tbody>
             <tr><td><code>git-url</code></td><td>The HTTPS address of the Git repository. There is no default; the run will not start while this is empty. Example shape: <code>https://github.com/org/do180-extended.git</code></td></tr>
             <tr><td><code>git-revision</code></td><td><code>main</code>, or whichever branch contains <code>src/deploy</code>. A tag or a commit also works.</td></tr>
-            <tr><td><code>manifest-path</code></td><td><code>images/NCA-APP/do108/src/deploy</code>. This is the folder inside the clone. If the repository root is already <code>do108</code>, use <code>src/deploy</code> instead.</td></tr>
+            <tr><td><code>manifest-path</code></td><td><code>src/deploy</code>. This is the folder inside the clone.</td></tr>
             <tr><td><code>deployment-name</code></td><td><code>fids-web</code>. This is the Deployment the health task waits for. <code>fids-db</code>, <code>fids-api</code>, and <code>fids-admin</code> are the other names the apply task creates.</td></tr>
             <tr><td><code>target-namespace</code></td><td><code>${U}-fids-app</code>. Must be the same project as the RoleBinding. The files in Git say <code>fids-app</code>; the deploy task rewrites that to whatever you type here.</td></tr>
           </tbody>
